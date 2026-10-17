@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FFF8EE">
+<title>İngilizce Prototip</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --krem: #FFF8EE; --murekkep: #3B3355; --soluk: #7A7192; --cizgi: #EDE6DA;
+    --mercan: #FF8A7A; --nane: #5CC9A7; --lavanta: #9F8BEA; --gunes: #FFC94D; --gok: #6DB8EE;
+    --mercan-a: #FFE3DE; --nane-a: #DDF5EC; --lavanta-a: #ECE6FF; --gunes-a: #FFF1C9; --gok-a: #DDEFFD;
+    --golge: 0 5px 0 rgba(59,51,85,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: #EFE7DA; }
+  body { font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; color: var(--murekkep); overflow: hidden; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+  /* Telefon kabuğu: telefonda tam ekran, bilgisayarda ortada telefon boyutu */
+  #uygulama { position: relative; height: 100%; max-width: 430px; margin: 0 auto; background: var(--krem); overflow: hidden; display: flex; flex-direction: column; }
+  @media (min-width: 600px) { #uygulama { height: min(880px, 100% - 32px); margin-top: 16px; border-radius: 40px; box-shadow: 0 20px 60px rgba(59,51,85,.25); } }
+
+  /* ---------- Arka plan sahnesi ---------- */
+  .sahne { position: absolute; inset: 0 0 auto 0; height: 300px; overflow: hidden; z-index: 0; transition: background 1s; }
+  .sahne .gok-cisim { position: absolute; width: 64px; height: 64px; border-radius: 50%; top: 40px; right: 40px; }
+  .sahne .bulut { position: absolute; background: rgba(255,255,255,.85); border-radius: 999px; height: 22px; animation: kay linear infinite; }
+  .sahne .bulut::before, .sahne .bulut::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
+  .sahne .bulut::before { width: 30px; height: 30px; left: 12px; top: -14px; }
+  .sahne .bulut::after { width: 22px; height: 22px; left: 34px; top: -9px; }
+  .sahne .yildizcik { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; animation: parla 2.4s ease-in-out infinite; }
+  .sahne svg { position: absolute; bottom: -2px; left: 0; width: 100%; height: 120px; }
+  @keyframes kay { from { transform: translateX(-120px); } to { transform: translateX(520px); } }
+  @keyframes parla { 50% { opacity: .2; } }
+
+  /* ---------- Genel ---------- */
+  .ekran { position: relative; z-index: 1; flex: 1; overflow-y: auto; padding: 18px 18px 110px; display: none; scrollbar-width: none; }
+  .ekran::-webkit-scrollbar { display: none; }
+  .ekran.aktif { display: block; animation: belir .25s ease; }
+  @keyframes belir { from { opacity: 0; transform: translateY(8px); } }
+  .ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .hap { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.92); border-radius: 999px; padding: 7px 14px; font-weight: 900; font-size: 16px; box-shadow: var(--golge); }
+  .kart { background: #fff; border-radius: 26px; padding: 18px; box-shadow: var(--golge); }
+  h1 { font-size: 26px; font-weight: 900; line-height: 1.15; }
+  h2 { font-size: 20px; font-weight: 900; margin: 22px 4px 10px; }
+  .soluk { color: var(--soluk); font-weight: 700; }
+  .buyuk-dugme { width: 100%; border-radius: 22px; padding: 16px; font-weight: 900; font-size: 19px; color: #fff; background: var(--nane); box-shadow: 0 5px 0 #3FA585; transition: transform .1s; }
+  .buyuk-dugme:active { transform: translateY(3px); box-shadow: 0 2px 0 #3FA585; }
+  .buyuk-dugme.mor { background: var(--lavanta); box-shadow: 0 5px 0 #7C67CC; }
+  .buyuk-dugme.mor:active { box-shadow: 0 2px 0 #7C67CC; }
+  .buyuk-dugme:disabled { background: #D6D0C6; box-shadow: 0 5px 0 #BDB6AA; }
+
+  /* ---------- Ana sayfa ---------- */
+  .selam { color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.18); margin: 18px 4px 24px; }
+  .selam p { font-weight: 800; opacity: .95; }
+  .hedef { display: flex; align-items: center; gap: 16px; }
+  .halka { --yuzde: 0; width: 84px; height: 84px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: conic-gradient(var(--nane) calc(var(--yuzde) * 1%), var(--nane-a) 0); }
+  .halka span { width: 64px; height: 64px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-weight: 900; font-size: 18px; }
+  .gorevler { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gorev { text-align: left; border-radius: 24px; padding: 16px; box-shadow: var(--golge); }
+  .gorev .ikon { font-size: 34px; display: block; margin-bottom: 6px; }
+  .gorev b { font-size: 17px; font-weight: 900; display: block; }
+  .gorev small { font-size: 14px; color: var(--soluk); font-weight: 700; }
+  .kutular { display: flex; gap: 8px; }
+  .kutu { flex: 1; border-radius: 18px; padding: 10px 4px; text-align: center; }
+  .kutu b { font-size: 22px; font-weight: 900; display: block; }
+  .kutu small { font-size: 12px; font-weight: 800; color: var(--soluk); }
+
+  /* ---------- Kart çalışma ---------- */
+  .tam { position: absolute; inset: 0; z-index: 20; background: var(--krem); display: none; flex-direction: column; padding: 18px; }
+  .tam.aktif { display: flex; animation: belir .25s ease; }
+  .ilerleme { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .ilerleme .cubuk { flex: 1; height: 16px; border-radius: 999px; background: var(--cizgi); overflow: hidden; }
+  .ilerleme .cubuk i { display: block; height: 100%; width: 0; background: var(--nane); border-radius: 999px; transition: width .4s; }
+  .kapat { font-size: 26px; font-weight: 900; color: var(--soluk); width: 36px; }
+  .cevir-alan { flex: 1; perspective: 1200px; display: flex; align-items: center; }
+  .cevir { position: relative; width: 100%; height: min(440px, 100%); transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3,1.3,.5,1); cursor: pointer; }
+  .cevir.donuk { transform: rotateY(180deg); }
+  .yuz { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; box-shadow: 0 8px 0 rgba(59,51,85,.10); }
+  .yuz.on { background: var(--gunes-a); }
+  .yuz.arka { background: #fff; transform: rotateY(180deg); }
+  .yuz .resim { font-size: 96px; line-height: 1; margin-bottom: 14px; }
+  .yuz .kelime { font-size: 44px; font-weight: 900; }
+  .yuz .ipucu { margin-top: 10px; font-size: 15px; color: var(--soluk); font-weight: 800; }
+  .yuz .anlam { font-size: 38px; font-weight: 900; color: #2E8A6C; }
+  .yuz .ornek { margin-top: 18px; background: var(--krem); border-radius: 18px; padding: 14px; font-size: 17px; font-weight: 700; }
+  .yuz .ornek i { display: block; color: var(--soluk); font-style: normal; margin-top: 4px; }
+  .ses { position: absolute; top: 16px; right: 16px; width: 48px; height: 48px; border-radius: 50%; background: #fff; font-size: 22px; box-shadow: var(--golge); }
+  .cevaplar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .cevaplar button { border-radius: 18px; padding: 14px 4px; font-weight: 900; font-size: 15px; box-shadow: var(--golge); }
+  .cevaplar button small { display: block; font-size: 12px; color: var(--soluk); font-weight: 700; }
+  .gizli { visibility: hidden; }
+
+  /* ---------- Cümle ---------- */
+  .soru { font-size: 15px; color: var(--soluk); font-weight: 800; margin-bottom: 6px; }
+  .tr-cumle { font-size: 26px; font-weight: 900; margin-bottom: 18px; }
+  .dizi { min-height: 116px; border-bottom: 3px dashed var(--lavanta); border-top: 3px dashed var(--lavanta); padding: 12px 0; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; margin-bottom: 22px; }
+  .havuz { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .blok { background: #fff; border: 3px solid var(--cizgi); border-bottom-width: 6px; border-radius: 14px; padding: 8px 14px; font-weight: 800; font-size: 19px; transition: transform .1s; }
+  .blok:active { transform: scale(.94); }
+  .blok.bos { visibility: hidden; }
+  .geri-bildirim { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 18px 24px; border-radius: 28px 28px 0 0; transform: translateY(110%); transition: transform .3s; z-index: 3; }
+  .geri-bildirim.acik { transform: none; }
+  .geri-bildirim.dogru { background: var(--nane-a); }
+  .geri-bildirim.yanlis { background: var(--mercan-a); }
+  .geri-bildirim h3 { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .geri-bildirim p { font-weight: 700; margin-bottom: 14px; }
+
+  /* ---------- Takvim ---------- */
+  .ay-bas { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .ay-bas button { width: 36px; height: 36px; border-radius: 50%; background: var(--krem); font-weight: 900; font-size: 18px; }
+  .gunler { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+  .gunler .bas { font-size: 12px; font-weight: 900; color: var(--soluk); }
+  .gun { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 15px; }
+  .gun.calisti { background: var(--gunes); color: #fff; }
+  .gun.korundu { background: var(--gok-a); }
+  .gun.bugun { outline: 3px solid var(--lavanta); }
+  .istat { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .istat .kart b { font-size: 28px; font-weight: 900; display: block; }
+
+  /* ---------- Ödüller ---------- */
+  .rozetler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .rozet { background: #fff; border-radius: 22px; padding: 14px 6px; text-align: center; box-shadow: var(--golge); }
+  .rozet .r-ikon { font-size: 38px; }
+  .rozet b { display: block; font-size: 14px; font-weight: 900; margin-top: 4px; line-height: 1.2; }
+  .rozet small { display: block; font-size: 11.5px; color: var(--soluk); font-weight: 700; margin-top: 3px; line-height: 1.25; }
+  .rozet.kilitli .r-ikon { filter: grayscale(1); opacity: .35; }
+  .rozet.kilitli b { color: var(--soluk); }
+  .magaza { display: grid; gap: 10px; }
+  .urun { display: flex; align-items: center; gap: 12px; }
+  .urun .u-ikon { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-size: 28px; flex: none; }
+  .urun div { flex: 1; }
+  .urun b { font-weight: 900; }
+  .urun small { display: block; color: var(--soluk); font-weight: 700; font-size: 13px; }
+  .al { border-radius: 14px; padding: 9px 12px; background: var(--gunes); font-weight: 900; box-shadow: 0 4px 0 #E0A92A; white-space: nowrap; }
+  .al.secili { background: var(--nane); box-shadow: 0 4px 0 #3FA585; color: #fff; }
+  .al:disabled { background: #E6E0D6; box-shadow: 0 4px 0 #CFC8BC; color: var(--soluk); }
+
+  /* ---------- Arkadaşlar ---------- */
+  .arkadas { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 20px; color: #fff; flex: none; }
+  .arkadas > div:not(.avatar) { flex: 1; min-width: 0; }
+  .arkadas b { font-weight: 900; }
+  .arkadas small { display: block; color: var(--soluk); font-weight: 700; font-size: 13px; }
+  .tepki { font-size: 22px; width: 44px; height: 44px; border-radius: 50%; background: var(--krem); }
+  .tepki.gonderildi { background: var(--nane-a); }
+  .lig .arkadas { margin-bottom: 0; padding: 10px 0; border-bottom: 2px solid var(--krem); }
+  .lig .arkadas:last-child { border-bottom: 0; }
+  .lig .sira { width: 22px; font-weight: 900; color: var(--soluk); }
+  .sen { background: var(--lavanta-a); border-radius: 16px; padding-left: 8px !important; padding-right: 8px !important; }
+
+  /* ---------- Alt menü ---------- */
+  nav { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 10; background: #fff; border-radius: 26px; display: flex; padding: 8px; box-shadow: 0 8px 30px rgba(59,51,85,.15); }
+  nav button { flex: 1; border-radius: 18px; padding: 8px 0 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: 800; font-size: 12px; color: var(--soluk); }
+  nav button span { font-size: 24px; filter: grayscale(.6); opacity: .7; transition: transform .2s; }
+  nav button.aktif { background: var(--lavanta-a); color: #6B55C9; }
+  nav button.aktif span { filter: none; opacity: 1; transform: translateY(-2px) scale(1.1); }
+
+  /* ---------- Pencere (ödül) ---------- */
+  .perde { position: absolute; inset: 0; z-index: 40; background: rgba(59,51,85,.45); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .perde.aktif { display: flex; animation: belir .2s; }
+  .pencere { background: #fff; border-radius: 32px; padding: 26px 22px 22px; text-align: center; width: 100%; animation: zipla .5s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes zipla { from { transform: scale(.6); } }
+  .pencere .p-ikon { font-size: 76px; }
+  .pencere h3 { font-size: 24px; font-weight: 900; margin: 6px 0; }
+  .pencere p { font-weight: 700; color: var(--soluk); margin-bottom: 18px; }
+  .hediye { cursor: pointer; animation: salla 1s ease-in-out infinite; display: inline-block; }
+  @keyframes salla { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+
+  .konfeti { position: absolute; z-index: 50; pointer-events: none; font-size: 22px; animation: patla 1s ease-out forwards; }
+  @keyframes patla { to { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; } }
+  .bildirim { position: absolute; top: 16px; left: 50%; transform: translate(-50%, -150%); z-index: 60; background: var(--murekkep); color: #fff; font-weight: 800; padding: 10px 18px; border-radius: 999px; transition: transform .3s; white-space: nowrap; font-size: 15px; }
+  .bildirim.acik { transform: translate(-50%, 0); }
+  .prototip-not { text-align: center; font-size: 12px; color: var(--soluk); font-weight: 700; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div id="uygulama">
+
+  <div class="sahne" id="sahne"></div>
+
+  <!-- ========== ANA SAYFA ========== -->
+  <section class="ekran aktif" id="ekran-ana">
+    <div class="ust">
+      <span class="hap" id="seri-hap">🔥 0</span>
+      <span class="hap" id="yildiz-hap">⭐ 0</span>
+    </div>
+    <div class="selam">
+      <h1 id="selam-baslik">Günaydın!</h1>
+      <p id="selam-alt">Bugün birkaç kelime öğrenelim mi?</p>
+    </div>
+
+    <div class="kart hedef">
+      <div class="halka" id="halka"><span id="halka-yazi">0/10</span></div>
+      <div>
+        <b style="font-size:18px;font-weight:900;">Günlük hedef</b>
+        <p class="soluk" id="hedef-yazi" style="font-size:15px;">10 kart çalış, hediyeni al 🎁</p>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;"><button class="buyuk-dugme" id="basla-dugme">Kartlara başla</button></div>
+
+    <h2>Alıştırmalar</h2>
+    <div class="gorevler">
+      <button class="gorev" style="background:var(--gunes-a)" data-ac="kartlar"><span class="ikon">🃏</span><b>Kelime kartları</b><small id="bekleyen-yazi">0 kart bekliyor</small></button>
+      <button class="gorev" style="background:var(--lavanta-a)" data-ac="cumle"><span class="ikon">🧩</span><b>Cümle kur</b><small>Blokları sıraya diz</small></button>
+    </div>
+
+    <h2>Kelime kutuların</h2>
+    <div class="kart">
+      <div class="kutular" id="kutular"></div>
+      <p class="soluk" style="font-size:13px;margin-top:10px;">Bildiğin kart sağa geçer ve daha seyrek gelir. Bilemediğin başa döner.</p>
+    </div>
+    <p class="prototip-not">Bu bir prototip: veriler sadece bu telefonda tutulur.</p>
+  </section>
+
+  <!-- ========== TAKVİM ========== -->
+  <section class="ekran" id="ekran-takvim">
+    <div class="ust"><span class="hap">📅 Takvim</span><span class="hap" id="koruyucu-hap">🧊 0</span></div>
+    <div class="kart" style="margin-top:60px;">
+      <div class="ay-bas">
+        <button id="ay-geri">‹</button>
+        <b style="font-size:19px;font-weight:900;" id="ay-adi"></b>
+        <button id="ay-ileri">›</button>
+      </div>
+      <div class="gunler" id="gunler"></div>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:14px;font-size:13px;font-weight:800;color:var(--soluk);">
+        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gunes);vertical-align:-1px;"></span> Çalıştın</span>
+        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gok-a);vertical-align:-1px;"></span> Koruyucu</span>
+      </div>
+    </div>
+    <h2>Senin istatistiklerin</h2>
+    <div class="istat">
+      <div class="kart"><b id="i-seri">0</b><span class="soluk">günlük seri 🔥</span></div>
+      <div class="kart"><b id="i-enuzun">0</b><span class="soluk">en uzun seri</span></div>
+      <div class="kart"><b id="i-ogrenilen">0</b><span class="soluk">öğrenilen kelime</span></div>
+      <div class="kart"><b id="i-gun">0</b><span class="soluk">toplam çalışılan gün</span></div>
+    </div>
+    <div class="kart" style="margin-top:12px;background:var(--gok-a);">
+      <b style="font-weight:900;">🧊 Seri koruyucu nedir?</b>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden yıldızla alabilirsin.</p>
+    </div>
+  </section>
+
+  <!-- ========== ÖDÜLLER ========== -->
+  <section class="ekran" id="ekran-oduller">
+    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">⭐ 0</span></div>
+    <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Başarımlar</h2>
+    <div class="rozetler" id="rozetler"></div>
+    <h2>Yıldız dükkânı</h2>
+    <div class="magaza" id="magaza"></div>
+  </section>
+
+  <!-- ========== ARKADAŞLAR ========== -->
+  <section class="ekran" id="ekran-arkadaslar">
+    <div class="ust"><span class="hap">👥 Arkadaşlar</span><button class="hap" id="ekle-dugme">＋ Ekle</button></div>
+    <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Bu haftanın ligi</h2>
+    <div class="kart lig" id="lig"></div>
+    <h2>Arkadaşların bugün</h2>
+    <div id="arkadas-listesi"></div>
+    <div class="kart" style="background:var(--lavanta-a);">
+      <b style="font-weight:900;">💬 Mesajlaşma yok, bilerek</b>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Sadece hazır tepkiler var. Böylece kimse kimseye kötü bir şey yazamaz.</p>
+    </div>
+    <p class="prototip-not">Arkadaşlar örnek: gerçek uygulamada hesaplarla gelecek.</p>
+  </section>
+
+  <!-- ========== KART ÇALIŞMA (tam ekran) ========== -->
+  <section class="tam" id="tam-kartlar">
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="k-cubuk"></i></div><b id="k-sayac">0/10</b></div>
+    <div class="cevir-alan">
+      <div class="cevir" id="cevir">
+        <div class="yuz on">
+          <button class="ses" id="ses-on">🔊</button>
+          <div class="resim" id="k-resim"></div>
+          <div class="kelime" id="k-kelime"></div>
+          <div class="ipucu">çevirmek için dokun</div>
+        </div>
+        <div class="yuz arka">
+          <button class="ses" id="ses-arka">🔊</button>
+          <div class="resim" id="k-resim2" style="font-size:56px;"></div>
+          <div class="soluk" id="k-kelime2" style="font-size:20px;"></div>
+          <div class="anlam" id="k-anlam"></div>
+          <div class="ornek" id="k-ornek"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cevaplar gizli" id="cevaplar">
+      <button style="background:var(--mercan-a)" data-cevap="0">😵 Bilemedim<small>başa döner</small></button>
+      <button style="background:var(--gunes-a)" data-cevap="1">🤔 Zorlandım<small>yakında tekrar</small></button>
+      <button style="background:var(--nane-a)" data-cevap="2">😎 Biliyorum<small>ileri kutuya</small></button>
+    </div>
+  </section>
+
+  <!-- ========== CÜMLE (tam ekran) ========== -->
+  <section class="tam" id="tam-cumle">
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="c-cubuk" style="background:var(--lavanta)"></i></div><b id="c-sayac">0/5</b></div>
+    <p class="soru">Bu cümleyi İngilizceye çevir:</p>
+    <p class="tr-cumle" id="c-tr"></p>
+    <div class="dizi" id="dizi"></div>
+    <div class="havuz" id="havuz"></div>
+    <div style="margin-top:auto;"><button class="buyuk-dugme mor" id="kontrol" disabled>Kontrol et</button></div>
+    <div class="geri-bildirim" id="geri-bildirim">
+      <h3 id="gb-baslik"></h3>
+      <p id="gb-yazi"></p>
+      <button class="buyuk-dugme" id="gb-devam">Devam</button>
+    </div>
+  </section>
+
+  <!-- ========== PENCERE ========== -->
+  <div class="perde" id="perde"><div class="pencere" id="pencere"></div></div>
+  <div class="bildirim" id="bildirim"></div>
+
+  <nav>
+    <button class="aktif" data-sekme="ana"><span>🏠</span>Ana sayfa</button>
+    <button data-sekme="takvim"><span>📅</span>Takvim</button>
+    <button data-sekme="oduller"><span>🏆</span>Ödüller</button>
+    <button data-sekme="arkadaslar"><span>👥</span>Arkadaşlar</button>
+  </nav>
+</div>
+
+<script>
+// ================= İÇERİK (A1 başlangıç destesi) =================
+const KELIMELER = [
+  ["apple","elma","🍎","I eat an apple every day.","Her gün bir elma yerim."],
+  ["water","su","💧","Can I have some water?","Biraz su alabilir miyim?"],
+  ["cat","kedi","🐱","The cat is sleeping.","Kedi uyuyor."],
+  ["dog","köpek","🐶","My dog likes the park.","Köpeğim parkı seviyor."],
+  ["house","ev","🏠","This is my house.","Burası benim evim."],
+  ["book","kitap","📖","I read a book at night.","Geceleri kitap okurum."],
+  ["sun","güneş","☀️","The sun is hot today.","Bugün güneş sıcak."],
+  ["friend","arkadaş","🤝","She is my best friend.","O benim en iyi arkadaşım."],
+  ["bread","ekmek","🍞","We buy bread in the morning.","Sabahları ekmek alırız."],
+  ["tree","ağaç","🌳","There is a big tree in the garden.","Bahçede büyük bir ağaç var."],
+  ["car","araba","🚗","His car is red.","Onun arabası kırmızı."],
+  ["school","okul","🏫","I go to school by bus.","Okula otobüsle giderim."],
+  ["happy","mutlu","😊","I am happy today.","Bugün mutluyum."],
+  ["rain","yağmur","🌧️","I like the sound of rain.","Yağmurun sesini severim."],
+  ["phone","telefon","📱","Where is my phone?","Telefonum nerede?"],
+  ["music","müzik","🎵","We listen to music together.","Birlikte müzik dinleriz."],
+  ["tea","çay","🍵","Do you want tea?","Çay ister misin?"],
+  ["moon","ay","🌙","The moon is beautiful tonight.","Bu gece ay çok güzel."],
+  ["fish","balık","🐟","The fish lives in the sea.","Balık denizde yaşar."],
+  ["flower","çiçek","🌸","This flower smells nice.","Bu çiçek güzel kokuyor."],
+  ["shoe","ayakkabı","👟","My shoes are new.","Ayakkabılarım yeni."],
+  ["key","anahtar","🔑","I can't find my key.","Anahtarımı bulamıyorum."],
+  ["cold","soğuk","🥶","It is cold outside.","Dışarısı soğuk."],
+  ["family","aile","👨‍👩‍👧","I love my family.","Ailemi seviyorum."],
+  ["egg","yumurta","🥚","I have two eggs for breakfast.","Kahvaltıda iki yumurta yerim."],
+  ["bird","kuş","🐦","A bird is singing.","Bir kuş şarkı söylüyor."],
+  ["door","kapı","🚪","Please close the door.","Lütfen kapıyı kapat."],
+  ["milk","süt","🥛","The baby drinks milk.","Bebek süt içiyor."],
+  ["star","yıldız","⭐","I can see a star.","Bir yıldız görebiliyorum."],
+  ["clock","saat","⏰","The clock is on the wall.","Saat duvarda."],
+];
+const CUMLELER = [
+  ["Ben her gün su içerim.", "I drink water every day", ["tea","night"]],
+  ["Kedi kanepede uyuyor.", "The cat is sleeping on the sofa", ["dog","eats"]],
+  ["Bu benim yeni telefonum.", "This is my new phone", ["old","your"]],
+  ["Biz okula otobüsle gideriz.", "We go to school by bus", ["car","they"]],
+  ["Bugün hava soğuk.", "It is cold today", ["hot","tomorrow"]],
+  ["O benim en iyi arkadaşım.", "She is my best friend", ["family","bad"]],
+  ["Kahvaltıda ekmek yeriz.", "We eat bread for breakfast", ["drink","dinner"]],
+  ["Ay bu gece çok güzel.", "The moon is very beautiful tonight", ["sun","morning"]],
+];
+
+// ================= DURUM (telefonda saklanır) =================
+const ANAHTAR = "ing-prototip-v1";
+const GUN_MS = 86400000;
+const bugunNo = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
+const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
+let d;
+
+function yeniDurum() {
+  const b = bugunNo();
+  // Prototipte takvim boş görünmesin diye son 4 gün çalışılmış sayılır.
+  return { yildiz: 40, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
+    bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {} };
+}
+function yukle() {
+  try { d = JSON.parse(localStorage.getItem(ANAHTAR)); } catch (e) { d = null; }
+  if (!d) d = yeniDurum();
+  if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
+}
+function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }
+
+function koruyucuKontrol() {
+  // Dün çalışılmadıysa ve koruyucu varsa dünü korunmuş say.
+  const dun = bugunNo() - 1;
+  if (!d.gunler[dun] && !d.korunan[dun] && d.gunler[dun - 1] && d.koruyucu > 0) { d.koruyucu--; d.korunan[dun] = 1; }
+}
+function seri() {
+  let s = 0, g = bugunNo();
+  if (!d.gunler[g]) g--;
+  while (d.gunler[g] || d.korunan[g]) { if (d.gunler[g]) s++; g--; }
+  return s;
+}
+const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
+function bekleyenler() {
+  const b = bugunNo();
+  const eski = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b);
+  const yeni = KELIMELER.filter(k => !d.kartlar[k[0]]);
+  return eski.concat(yeni.slice(0, Math.max(0, 10 - eski.length)));
+}
+
+// ================= ARKA PLAN SAHNESİ =================
+const TEMALAR = {
+  cayir: { ad: "Çayır", ikon: "🌼", fiyat: 0, tepe: ["#9ED9A0", "#7CC98A"] },
+  sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 120, tepe: ["#F6DFA5", "#8CCFE8"] },
+  kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 150, tepe: ["#FFFFFF", "#DCE8F5"] },
+  sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 200, tepe: ["#F7C6D3", "#E9A5BC"] },
+};
+function sahneCiz() {
+  const s = document.getElementById("sahne"), saat = new Date().getHours();
+  const vakit = saat >= 6 && saat < 17 ? "gunduz" : saat >= 17 && saat < 20 ? "aksam" : "gece";
+  const gok = { gunduz: "linear-gradient(#7CC3F2, #BFE3FA)", aksam: "linear-gradient(#F59E9E, #FFD39A)", gece: "linear-gradient(#2E2A5A, #6A5BA8)" }[vakit];
+  const t = TEMALAR[d.tema];
+  s.style.background = gok;
+  let h = `<div class="gok-cisim" style="background:${vakit === "gece" ? "#FFF6D6;box-shadow:0 0 30px #FFF6D6" : vakit === "aksam" ? "#FFB36B" : "#FFD95C;box-shadow:0 0 40px #FFE38A"}"></div>`;
+  if (vakit === "gece") for (let i = 0; i < 18; i++) h += `<i class="yildizcik" style="left:${(i * 53) % 100}%;top:${(i * 37) % 60}%;animation-delay:${i * .3}s"></i>`;
+  for (let i = 0; i < 3; i++) h += `<div class="bulut" style="width:${70 + i * 15}px;top:${30 + i * 45}px;animation-duration:${40 + i * 18}s;animation-delay:-${i * 14}s;${vakit === "gece" ? "opacity:.25" : ""}"></div>`;
+  h += `<svg viewBox="0 0 430 120" preserveAspectRatio="none">
+    <path d="M0 70 Q 90 20 190 60 T 430 50 V120 H0Z" fill="${t.tepe[1]}"/>
+    <path d="M0 95 Q 120 55 240 88 T 430 80 V120 H0Z" fill="${t.tepe[0]}"/>
+    <path d="M0 112 Q 215 96 430 112 V120 H0Z" fill="#FFF8EE"/></svg>`;
+  s.innerHTML = h;
+  const baslik = { gunduz: "Günaydın! ☀️", aksam: "İyi akşamlar! 🌇", gece: "İyi geceler! 🌙" }[vakit];
+  document.getElementById("selam-baslik").textContent = saat < 12 && saat >= 6 ? baslik : vakit === "gunduz" ? "Merhaba! ☀️" : baslik;
+}
+
+// ================= ANA SAYFA =================
+function anaCiz() {
+  const sr = seri(), say = d.bugun.sayi, bek = bekleyenler().length;
+  document.getElementById("seri-hap").textContent = "🔥 " + sr;
+  ["yildiz-hap", "yildiz-hap2"].forEach(i => document.getElementById(i).textContent = "⭐ " + d.yildiz);
+  document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
+  const yuzde = Math.min(100, say * 10);
+  document.getElementById("halka").style.setProperty("--yuzde", yuzde);
+  document.getElementById("halka-yazi").textContent = Math.min(say, 10) + "/10";
+  document.getElementById("hedef-yazi").textContent = say >= 10 ? (d.bugun.hediye ? "Bugünkü hedef tamam! Yarın görüşürüz 💜" : "Hedef tamam! Hediyeni aç 🎁") : `${10 - say} kart daha, hediyeni al 🎁`;
+  document.getElementById("selam-alt").textContent = sr > 0 ? `${sr} günlük serin var, bozmayalım!` : "Bugün birkaç kelime öğrenelim mi?";
+  document.getElementById("bekleyen-yazi").textContent = bek ? bek + " kart bekliyor" : "Bugünlük bitti 🎉";
+  const bd = document.getElementById("basla-dugme");
+  bd.textContent = say >= 10 && !d.bugun.hediye ? "🎁 Hediyeni aç" : bek ? "Kartlara başla" : "Cümle alıştırması yap";
+  const sayac = [0, 0, 0, 0, 0];
+  KELIMELER.forEach(k => { const c = d.kartlar[k[0]]; if (c) sayac[Math.min(c.kutu, 4)]++; });
+  const yeniSayi = KELIMELER.length - Object.keys(d.kartlar).length;
+  const renk = ["var(--krem)", "var(--mercan-a)", "var(--gunes-a)", "var(--nane-a)", "var(--lavanta-a)"];
+  const ad = ["Yeni", "1. kutu", "2. kutu", "3. kutu", "Öğrenildi ⭐"];
+  const deger = [yeniSayi, sayac[1] + sayac[0], sayac[2], sayac[3], sayac[4]];
+  document.getElementById("kutular").innerHTML = deger.map((v, i) => `<div class="kutu" style="background:${renk[i]}"><b>${v}</b><small>${ad[i]}</small></div>`).join("");
+}
+
+// ================= KART ÇALIŞMA =================
+let deste = [], kIndex = 0;
+function kartlariAc() {
+  deste = bekleyenler();
+  if (!deste.length) { bildir("Bugünlük kart kalmadı 🎉 Cümle kurmaya ne dersin?"); return; }
+  kIndex = 0; tamAc("kartlar"); kartGoster();
+}
+function kartGoster() {
+  const k = deste[kIndex];
+  // Yeni kart animasyonsuz ön yüze döner; yoksa dönerken sonraki kartın cevabı görünürdü.
+  const c = document.getElementById("cevir");
+  c.style.transition = "none"; c.classList.remove("donuk"); void c.offsetWidth; c.style.transition = "";
+  c.animate([{ transform: "scale(.9)", opacity: .3 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "ease-out" });
+  document.getElementById("cevaplar").classList.add("gizli");
+  document.getElementById("k-resim").textContent = k[2];
+  document.getElementById("k-kelime").textContent = k[0];
+  document.getElementById("k-resim2").textContent = k[2];
+  document.getElementById("k-kelime2").textContent = k[0];
+  document.getElementById("k-anlam").textContent = k[1];
+  document.getElementById("k-ornek").innerHTML = `${k[3]}<i>${k[4]}</i>`;
+  document.getElementById("k-sayac").textContent = `${kIndex}/${deste.length}`;
+  document.getElementById("k-cubuk").style.width = (kIndex / deste.length * 100) + "%";
+}
+document.getElementById("cevir").addEventListener("click", e => {
+  if (e.target.closest(".ses")) return;
+  const c = document.getElementById("cevir");
+  c.classList.toggle("donuk");
+  if (c.classList.contains("donuk")) document.getElementById("cevaplar").classList.remove("gizli");
+});
+document.querySelectorAll("[data-cevap]").forEach(b => b.addEventListener("click", () => {
+  const k = deste[kIndex], cev = +b.dataset.cevap, c = kartDurum(k[0]);
+  let kutu = cev === 0 ? 1 : cev === 1 ? Math.max(1, c.kutu) : Math.min(4, (c.kutu || 1) + 1);
+  d.kartlar[k[0]] = { kutu, sira: bugunNo() + (cev === 0 ? 0 : ARALIK[kutu]) };
+  if (cev === 0) deste.push(k); // bilemediğini bu turda bir daha sor
+  d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.enUzun = Math.max(d.enUzun, seri());
+  if (cev === 2) konfeti(b, 6);
+  kaydet(); rozetKontrol();
+  kIndex++;
+  if (kIndex >= deste.length) { tamKapat(); bitisPenceresi(); } else kartGoster();
+}));
+function seslendir(metin) {
+  try { const u = new SpeechSynthesisUtterance(metin); u.lang = "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+}
+document.getElementById("ses-on").onclick = () => seslendir(deste[kIndex][0]);
+document.getElementById("ses-arka").onclick = () => seslendir(deste[kIndex][3]);
+
+// ================= CÜMLE =================
+let cDeste = [], cIndex = 0, dizilen = [];
+function cumleAc() {
+  cDeste = [...CUMLELER].sort(() => Math.random() - .5).slice(0, 5);
+  cIndex = 0; tamAc("cumle"); cumleGoster();
+}
+function cumleGoster() {
+  const c = cDeste[cIndex];
+  document.getElementById("c-tr").textContent = c[0];
+  document.getElementById("c-sayac").textContent = `${cIndex}/${cDeste.length}`;
+  document.getElementById("c-cubuk").style.width = (cIndex / cDeste.length * 100) + "%";
+  const bloklar = c[1].split(" ").concat(c[2]).sort(() => Math.random() - .5);
+  dizilen = [];
+  document.getElementById("havuz").innerHTML = bloklar.map((b, i) => `<button class="blok" data-i="${i}">${b}</button>`).join("");
+  document.getElementById("dizi").innerHTML = "";
+  document.getElementById("kontrol").disabled = true;
+  document.querySelectorAll("#havuz .blok").forEach(b => b.onclick = () => {
+    if (b.classList.contains("bos")) return;
+    b.classList.add("bos");
+    const yeni = document.createElement("button");
+    yeni.className = "blok"; yeni.textContent = b.textContent;
+    yeni.onclick = () => { yeni.remove(); b.classList.remove("bos"); dizilen = dizilen.filter(x => x !== yeni); kontrolDurum(); };
+    document.getElementById("dizi").appendChild(yeni); dizilen.push(yeni); kontrolDurum();
+  });
+}
+const kontrolDurum = () => document.getElementById("kontrol").disabled = !dizilen.length;
+document.getElementById("kontrol").onclick = () => {
+  const c = cDeste[cIndex];
+  const cevap = [...document.querySelectorAll("#dizi .blok")].map(b => b.textContent).join(" ");
+  const dogru = cevap.toLowerCase() === c[1].toLowerCase();
+  const gb = document.getElementById("geri-bildirim");
+  gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
+  document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
+  document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
+  if (dogru) { d.cumleDogru++; d.yildiz += 2; konfeti(document.getElementById("kontrol"), 10); } else seslendir(c[1]);
+  if (dogru) seslendir(c[1]);
+  d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
+};
+document.getElementById("gb-devam").onclick = () => {
+  document.getElementById("geri-bildirim").className = "geri-bildirim";
+  cIndex++;
+  if (cIndex >= cDeste.length) { tamKapat(); pencere("🧩", "Cümleler bitti!", "Her doğru cümle 2 ⭐ kazandırdı.", "Tamam"); } else cumleGoster();
+};
+
+// ================= PENCERELER / ÖDÜL =================
+function pencere(ikon, baslik, yazi, dugme, sonra) {
+  const p = document.getElementById("pencere");
+  p.innerHTML = `<div class="p-ikon">${ikon}</div><h3>${baslik}</h3><p>${yazi}</p><button class="buyuk-dugme" id="p-dugme">${dugme}</button>`;
+  document.getElementById("perde").classList.add("aktif");
+  document.getElementById("p-dugme").onclick = () => { document.getElementById("perde").classList.remove("aktif"); sonra && sonra(); herSeyiCiz(); };
+}
+function bitisPenceresi() {
+  if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
+  else pencere("🃏", "Tur bitti!", `Bugün ${d.bugun.sayi} kart çalıştın.`, "Tamam");
+}
+function hediyePenceresi() {
+  const p = document.getElementById("pencere");
+  p.innerHTML = `<div class="p-ikon hediye" id="hediye">🎁</div><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
+  document.getElementById("perde").classList.add("aktif");
+  document.getElementById("hediye").onclick = e => {
+    const kazanc = 10 + Math.floor(Math.random() * 3) * 5;
+    d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16);
+    setTimeout(() => pencere("⭐", `+${kazanc} yıldız!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
+  };
+}
+function konfeti(el, n) {
+  const kok = document.getElementById("uygulama").getBoundingClientRect(), r = el.getBoundingClientRect();
+  const parca = ["⭐", "✨", "💜", "🌸", "🎉"];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("span"); s.className = "konfeti"; s.textContent = parca[i % parca.length];
+    s.style.left = (r.left - kok.left + r.width / 2) + "px"; s.style.top = (r.top - kok.top + r.height / 2) + "px";
+    s.style.setProperty("--x", (Math.random() * 240 - 120) + "px"); s.style.setProperty("--y", (Math.random() * -220 - 30) + "px"); s.style.setProperty("--r", (Math.random() * 360) + "deg");
+    document.getElementById("uygulama").appendChild(s); setTimeout(() => s.remove(), 1000);
+  }
+}
+let bildirimZaman;
+function bildir(m) { const b = document.getElementById("bildirim"); b.textContent = m; b.classList.add("acik"); clearTimeout(bildirimZaman); bildirimZaman = setTimeout(() => b.classList.remove("acik"), 2400); }
+
+// ================= BAŞARIMLAR =================
+const ROZETLER = [
+  ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 5],
+  ["on", "📚", "10 kelime", "10 kelimeyi 2. kutuya taşı", () => KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length >= 10, 20],
+  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= 10, 10],
+  ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 15],
+  ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 100],
+  ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 15],
+  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren", () => KELIMELER.some(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 4), 25],
+  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 5],
+  ["tema", "🎨", "Dekoratör", "Yeni bir sahne aç", () => d.temalar.length > 1, 10],
+];
+function rozetKontrol() {
+  ROZETLER.forEach(([id, ikon, ad, , kosul, odul]) => {
+    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => bildir(`${ikon} Başarım: ${ad} (+${odul} ⭐)`), 500); }
+  });
+}
+function odulCiz() {
+  document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
+    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + "⭐"}</small></div>`).join("");
+  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 50 ? "disabled" : ""}>50 ⭐</button></div>`;
+  for (const [k, t] of Object.entries(TEMALAR)) {
+    const var_ = d.temalar.includes(k), secili = d.tema === k;
+    h += `<div class="kart urun"><div class="u-ikon" style="background:linear-gradient(${t.tepe[0]},${t.tepe[1]})">${t.ikon}</div><div><b>${t.ad} sahnesi</b><small>Ana sayfa arka planı</small></div>
+      <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : t.fiyat + " ⭐"}</button></div>`;
+  }
+  document.getElementById("magaza").innerHTML = h;
+  document.querySelector('[data-al="koruyucu"]').onclick = () => { d.yildiz -= 50; d.koruyucu++; kaydet(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
+  document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
+    const k = b.dataset.tema;
+    if (!d.temalar.includes(k)) { d.yildiz -= TEMALAR[k].fiyat; d.temalar.push(k); bildir(TEMALAR[k].ikon + " Yeni sahne açıldı!"); }
+    d.tema = k; kaydet(); rozetKontrol(); herSeyiCiz();
+  });
+}
+
+// ================= TAKVİM =================
+let ayKaydir = 0;
+const AYLAR = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+function takvimCiz() {
+  const simdi = new Date(), ay = new Date(simdi.getFullYear(), simdi.getMonth() + ayKaydir, 1);
+  document.getElementById("ay-adi").textContent = AYLAR[ay.getMonth()] + " " + ay.getFullYear();
+  let h = ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"].map(g => `<div class="bas">${g}</div>`).join("");
+  const bas = (ay.getDay() + 6) % 7, gunSayi = new Date(ay.getFullYear(), ay.getMonth() + 1, 0).getDate();
+  for (let i = 0; i < bas; i++) h += "<div></div>";
+  for (let g = 1; g <= gunSayi; g++) {
+    const t = new Date(ay.getFullYear(), ay.getMonth(), g);
+    const no = Math.floor((t.getTime() - t.getTimezoneOffset() * 60000) / GUN_MS);
+    const cls = d.gunler[no] ? "calisti" : d.korunan[no] ? "korundu" : "";
+    h += `<div class="gun ${cls} ${no === bugunNo() ? "bugun" : ""}">${d.korunan[no] ? "🧊" : g}</div>`;
+  }
+  document.getElementById("gunler").innerHTML = h;
+  document.getElementById("i-seri").textContent = seri();
+  document.getElementById("i-enuzun").textContent = Math.max(d.enUzun, seri());
+  document.getElementById("i-ogrenilen").textContent = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length;
+  document.getElementById("i-gun").textContent = Object.keys(d.gunler).length;
+}
+document.getElementById("ay-geri").onclick = () => { ayKaydir--; takvimCiz(); };
+document.getElementById("ay-ileri").onclick = () => { ayKaydir++; takvimCiz(); };
+
+// ================= ARKADAŞLAR (örnek veri) =================
+const ARKADASLAR = [
+  ["Ahmet", "#FF8A7A", 9, 145, "bugün 12 kart çalıştı"],
+  ["Elif", "#5CC9A7", 21, 210, "yeni bir başarım kazandı 🎓"],
+  ["Mert", "#6DB8EE", 2, 60, "bugün henüz girmedi"],
+];
+const tepkiler = {};
+function arkadasCiz() {
+  const sen = ["Sen", "#9F8BEA", seri(), d.bugun.sayi * 10 + d.cumleDogru * 15 + 80];
+  const lig = ARKADASLAR.map(a => a.slice(0, 4)).concat([sen]).sort((a, b) => b[3] - a[3]);
+  document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${["🥇","🥈","🥉"][i] || i + 1}</span><div class="avatar" style="background:${a[1]};width:40px;height:40px;font-size:16px;">${a[0][0]}</div><div><b>${a[0]}</b><small>🔥 ${a[2]} gün</small></div><b>${a[3]} XP</b></div>`).join("");
+  document.getElementById("arkadas-listesi").innerHTML = ARKADASLAR.map((a, i) => `<div class="kart arkadas"><div class="avatar" style="background:${a[1]}">${a[0][0]}</div><div><b>${a[0]}</b><small>${a[4]}</small></div>
+    ${["👏","🔥","💜"].map(t => `<button class="tepki ${tepkiler[i + t] ? "gonderildi" : ""}" data-t="${i}|${t}">${t}</button>`).join("")}</div>`).join("");
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+    const [i, t] = b.dataset.t.split("|");
+    if (tepkiler[i + t]) return;
+    tepkiler[i + t] = 1; d.tepki++; kaydet(); konfeti(b, 5); bildir(`${ARKADASLAR[i][0]}'e ${t} gönderildi`); rozetKontrol(); arkadasCiz();
+  });
+}
+document.getElementById("ekle-dugme").onclick = () => pencere("🤝", "Arkadaş ekle", "Gerçek uygulamada burada arkadaş kodu ya da kullanıcı adı yazılacak. Senin kodun: <b style='color:#6B55C9'>KUZU-4821</b>", "Tamam");
+
+// ================= GEZİNME =================
+function sekme(ad) {
+  document.querySelectorAll(".ekran").forEach(e => e.classList.toggle("aktif", e.id === "ekran-" + ad));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("aktif", b.dataset.sekme === ad));
+  herSeyiCiz();
+}
+function tamAc(ad) { document.getElementById("tam-" + ad).classList.add("aktif"); }
+function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); herSeyiCiz(); }
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
+document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
+document.querySelectorAll("[data-ac]").forEach(b => b.onclick = () => b.dataset.ac === "kartlar" ? kartlariAc() : cumleAc());
+document.getElementById("basla-dugme").onclick = () => {
+  if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
+  else if (bekleyenler().length) kartlariAc(); else cumleAc();
+};
+function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz(); }
+
+yukle(); kaydet(); herSeyiCiz();
+setInterval(sahneCiz, 10 * 60000);
+</script>
+</body>
+</html>

@@ -175,6 +175,36 @@
   .bildirim.acik { transform: translate(-50%, 0); }
   .prototip-not { text-align: center; font-size: 12px; color: var(--soluk); font-weight: 700; margin-top: 18px; }
 
+  /* ---------- Kedi sekmesi ---------- */
+  .kedi-sahne { position: relative; margin-top: 58px; border-radius: 30px; padding: 18px 12px 14px; display: flex; flex-direction: column; align-items: center; box-shadow: var(--golge); overflow: hidden; }
+  .kedi-kutu { position: relative; width: 200px; height: 200px; cursor: pointer; }
+  .kedi-kutu svg { width: 100%; height: 100%; overflow: visible; }
+  .kedi-kutu .esya { position: absolute; transform: translate(-50%, -50%); line-height: 1; pointer-events: none; }
+  .kedi-kutu.mirr svg { animation: mirr .18s linear 6; }
+  @keyframes mirr { 50% { transform: translateX(2px) rotate(1deg); } }
+  .kedi-kutu .kuyruk { transform-origin: 140px 165px; animation: kuyruk 2.4s ease-in-out infinite; }
+  @keyframes kuyruk { 50% { transform: rotate(10deg); } }
+  .kedi-kutu .goz-kapak { animation: kirp 4s infinite; transform-origin: center; transform-box: fill-box; }
+  @keyframes kirp { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  .balon { background: #fff; border-radius: 18px; padding: 8px 14px; font-weight: 800; font-size: 15px; box-shadow: var(--golge); position: relative; max-width: 90%; text-align: center; }
+  .balon::after { content: ""; position: absolute; bottom: -8px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  .sev-dugme { margin-top: 4px; border-radius: 999px; padding: 9px 20px; background: #fff; font-weight: 900; box-shadow: var(--golge); }
+  .av-kart { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; margin-top: 12px; background: var(--gok-a); }
+  .av-kart-ikon { font-size: 34px; }
+  .av-kart div { flex: 1; } .av-kart b { font-weight: 900; font-size: 17px; display: block; } .av-kart small { color: var(--soluk); font-weight: 700; font-size: 13px; }
+  .av-kart .ok { font-size: 28px; font-weight: 900; color: var(--soluk); }
+  .av-kart.oynandi { background: #F1ECE4; }
+  .dolap-sekme { display: flex; gap: 6px; margin-bottom: 10px; }
+  .dolap-sekme button { flex: 1; border-radius: 14px; padding: 8px 2px; font-weight: 900; font-size: 13px; background: #fff; box-shadow: var(--golge); }
+  .dolap-sekme button.aktif { background: var(--lavanta-a); color: #6B55C9; }
+  .dolap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .esya-kart { background: #fff; border-radius: 20px; padding: 12px 6px 10px; text-align: center; box-shadow: var(--golge); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .esya-kart.giyili { outline: 3px solid var(--nane); }
+  .esya-kart .e-ikon { font-size: 34px; height: 40px; display: grid; place-items: center; }
+  .esya-kart b { font-size: 13px; font-weight: 900; line-height: 1.2; }
+  .esya-kart .al { font-size: 13px; padding: 6px 10px; }
+  .renk-top { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--cizgi); }
+
   /* ---------- Günlük balık avı (mini oyun) ---------- */
   .av-dugme { position: absolute; right: 0; top: -4px; width: 64px; height: 64px; border-radius: 22px; background: #fff; box-shadow: var(--golge); display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: none; }
   .av-dugme span { font-size: 28px; line-height: 1; animation: zipzip 1.4s ease-in-out infinite; }
@@ -218,7 +248,7 @@
     <div class="ust">
       <span class="hap" id="seri-hap">🔥 0</span>
       <a class="hap" href="kedi.html" style="font-size:13px;text-decoration:none;color:#6B55C9;background:var(--lavanta-a);">↔ Kedi sürümü</a>
-      <span class="hap" id="yildiz-hap">⭐ 0</span>
+      <span class="hap" id="yildiz-hap">🐟 0</span>
     </div>
     <div class="selam" style="position:relative;">
       <button class="av-dugme" id="av-dugme"><span>🐟</span><small id="av-dugme-yazi">Günün avı</small></button>
@@ -280,11 +310,40 @@
 
   <!-- ========== ÖDÜLLER ========== -->
   <section class="ekran" id="ekran-oduller">
-    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">⭐ 0</span></div>
+    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">🐟 0</span></div>
     <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Başarımlar</h2>
     <div class="rozetler" id="rozetler"></div>
-    <h2>Yıldız dükkânı</h2>
+    <h2>Dükkân</h2>
     <div class="magaza" id="magaza"></div>
+  </section>
+
+  <!-- ========== KEDİ ========== -->
+  <section class="ekran" id="ekran-kedi">
+    <div class="ust"><button class="hap" id="kedi-ad">🐱 Pati ✏️</button><span class="hap" id="yildiz-hap3">🐟 0</span></div>
+    <div class="kedi-sahne" id="kedi-sahne">
+      <div class="balon" id="kedi-balon">Miyav! 👋</div>
+      <div class="kedi-kutu" id="kedi-kutu"></div>
+      <button class="sev-dugme" id="sev-dugme">💕 Sev</button>
+    </div>
+    <button class="kart av-kart" id="av-kart">
+      <span class="av-kart-ikon">🎣</span>
+      <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Ulaşırsan 3 🐟</small></div>
+      <span class="ok">›</span>
+    </button>
+    <h2>Gardırop</h2>
+    <div class="dolap-sekme" id="dolap-sekme">
+      <button data-yer="sapka" class="aktif">🎩 Şapka</button>
+      <button data-yer="boyun">🎀 Boyun</button>
+      <button data-yer="goz">👓 Gözlük</button>
+      <button data-yer="kurk">🎨 Kürk</button>
+    </div>
+    <div class="dolap" id="dolap"></div>
+    <h2>Arka plan</h2>
+    <div class="magaza" id="sahneler"></div>
+    <div class="kart" style="margin-top:14px;background:var(--gunes-a);">
+      <b style="font-weight:900;">🐟 Balık nasıl kazanılır?</b>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🐟 · Günün avında balığa ulaş: 3 🐟 · Cümle turunda 3 doğru: 1 🐟 · Başarımlar: 1–10 🐟</p>
+    </div>
   </section>
 
   <!-- ========== ARKADAŞLAR ========== -->
@@ -366,6 +425,7 @@
   <nav>
     <button class="aktif" data-sekme="ana"><span>🏠</span>Ana sayfa</button>
     <button data-sekme="takvim"><span>📅</span>Takvim</button>
+    <button data-sekme="kedi"><span>🐱</span>Kedi</button>
     <button data-sekme="oduller"><span>🏆</span>Ödüller</button>
     <button data-sekme="arkadaslar"><span>👥</span>Arkadaşlar</button>
   </nav>
@@ -417,7 +477,7 @@ const CUMLELER = [
 ];
 
 // ================= DURUM (telefonda saklanır) =================
-const ANAHTAR = "ing-prototip-v1";
+const ANAHTAR = "ing-prototip-v2";
 const GUN_MS = 86400000;
 const bugunNo = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
 const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
@@ -426,8 +486,9 @@ let d;
 function yeniDurum() {
   const b = bugunNo();
   // Prototipte takvim boş görünmesin diye son 4 gün çalışılmış sayılır.
-  return { yildiz: 40, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
-    bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {} };
+  return { yildiz: 3, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
+    bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {},
+    kediAd: "Pati", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
 }
 function yukle() {
   try { d = JSON.parse(localStorage.getItem(ANAHTAR)); } catch (e) { d = null; }
@@ -458,9 +519,9 @@ function bekleyenler() {
 // ================= ARKA PLAN SAHNESİ =================
 const TEMALAR = {
   cayir: { ad: "Çayır", ikon: "🌼", fiyat: 0, tepe: ["#9ED9A0", "#7CC98A"] },
-  sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 120, tepe: ["#F6DFA5", "#8CCFE8"] },
-  kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 150, tepe: ["#FFFFFF", "#DCE8F5"] },
-  sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 200, tepe: ["#F7C6D3", "#E9A5BC"] },
+  sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 4, tepe: ["#F6DFA5", "#8CCFE8"] },
+  kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 5, tepe: ["#FFFFFF", "#DCE8F5"] },
+  sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 6, tepe: ["#F7C6D3", "#E9A5BC"] },
 };
 function sahneCiz() {
   const s = document.getElementById("sahne"), saat = new Date().getHours();
@@ -484,7 +545,7 @@ function sahneCiz() {
 function anaCiz() {
   const sr = seri(), say = d.bugun.sayi, bek = bekleyenler().length;
   document.getElementById("seri-hap").textContent = "🔥 " + sr;
-  ["yildiz-hap", "yildiz-hap2"].forEach(i => document.getElementById(i).textContent = "⭐ " + d.yildiz);
+  ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🐟 " + d.yildiz);
   document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
   const yuzde = Math.min(100, say * 10);
   document.getElementById("halka").style.setProperty("--yuzde", yuzde);
@@ -550,10 +611,10 @@ document.getElementById("ses-on").onclick = () => seslendir(deste[kIndex][0]);
 document.getElementById("ses-arka").onclick = () => seslendir(deste[kIndex][3]);
 
 // ================= CÜMLE =================
-let cDeste = [], cIndex = 0, dizilen = [];
+let cDeste = [], cIndex = 0, dizilen = [], cTurDogru = 0;
 function cumleAc() {
   cDeste = [...CUMLELER].sort(() => Math.random() - .5).slice(0, 5);
-  cIndex = 0; tamAc("cumle"); cumleGoster();
+  cIndex = 0; cTurDogru = 0; tamAc("cumle"); cumleGoster();
 }
 function cumleGoster() {
   const c = cDeste[cIndex];
@@ -583,14 +644,14 @@ document.getElementById("kontrol").onclick = () => {
   gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
   document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
   document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
-  if (dogru) { d.cumleDogru++; d.yildiz += 2; konfeti(document.getElementById("kontrol"), 10); } else seslendir(c[1]);
+  if (dogru) { d.cumleDogru++; cTurDogru++; konfeti(document.getElementById("kontrol"), 10); } else seslendir(c[1]);
   if (dogru) seslendir(c[1]);
   d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
 };
 document.getElementById("gb-devam").onclick = () => {
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
-  if (cIndex >= cDeste.length) { tamKapat(); pencere("🧩", "Cümleler bitti!", "Her doğru cümle 2 ⭐ kazandırdı.", "Tamam"); } else cumleGoster();
+  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🐟 kazandın!" : "3 doğru yaparsan 1 🐟 kazanırsın."}`, "Tamam"); } else cumleGoster();
 };
 
 // ================= PENCERELER / ÖDÜL =================
@@ -609,9 +670,9 @@ function hediyePenceresi() {
   p.innerHTML = `<div class="p-ikon hediye" id="hediye">🎁</div><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
   document.getElementById("perde").classList.add("aktif");
   document.getElementById("hediye").onclick = e => {
-    const kazanc = 10 + Math.floor(Math.random() * 3) * 5;
+    const kazanc = 2 + (Math.random() < .3 ? 1 : 0);
     d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16);
-    setTimeout(() => pencere("⭐", `+${kazanc} yıldız!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
+    setTimeout(() => pencere("🐟", `+${kazanc} balık!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
   };
 }
 function konfeti(el, n) {
@@ -629,37 +690,27 @@ function bildir(m) { const b = document.getElementById("bildirim"); b.textConten
 
 // ================= BAŞARIMLAR =================
 const ROZETLER = [
-  ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 5],
-  ["on", "📚", "10 kelime", "10 kelimeyi 2. kutuya taşı", () => KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length >= 10, 20],
-  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= 10, 10],
-  ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 15],
-  ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 100],
-  ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 15],
-  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren", () => KELIMELER.some(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 4), 25],
-  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 5],
-  ["tema", "🎨", "Dekoratör", "Yeni bir sahne aç", () => d.temalar.length > 1, 10],
+  ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 1],
+  ["on", "📚", "10 kelime", "10 kelimeyi 2. kutuya taşı", () => KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length >= 10, 3],
+  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= 10, 2],
+  ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 2],
+  ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 10],
+  ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 2],
+  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren", () => KELIMELER.some(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 4), 3],
+  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 1],
+  ["tema", "🎨", "Dekoratör", "Kedine bir eşya al", () => d.esyalar.length > 0, 1],
 ];
 function rozetKontrol() {
   ROZETLER.forEach(([id, ikon, ad, , kosul, odul]) => {
-    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => bildir(`${ikon} Başarım: ${ad} (+${odul} ⭐)`), 500); }
+    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => bildir(`${ikon} Başarım: ${ad} (+${odul} 🐟)`), 500); }
   });
 }
 function odulCiz() {
   document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
-    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + "⭐"}</small></div>`).join("");
-  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 50 ? "disabled" : ""}>50 ⭐</button></div>`;
-  for (const [k, t] of Object.entries(TEMALAR)) {
-    const var_ = d.temalar.includes(k), secili = d.tema === k;
-    h += `<div class="kart urun"><div class="u-ikon" style="background:linear-gradient(${t.tepe[0]},${t.tepe[1]})">${t.ikon}</div><div><b>${t.ad} sahnesi</b><small>Ana sayfa arka planı</small></div>
-      <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : t.fiyat + " ⭐"}</button></div>`;
-  }
+    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🐟"}</small></div>`).join("");
+  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 3 ? "disabled" : ""}>🐟 3</button></div>`;
   document.getElementById("magaza").innerHTML = h;
-  document.querySelector('[data-al="koruyucu"]').onclick = () => { d.yildiz -= 50; d.koruyucu++; kaydet(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
-  document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
-    const k = b.dataset.tema;
-    if (!d.temalar.includes(k)) { d.yildiz -= TEMALAR[k].fiyat; d.temalar.push(k); bildir(TEMALAR[k].ikon + " Yeni sahne açıldı!"); }
-    d.tema = k; kaydet(); rozetKontrol(); herSeyiCiz();
-  });
+  document.querySelector('[data-al="koruyucu"]').onclick = () => { d.yildiz -= 3; d.koruyucu++; kaydet(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
 }
 
 // ================= TAKVİM =================
@@ -722,6 +773,130 @@ document.getElementById("basla-dugme").onclick = () => {
   if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
   else if (bekleyenler().length) kartlariAc(); else cumleAc();
 };
+// ================= KEDİ =================
+const KURKLER = {
+  turuncu: { ad: "Turuncu", ana: "#F6A04D", koyu: "#DB7A2A", fiyat: 0 },
+  krem:    { ad: "Krem", ana: "#F1DDBF", koyu: "#D2B48A", fiyat: 3 },
+  gri:     { ad: "Gri", ana: "#A9AAB8", koyu: "#7E7F90", fiyat: 3 },
+  siyah:   { ad: "Gece", ana: "#4A4458", koyu: "#2E2A3A", fiyat: 5 },
+};
+const ESYALAR = [
+  { id: "kasket", yer: "sapka", ikon: "🧢", ad: "Kasket", fiyat: 2 },
+  { id: "hasir", yer: "sapka", ikon: "👒", ad: "Hasır şapka", fiyat: 3 },
+  { id: "silindir", yer: "sapka", ikon: "🎩", ad: "Silindir", fiyat: 5 },
+  { id: "kep", yer: "sapka", ikon: "🎓", ad: "Mezuniyet kepi", fiyat: 0, rozet: "ogrendi" },
+  { id: "tac", yer: "sapka", ikon: "👑", ad: "Taç", fiyat: 10 },
+  { id: "fiyonk", yer: "boyun", ikon: "🎀", ad: "Fiyonk", fiyat: 2 },
+  { id: "zil", yer: "boyun", ikon: "🔔", ad: "Zilli tasma", fiyat: 3 },
+  { id: "atki", yer: "boyun", ikon: "🧣", ad: "Atkı", fiyat: 4 },
+  { id: "gozluk", yer: "goz", ikon: "👓", ad: "Gözlük", fiyat: 3 },
+  { id: "gunes", yer: "goz", ikon: "🕶️", ad: "Güneş gözlüğü", fiyat: 5 },
+];
+// Eşyaların kedi üstündeki yeri (200×200 kutuda yüzde) ve boyu
+const YERLESIM = { sapka: [50, 17, 64], goz: [50, 46, 56], boyun: [50, 63, 36] };
+function kediSvg(kurk) {
+  const k = KURKLER[kurk] || KURKLER.turuncu;
+  return `<svg viewBox="0 0 200 200">
+    <path class="kuyruk" d="M138 168 Q 192 162 180 112 Q 175 98 163 106 Q 172 142 132 152 Z" fill="${k.ana}"/>
+    <ellipse cx="100" cy="158" rx="50" ry="36" fill="${k.ana}"/>
+    <ellipse cx="100" cy="166" rx="27" ry="21" fill="#FFF4E6" opacity=".85"/>
+    <ellipse cx="80" cy="190" rx="15" ry="8" fill="${k.ana}"/><ellipse cx="120" cy="190" rx="15" ry="8" fill="${k.ana}"/>
+    <polygon points="56,72 64,26 98,58" fill="${k.ana}"/><polygon points="144,72 136,26 102,58" fill="${k.ana}"/>
+    <polygon points="66,60 69,40 86,56" fill="#F6B2B5"/><polygon points="134,60 131,40 114,56" fill="#F6B2B5"/>
+    <ellipse cx="100" cy="92" rx="50" ry="44" fill="${k.ana}"/>
+    <g stroke="${k.koyu}" stroke-width="5" stroke-linecap="round"><path d="M100 50 v13"/><path d="M87 53 l3 10"/><path d="M113 53 l-3 10"/></g>
+    <g class="goz-kapak"><ellipse cx="80" cy="92" rx="7" ry="9" fill="#3B3355"/><ellipse cx="120" cy="92" rx="7" ry="9" fill="#3B3355"/>
+      <circle cx="82.5" cy="88.5" r="2.6" fill="#fff"/><circle cx="122.5" cy="88.5" r="2.6" fill="#fff"/></g>
+    <circle cx="66" cy="107" r="8" fill="#FF9FA8" opacity=".55"/><circle cx="134" cy="107" r="8" fill="#FF9FA8" opacity=".55"/>
+    <path d="M95 103 L105 103 L100 109 Z" fill="#F27C8A"/>
+    <path d="M100 109 Q 95 116 89 112 M100 109 Q 105 116 111 112" stroke="#3B3355" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <g stroke="${k.koyu}" stroke-width="2" opacity=".55" stroke-linecap="round"><path d="M60 103 L36 99"/><path d="M60 110 L36 114"/><path d="M140 103 L164 99"/><path d="M140 110 L164 114"/></g>
+  </svg>`;
+}
+function kediHTML() {
+  let h = kediSvg(d.kurk);
+  for (const yer of ["boyun", "goz", "sapka"]) {
+    const e = ESYALAR.find(x => x.id === d.giyili[yer]); if (!e) continue;
+    const [x, y, boy] = YERLESIM[yer];
+    h += `<span class="esya" style="left:${x}%;top:${y}%;font-size:${boy}px">${e.ikon}</span>`;
+  }
+  return h;
+}
+let dolapYer = "sapka";
+function kediCiz() {
+  document.getElementById("kedi-ad").textContent = `🐱 ${d.kediAd} ✏️`;
+  const t = TEMALAR[d.tema];
+  document.getElementById("kedi-sahne").style.background = `linear-gradient(#DDF0FB 0 62%, ${t.tepe[0]} 62% 78%, ${t.tepe[1]} 78%)`;
+  document.getElementById("kedi-kutu").innerHTML = kediHTML();
+  // Günün avı kartı
+  const oynandi = avOynandiMi();
+  document.getElementById("av-kart").classList.toggle("oynandi", oynandi);
+  document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Yarın yeni balık!" : "30 saniye, 10 kelime. Ulaşırsan 3 🐟";
+  // Gardırop
+  document.querySelectorAll("#dolap-sekme button").forEach(b => b.classList.toggle("aktif", b.dataset.yer === dolapYer));
+  let h = "";
+  if (dolapYer === "kurk") {
+    for (const [id, k] of Object.entries(KURKLER)) {
+      const var_ = d.kurklar.includes(id), secili = d.kurk === id;
+      h += `<div class="esya-kart ${secili ? "giyili" : ""}"><div class="e-ikon"><span class="renk-top" style="background:${k.ana}"></span></div><b>${k.ad}</b>
+        <button class="al ${secili ? "secili" : ""}" data-kurk="${id}" ${!var_ && d.yildiz < k.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Seç" : "🐟 " + k.fiyat}</button></div>`;
+    }
+  } else {
+    for (const e of ESYALAR.filter(x => x.yer === dolapYer)) {
+      const var_ = d.esyalar.includes(e.id) || (e.rozet && d.rozet[e.rozet]), giyili = d.giyili[e.yer] === e.id;
+      const kilit = e.rozet && !d.rozet[e.rozet];
+      const etiket = giyili ? "Çıkar" : var_ ? "Giy" : kilit ? "🔒 Başarım" : "🐟 " + e.fiyat;
+      h += `<div class="esya-kart ${giyili ? "giyili" : ""}"><div class="e-ikon">${e.ikon}</div><b>${e.ad}</b>
+        <button class="al ${giyili ? "secili" : ""}" data-esya="${e.id}" ${kilit || (!var_ && d.yildiz < e.fiyat) ? "disabled" : ""}>${etiket}</button></div>`;
+    }
+  }
+  document.getElementById("dolap").innerHTML = h;
+  document.querySelectorAll("[data-esya]").forEach(b => b.onclick = () => {
+    const e = ESYALAR.find(x => x.id === b.dataset.esya);
+    if (!d.esyalar.includes(e.id) && !(e.rozet && d.rozet[e.rozet])) { d.yildiz -= e.fiyat; d.esyalar.push(e.id); bildir(`${e.ikon} ${e.ad} alındı!`); }
+    d.giyili[e.yer] = d.giyili[e.yer] === e.id ? null : e.id;
+    kaydet(); rozetKontrol(); herSeyiCiz(); kediSoyle(d.giyili[e.yer] ? "Yakıştı mı? 😸" : "Böyle de fena değilim 😼");
+  });
+  document.querySelectorAll("[data-kurk]").forEach(b => b.onclick = () => {
+    const id = b.dataset.kurk;
+    if (!d.kurklar.includes(id)) { d.yildiz -= KURKLER[id].fiyat; d.kurklar.push(id); bildir("🎨 Yeni kürk rengi!"); }
+    d.kurk = id; kaydet(); herSeyiCiz();
+  });
+  // Arka planlar (eskiden yıldız dükkânındaydı)
+  let s = "";
+  for (const [k, t2] of Object.entries(TEMALAR)) {
+    const var_ = d.temalar.includes(k), secili = d.tema === k;
+    s += `<div class="kart urun"><div class="u-ikon" style="background:linear-gradient(${t2.tepe[0]},${t2.tepe[1]})">${t2.ikon}</div><div><b>${t2.ad}</b><small>Ana sayfa ve kedinin arka planı</small></div>
+      <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t2.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : "🐟 " + t2.fiyat}</button></div>`;
+  }
+  document.getElementById("sahneler").innerHTML = s;
+  document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
+    const k = b.dataset.tema;
+    if (!d.temalar.includes(k)) { d.yildiz -= TEMALAR[k].fiyat; d.temalar.push(k); bildir(TEMALAR[k].ikon + " Yeni arka plan açıldı!"); }
+    d.tema = k; kaydet(); herSeyiCiz();
+  });
+}
+function kediSoyle(m) { const b = document.getElementById("kedi-balon"); b.textContent = m; b.animate([{ transform: "scale(.8)" }, { transform: "none" }], { duration: 250, easing: "cubic-bezier(.3,1.6,.5,1)" }); }
+function kediLafi() {
+  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
+  const secenek = [`Miyav! Bugün ${d.bugun.sayi} kart çalıştın 💪`];
+  if (calisilan.length) { const k = calisilan[Math.floor(Math.random() * calisilan.length)]; secenek.push(`"${k[0]}" = ${k[1]} ${k[2]} Unutma!`, `${k[2]} ${k[0]}... ${k[0]}... aklımda kalsın diye tekrar ediyorum`); }
+  if (!avOynandiMi()) secenek.push("Kovada balık var... günün avına çıkalım mı? 🎣");
+  if (d.yildiz === 0) secenek.push("Hiç balığımız kalmamış 🥺");
+  return secenek[Math.floor(Math.random() * secenek.length)];
+}
+document.querySelectorAll("#dolap-sekme button").forEach(b => b.onclick = () => { dolapYer = b.dataset.yer; kediCiz(); });
+document.getElementById("sev-dugme").onclick = e => {
+  const k = document.getElementById("kedi-kutu"); k.classList.remove("mirr"); void k.offsetWidth; k.classList.add("mirr");
+  kediSoyle("Mırrr... 💜"); konfeti(e.target, 6);
+};
+document.getElementById("kedi-kutu").onclick = () => kediSoyle(kediLafi());
+document.getElementById("kedi-ad").onclick = () => {
+  const ad = prompt("Kedinin adı ne olsun?", d.kediAd);
+  if (ad && ad.trim()) { d.kediAd = ad.trim().slice(0, 14); kaydet(); kediCiz(); }
+};
+document.getElementById("av-kart").onclick = () => document.getElementById("av-dugme").click();
+
 // ================= GÜNLÜK BALIK AVI =================
 // Denge: yol 100 birim, süre 30 sn. Kedi kendi kendine 2 birim/sn yürür (30 sn'de 60, tek başına ulaşamaz).
 // Doğru cevap +8 birim atılma, yanlış cevap 1,5 sn duraklama (-3 birim). Bitiş = 60 + 8·doğru − 3·yanlış.
@@ -819,22 +994,22 @@ function avBitir(ulasti) {
   const kedi = document.getElementById("av-kedi"); kedi.classList.remove("kosuyor");
   const yuzde = ulasti ? 100 : Math.min(99, Math.floor(av.konum / AV.YOL * 100));
   // Ödül kademeli: ulaşırsa büyük ödül, ulaşamazsa yaklaştığı kadar küçük teselli
-  const odul = ulasti ? 25 : Math.floor(yuzde / 20) * 2;
+  const odul = ulasti ? 3 : yuzde >= 60 ? 1 : 0;
   d.yildiz += odul; d.avGunu = bugunNo();
-  d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} ⭐`;
+  d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🐟`;
   kaydet(); avDugmeCiz();
   if (ulasti) { kedi.textContent = "😻"; document.getElementById("av-uyari").textContent = "Kaptı! 🐟"; }
   else { kedi.textContent = "🙀"; document.getElementById("av-balikci").classList.add("dondu"); document.getElementById("av-uyari").textContent = "Balıkçı fark etti! ❗"; }
   setTimeout(() => {
     tamKapat();
     pencere(ulasti ? "😻" : "🙀", ulasti ? "Balığı kaptın!" : "Balıkçı fark etti!",
-      `${av.dogru} doğru, ${av.yanlis} yanlış. ${ulasti ? `Kalan süre: ${Math.ceil(av.kalan)} sn.` : `Kedi yolun %${yuzde}'ine geldi.`} +${odul} ⭐`, "Tamam");
+      `${av.dogru} doğru, ${av.yanlis} yanlış. ${ulasti ? `Kalan süre: ${Math.ceil(av.kalan)} sn.` : `Kedi yolun %${yuzde}'ine geldi.`} +${odul} 🐟`, "Tamam");
     av = null;
   }, 1100);
 }
 document.getElementById("av-kapat").onclick = () => { if (av && !av.bitti) { av.bitti = true; av = null; } tamKapat(); };
 
-function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz(); avDugmeCiz(); }
+function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz(); avDugmeCiz(); kediCiz(); }
 
 yukle(); kaydet(); herSeyiCiz();
 setInterval(sahneCiz, 10 * 60000);

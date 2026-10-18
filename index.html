@@ -263,10 +263,9 @@
   <section class="ekran aktif" id="ekran-ana">
     <div class="ust">
       <span class="hap" id="seri-hap">🔥 0</span>
-      <span class="hap" id="yildiz-hap">🐟 0</span>
+      <span class="hap" id="yildiz-hap">🪙 0</span>
     </div>
     <div class="selam" style="position:relative;">
-      <button class="av-dugme" id="av-dugme"><span>🐟</span><small id="av-dugme-yazi">Günün avı</small></button>
       <h1 id="selam-baslik">Günaydın!</h1>
       <p id="selam-alt">Bugün birkaç kelime öğrenelim mi?</p>
     </div>
@@ -320,13 +319,13 @@
     </div>
     <div class="kart" style="margin-top:12px;background:var(--gok-a);">
       <b style="font-weight:900;">🧊 Seri koruyucu nedir?</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden 3 🐟 karşılığında alabilirsin.</p>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden 3 🪙 karşılığında alabilirsin.</p>
     </div>
   </section>
 
   <!-- ========== ÖDÜLLER ========== -->
   <section class="ekran" id="ekran-oduller">
-    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">🐟 0</span></div>
+    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">🪙 0</span></div>
     <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Başarımlar</h2>
     <div class="rozetler" id="rozetler"></div>
     <h2>Dükkân</h2>
@@ -335,7 +334,7 @@
 
   <!-- ========== KEDİ ========== -->
   <section class="ekran" id="ekran-kedi">
-    <div class="ust"><button class="hap" id="kedi-ad">🐱 Pati ✏️</button><span class="hap" id="yildiz-hap3">🐟 0</span></div>
+    <div class="ust"><button class="hap" id="kedi-ad">🐱 Pati ✏️</button><span class="hap" id="yildiz-hap3">🪙 0</span></div>
     <div class="kedi-sahne" id="kedi-sahne">
       <div class="balon" id="kedi-balon">Miyav! 👋</div>
       <div class="kedi-kutu" id="kedi-kutu"></div>
@@ -343,7 +342,7 @@
     </div>
     <button class="kart av-kart" id="av-kart">
       <span class="av-kart-ikon">🎣</span>
-      <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Ulaşırsan 3 🐟</small></div>
+      <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙</small></div>
       <span class="ok">›</span>
     </button>
     <h2>Gardırop</h2>
@@ -357,8 +356,8 @@
     <h2>Arka plan</h2>
     <div class="magaza" id="sahneler"></div>
     <div class="kart" style="margin-top:14px;background:var(--gunes-a);">
-      <b style="font-weight:900;">🐟 Balık nasıl kazanılır?</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🐟 · Günün avında balığa ulaş: 3 🐟 · Cümle turunda 3 doğru: 1 🐟 · Başarımlar: 1–10 🐟</p>
+      <b style="font-weight:900;">🪙 Altın nasıl kazanılır?</b>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🪙 · Günün avında balığa ulaş: 1 🪙 · Cümle turunda 3 doğru: 1 🪙 · Başarımlar: 1–10 🪙</p>
     </div>
   </section>
 
@@ -561,7 +560,7 @@ function sahneCiz() {
 function anaCiz() {
   const sr = seri(), say = d.bugun.sayi, bek = bekleyenler().length;
   document.getElementById("seri-hap").textContent = "🔥 " + sr;
-  ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🐟 " + d.yildiz);
+  ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🪙 " + d.yildiz);
   document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
   const yuzde = Math.min(100, say * 10);
   document.getElementById("halka").style.setProperty("--yuzde", yuzde);
@@ -667,7 +666,7 @@ document.getElementById("kontrol").onclick = () => {
 document.getElementById("gb-devam").onclick = () => {
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
-  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🐟 kazandın!" : "3 doğru yaparsan 1 🐟 kazanırsın."}`, "Tamam"); } else cumleGoster();
+  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else cumleGoster();
 };
 
 // ================= PENCERELER / ÖDÜL =================
@@ -688,7 +687,7 @@ function hediyePenceresi() {
   document.getElementById("hediye").onclick = e => {
     const kazanc = 2 + (Math.random() < .3 ? 1 : 0);
     d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16);
-    setTimeout(() => pencere("🐟", `+${kazanc} balık!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
+    setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
   };
 }
 function konfeti(el, n) {
@@ -718,13 +717,13 @@ const ROZETLER = [
 ];
 function rozetKontrol() {
   ROZETLER.forEach(([id, ikon, ad, , kosul, odul]) => {
-    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => bildir(`${ikon} Başarım: ${ad} (+${odul} 🐟)`), 500); }
+    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => bildir(`${ikon} Başarım: ${ad} (+${odul} 🪙)`), 500); }
   });
 }
 function odulCiz() {
   document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
-    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🐟"}</small></div>`).join("");
-  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 3 ? "disabled" : ""}>🐟 3</button></div>`;
+    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🪙"}</small></div>`).join("");
+  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 3 ? "disabled" : ""}>🪙 3</button></div>`;
   document.getElementById("magaza").innerHTML = h;
   document.querySelector('[data-al="koruyucu"]').onclick = () => { d.yildiz -= 3; d.koruyucu++; kaydet(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
 }
@@ -856,7 +855,7 @@ function kediCiz() {
   // Günün avı kartı
   const oynandi = avOynandiMi();
   document.getElementById("av-kart").classList.toggle("oynandi", oynandi);
-  document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Yarın yeni balık!" : "30 saniye, 10 kelime. Ulaşırsan 3 🐟";
+  document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Yarın yeni balık!" : "30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙";
   // Gardırop
   document.querySelectorAll("#dolap-sekme button").forEach(b => b.classList.toggle("aktif", b.dataset.yer === dolapYer));
   let h = "";
@@ -864,13 +863,13 @@ function kediCiz() {
     for (const [id, k] of Object.entries(KURKLER)) {
       const var_ = d.kurklar.includes(id), secili = d.kurk === id;
       h += `<div class="esya-kart ${secili ? "giyili" : ""}"><div class="e-ikon"><span class="renk-top" style="background:${k.ana}"></span></div><b>${k.ad}</b>
-        <button class="al ${secili ? "secili" : ""}" data-kurk="${id}" ${!var_ && d.yildiz < k.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Seç" : "🐟 " + k.fiyat}</button></div>`;
+        <button class="al ${secili ? "secili" : ""}" data-kurk="${id}" ${!var_ && d.yildiz < k.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Seç" : "🪙 " + k.fiyat}</button></div>`;
     }
   } else {
     for (const e of ESYALAR.filter(x => x.yer === dolapYer)) {
       const var_ = d.esyalar.includes(e.id) || (e.rozet && d.rozet[e.rozet]), giyili = d.giyili[e.yer] === e.id;
       const kilit = e.rozet && !d.rozet[e.rozet];
-      const etiket = giyili ? "Çıkar" : var_ ? "Giy" : kilit ? "🔒 Başarım" : "🐟 " + e.fiyat;
+      const etiket = giyili ? "Çıkar" : var_ ? "Giy" : kilit ? "🔒 Başarım" : "🪙 " + e.fiyat;
       h += `<div class="esya-kart ${giyili ? "giyili" : ""}"><div class="e-ikon">${e.ikon}</div><b>${e.ad}</b>
         <button class="al ${giyili ? "secili" : ""}" data-esya="${e.id}" ${kilit || (!var_ && d.yildiz < e.fiyat) ? "disabled" : ""}>${etiket}</button></div>`;
     }
@@ -892,7 +891,7 @@ function kediCiz() {
   for (const [k, t2] of Object.entries(TEMALAR)) {
     const var_ = d.temalar.includes(k), secili = d.tema === k;
     s += `<div class="kart urun"><div class="u-ikon" style="background:linear-gradient(${t2.tepe[0]},${t2.tepe[1]})">${t2.ikon}</div><div><b>${t2.ad}</b><small>Ana sayfa ve kedinin arka planı</small></div>
-      <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t2.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : "🐟 " + t2.fiyat}</button></div>`;
+      <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t2.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : "🪙 " + t2.fiyat}</button></div>`;
   }
   document.getElementById("sahneler").innerHTML = s;
   document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
@@ -907,7 +906,7 @@ function kediLafi() {
   const secenek = [`Miyav! Bugün ${d.bugun.sayi} kart çalıştın 💪`];
   if (calisilan.length) { const k = calisilan[Math.floor(Math.random() * calisilan.length)]; secenek.push(`"${k[0]}" = ${k[1]} ${k[2]} Unutma!`, `${k[2]} ${k[0]}... ${k[0]}... aklımda kalsın diye tekrar ediyorum`); }
   if (!avOynandiMi()) secenek.push("Kovada balık var... günün avına çıkalım mı? 🎣");
-  if (d.yildiz === 0) secenek.push("Hiç balığımız kalmamış 🥺");
+  if (d.yildiz === 0) secenek.push("Kumbaramız bomboş 🥺 Biraz kelime çalışalım mı?");
   return secenek[Math.floor(Math.random() * secenek.length)];
 }
 document.querySelectorAll("#dolap-sekme button").forEach(b => b.onclick = () => { dolapYer = b.dataset.yer; kediCiz(); });
@@ -920,7 +919,7 @@ document.getElementById("kedi-ad").onclick = () => {
   const ad = prompt("Kedinin adı ne olsun?", d.kediAd);
   if (ad && ad.trim()) { d.kediAd = ad.trim().slice(0, 14); kaydet(); kediCiz(); }
 };
-document.getElementById("av-kart").onclick = () => document.getElementById("av-dugme").click();
+document.getElementById("av-kart").onclick = () => avAc();
 
 // ================= GÜNLÜK BALIK AVI =================
 // Denge (Serhat, 2026-10-18): kedi kendiliğinden yürümez. Sadece doğru cevapta 15 birim atılır,
@@ -928,12 +927,8 @@ document.getElementById("av-kart").onclick = () => document.getElementById("av-d
 const AV = { YOL: 100, SURE: 30, ATILMA: 15 };
 let av = null;
 function avOynandiMi() { return d.avGunu === bugunNo(); }
-function avDugmeCiz() {
-  const b = document.getElementById("av-dugme");
-  b.classList.toggle("oynandi", avOynandiMi());
-  document.getElementById("av-dugme-yazi").textContent = avOynandiMi() ? "Yarın" : "Günün avı";
-}
-document.getElementById("av-dugme").onclick = () => {
+function avDugmeCiz() {} // ana sayfa butonu kaldırıldı; durum kedi sekmesindeki kartta gösterilir
+function avAc() {
   if (avOynandiMi()) {
     pencere("🐟", "Bugünkü avını yaptın", d.avSonuc || "Yarın yeni balık gelecek.", "Tamam", null);
     // Prototipte denemeyi kolaylaştırmak için tekrar oynama yolu
@@ -942,8 +937,8 @@ document.getElementById("av-dugme").onclick = () => {
     t.onclick = () => { document.getElementById("perde").classList.remove("aktif"); avBasla(); }; p.appendChild(t);
     return;
   }
-  pencere("🐟", "Günün balık avı", "10 kelime, 30 saniye. Her doğru cevapta kedi balığa doğru atılır, bilemezsen yerinde kalır. 10 kelimenin 7'sini bilirsen balığa ulaşırsın. Balıkçı fark etmeden yetiş! Günde bir kez oynanır.", "Başla", avBasla);
-};
+  pencere("🐟", "Günün balık avı", "10 kelime, 30 saniye. Her doğru cevapta kedi balığa doğru atılır, bilemezsen yerinde kalır. 10 kelimenin 7'sini bilirsen balığa ulaşırsın. Balıkçı fark etmeden yetiş! Balığa ulaşırsan 1 🪙 kazanırsın. Günde bir kez oynanır.", "Başla", avBasla);
+}
 function avKelimeleri() {
   // Önce çalışılmış kelimeler (tekrar işlevi görür), yetmezse yenileri
   const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]), diger = KELIMELER.filter(k => !d.kartlar[k[0]]);
@@ -1022,16 +1017,16 @@ function avBitir(ulasti) {
   const kedi = document.getElementById("av-kedi"); kedi.classList.remove("kosuyor");
   const yuzde = ulasti ? 100 : Math.min(99, Math.floor(av.konum / AV.YOL * 100));
   // Ödül kademeli: ulaşırsa büyük ödül, ulaşamazsa yaklaştığı kadar küçük teselli
-  const odul = ulasti ? 3 : yuzde >= 60 ? 1 : 0;
+  const odul = ulasti ? 1 : 0; // Serhat: oyunu bitirmek 1 altın
   d.yildiz += odul; d.avGunu = bugunNo();
-  d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🐟`;
+  d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🪙`;
   kaydet(); avDugmeCiz();
   if (ulasti) { kedi.textContent = "😻"; document.getElementById("av-uyari").textContent = "Kaptı! 🐟"; }
   else { kedi.textContent = "🙀"; document.getElementById("av-balikci").classList.add("dondu"); document.getElementById("av-uyari").textContent = "Balıkçı fark etti! ❗"; }
   setTimeout(() => {
     tamKapat();
     pencere(ulasti ? "😻" : "🙀", ulasti ? "Balığı kaptın!" : "Balıkçı fark etti!",
-      `${av.dogru} doğru, ${av.yanlis} yanlış. ${ulasti ? `Kalan süre: ${Math.ceil(av.kalan)} sn.` : `Kedi yolun %${yuzde}'ine geldi.`} +${odul} 🐟`, "Tamam");
+      `${av.dogru} doğru, ${av.yanlis} yanlış. ${ulasti ? `Kalan süre: ${Math.ceil(av.kalan)} sn.` : `Kedi yolun %${yuzde}'ine geldi.`} +${odul} 🪙`, "Tamam");
     av = null;
   }, 1100);
 }

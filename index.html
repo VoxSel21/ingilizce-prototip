@@ -109,16 +109,32 @@
   .geri-bildirim p { font-weight: 700; margin-bottom: 14px; }
 
   /* ---------- Takvim ---------- */
-  .ay-bas { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .ay-bas button { width: 36px; height: 36px; border-radius: 50%; background: var(--krem); font-weight: 900; font-size: 18px; }
-  .gunler { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-  .gunler .bas { font-size: 12px; font-weight: 900; color: var(--soluk); }
-  .gun { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 15px; }
-  .gun.calisti { background: var(--gunes); color: #fff; }
+  .takvim-kart { margin-top: 58px; border-radius: 30px; padding: 18px 14px 14px; background: linear-gradient(160deg, #FFF1C9 0%, #FFE3DE 45%, #ECE6FF 100%); box-shadow: var(--golge); }
+  .ay-bas { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 0 4px; }
+  .ay-emoji { width: 52px; height: 52px; border-radius: 18px; background: #fff; display: grid; place-items: center; font-size: 30px; box-shadow: var(--golge); }
+  .ay-bas b { display: block; font-size: 22px; font-weight: 900; }
+  .ay-bas small { display: block; font-size: 14px; font-weight: 800; color: var(--soluk); }
+  .ay-cubuk { height: 10px; border-radius: 999px; background: rgba(255,255,255,.7); overflow: hidden; margin: 0 4px 14px; }
+  .ay-cubuk i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #FF8A7A, #FFC94D, #5CC9A7); }
+  .gunler { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; background: rgba(255,255,255,.55); border-radius: 22px; padding: 10px 8px; }
+  .gunler .bas { font-size: 12px; font-weight: 900; color: var(--soluk); padding-bottom: 2px; }
+  .gunler .bas.hafta-sonu { color: #E0604E; }
+  .gun { aspect-ratio: 1; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-size: 14px; background: #fff; position: relative; }
+  .gun.gelecek { background: transparent; color: #B9B1C9; }
+  .gun.gecti { background: rgba(255,255,255,.6); color: #B9B1C9; }
+  .gun.calisti { color: #fff; box-shadow: 0 3px 0 rgba(59,51,85,.12); animation: pat .4s cubic-bezier(.3,1.6,.5,1) both; }
+  .gun.calisti::after { content: "🐾"; position: absolute; right: -3px; bottom: -4px; font-size: 11px; }
   .gun.korundu { background: var(--gok-a); }
-  .gun.bugun { outline: 3px solid var(--lavanta); }
+  .gun.bugun { background: #fff; outline: 3px solid var(--lavanta); color: #6B55C9; }
+  .gun.bugun.calisti { outline-color: #6B55C9; }
+  .gun.bugun::before { content: "🐱"; position: absolute; top: -10px; right: -6px; font-size: 14px; }
+  @keyframes pat { from { transform: scale(.5); } }
+  .lejant { display: flex; gap: 12px; justify-content: center; margin-top: 12px; font-size: 12px; font-weight: 800; color: var(--soluk); flex-wrap: wrap; }
+  .lejant i { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 6px; vertical-align: -4px; font-style: normal; font-size: 10px; margin-right: 2px; }
   .istat { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .istat .kart { position: relative; }
   .istat .kart b { font-size: 28px; font-weight: 900; display: block; }
+  .istat .i-ikon { position: absolute; right: 14px; top: 12px; font-size: 26px; }
 
   /* ---------- Ödüller ---------- */
   .rozetler { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -247,7 +263,6 @@
   <section class="ekran aktif" id="ekran-ana">
     <div class="ust">
       <span class="hap" id="seri-hap">🔥 0</span>
-      <a class="hap" href="kedi.html" style="font-size:13px;text-decoration:none;color:#6B55C9;background:var(--lavanta-a);">↔ Kedi sürümü</a>
       <span class="hap" id="yildiz-hap">🐟 0</span>
     </div>
     <div class="selam" style="position:relative;">
@@ -283,28 +298,29 @@
   <!-- ========== TAKVİM ========== -->
   <section class="ekran" id="ekran-takvim">
     <div class="ust"><span class="hap">📅 Takvim</span><span class="hap" id="koruyucu-hap">🧊 0</span></div>
-    <div class="kart" style="margin-top:60px;">
+    <div class="takvim-kart">
       <div class="ay-bas">
-        <button id="ay-geri">‹</button>
-        <b style="font-size:19px;font-weight:900;" id="ay-adi"></b>
-        <button id="ay-ileri">›</button>
+        <span class="ay-emoji" id="ay-emoji">🍂</span>
+        <div><b id="ay-adi"></b><small id="ay-ozet"></small></div>
       </div>
+      <div class="ay-cubuk"><i id="ay-cubuk"></i></div>
       <div class="gunler" id="gunler"></div>
-      <div style="display:flex;gap:14px;justify-content:center;margin-top:14px;font-size:13px;font-weight:800;color:var(--soluk);">
-        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gunes);vertical-align:-1px;"></span> Çalıştın</span>
-        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gok-a);vertical-align:-1px;"></span> Koruyucu</span>
+      <div class="lejant">
+        <span><i style="background:linear-gradient(135deg,#FF8A7A,#FFC94D)"></i> Çalıştın</span>
+        <span><i style="background:#DDEFFD">🧊</i> Koruyucu</span>
+        <span><i style="background:#fff;outline:3px solid #9F8BEA">🐱</i> Bugün</span>
       </div>
     </div>
     <h2>Senin istatistiklerin</h2>
     <div class="istat">
-      <div class="kart"><b id="i-seri">0</b><span class="soluk">günlük seri 🔥</span></div>
-      <div class="kart"><b id="i-enuzun">0</b><span class="soluk">en uzun seri</span></div>
-      <div class="kart"><b id="i-ogrenilen">0</b><span class="soluk">öğrenilen kelime</span></div>
-      <div class="kart"><b id="i-gun">0</b><span class="soluk">toplam çalışılan gün</span></div>
+      <div class="kart" style="background:var(--mercan-a)"><span class="i-ikon">🔥</span><b id="i-seri">0</b><span class="soluk">günlük seri</span></div>
+      <div class="kart" style="background:var(--gunes-a)"><span class="i-ikon">🏆</span><b id="i-enuzun">0</b><span class="soluk">en uzun seri</span></div>
+      <div class="kart" style="background:var(--nane-a)"><span class="i-ikon">📚</span><b id="i-ogrenilen">0</b><span class="soluk">öğrenilen kelime</span></div>
+      <div class="kart" style="background:var(--lavanta-a)"><span class="i-ikon">📅</span><b id="i-gun">0</b><span class="soluk">toplam çalışılan gün</span></div>
     </div>
     <div class="kart" style="margin-top:12px;background:var(--gok-a);">
       <b style="font-weight:900;">🧊 Seri koruyucu nedir?</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden yıldızla alabilirsin.</p>
+      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden 3 🐟 karşılığında alabilirsin.</p>
     </div>
   </section>
 
@@ -414,7 +430,7 @@
     </div>
     <div class="kart av-soru"><div class="soluk" style="font-size:14px;">Türkçesi ne?</div><div class="s-kelime" id="av-kelime"></div></div>
     <div class="av-siklar" id="av-siklar"></div>
-    <p class="soluk" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Doğru cevap = kedi atılır 💨 · Yanlış cevap = kedi duraklar 💦</p>
+    <p class="soluk" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Doğru cevap = kedi atılır 💨 · Yanlış cevap = kedi yerinde kalır 💦</p>
     <div class="geri-sayim" id="geri-sayim"></div>
   </section>
 
@@ -714,28 +730,37 @@ function odulCiz() {
 }
 
 // ================= TAKVİM =================
-let ayKaydir = 0;
+// Sadece içinde bulunulan ay gösterilir (Serhat, 2026-10-18)
 const AYLAR = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+const AY_EMOJI = ["❄️","⛄","🌱","🌷","🌸","☀️","🍉","🏖️","🍎","🍂","🍁","🎄"];
+const GUN_RENK = [["#FF8A7A","#FFB38A"], ["#FFC94D","#FFDF8A"], ["#5CC9A7","#8FE0C4"], ["#6DB8EE","#9FD2F7"], ["#9F8BEA","#C3B4F5"]];
 function takvimCiz() {
-  const simdi = new Date(), ay = new Date(simdi.getFullYear(), simdi.getMonth() + ayKaydir, 1);
+  const simdi = new Date(), ay = new Date(simdi.getFullYear(), simdi.getMonth(), 1);
   document.getElementById("ay-adi").textContent = AYLAR[ay.getMonth()] + " " + ay.getFullYear();
-  let h = ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"].map(g => `<div class="bas">${g}</div>`).join("");
+  document.getElementById("ay-emoji").textContent = AY_EMOJI[ay.getMonth()];
+  let h = ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"].map((g, i) => `<div class="bas ${i > 4 ? "hafta-sonu" : ""}">${g}</div>`).join("");
   const bas = (ay.getDay() + 6) % 7, gunSayi = new Date(ay.getFullYear(), ay.getMonth() + 1, 0).getDate();
   for (let i = 0; i < bas; i++) h += "<div></div>";
+  let calisilan = 0, renkSira = 0;
   for (let g = 1; g <= gunSayi; g++) {
     const t = new Date(ay.getFullYear(), ay.getMonth(), g);
     const no = Math.floor((t.getTime() - t.getTimezoneOffset() * 60000) / GUN_MS);
-    const cls = d.gunler[no] ? "calisti" : d.korunan[no] ? "korundu" : "";
-    h += `<div class="gun ${cls} ${no === bugunNo() ? "bugun" : ""}">${d.korunan[no] ? "🧊" : g}</div>`;
+    let cls = "", stil = "", icerik = g;
+    if (d.gunler[no]) { calisilan++; const r = GUN_RENK[renkSira++ % GUN_RENK.length]; cls = "calisti"; stil = `background:linear-gradient(135deg,${r[0]},${r[1]});animation-delay:${renkSira * .04}s`; }
+    else if (d.korunan[no]) { cls = "korundu"; icerik = "🧊"; }
+    else if (no > bugunNo()) cls = "gelecek";
+    else if (no < bugunNo()) cls = "gecti";
+    h += `<div class="gun ${cls} ${no === bugunNo() ? "bugun" : ""}" style="${stil}">${icerik}</div>`;
   }
   document.getElementById("gunler").innerHTML = h;
+  const gecen = simdi.getDate();
+  document.getElementById("ay-ozet").textContent = calisilan ? `Bu ay ${calisilan} gün çalıştın ${calisilan >= gecen * .7 ? "🌟" : "💪"}` : "Bu ayın ilk gününü işaretle!";
+  document.getElementById("ay-cubuk").style.width = Math.round(calisilan / gunSayi * 100) + "%";
   document.getElementById("i-seri").textContent = seri();
   document.getElementById("i-enuzun").textContent = Math.max(d.enUzun, seri());
   document.getElementById("i-ogrenilen").textContent = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length;
   document.getElementById("i-gun").textContent = Object.keys(d.gunler).length;
 }
-document.getElementById("ay-geri").onclick = () => { ayKaydir--; takvimCiz(); };
-document.getElementById("ay-ileri").onclick = () => { ayKaydir++; takvimCiz(); };
 
 // ================= ARKADAŞLAR (örnek veri) =================
 const ARKADASLAR = [
@@ -898,10 +923,9 @@ document.getElementById("kedi-ad").onclick = () => {
 document.getElementById("av-kart").onclick = () => document.getElementById("av-dugme").click();
 
 // ================= GÜNLÜK BALIK AVI =================
-// Denge: yol 100 birim, süre 30 sn. Kedi kendi kendine 2 birim/sn yürür (30 sn'de 60, tek başına ulaşamaz).
-// Doğru cevap +8 birim atılma, yanlış cevap 1,5 sn duraklama (-3 birim). Bitiş = 60 + 8·doğru − 3·yanlış.
-// 7 doğru 3 yanlış: 107 (ulaşır, ~3 sn kala). 6 doğru 4 yanlış: 96 (kıl payı kaçırır).
-const AV = { YOL: 100, SURE: 30, HIZ: 2, ATILMA: 8, DURMA: 1.5 };
+// Denge (Serhat, 2026-10-18): kedi kendiliğinden yürümez. Sadece doğru cevapta 15 birim atılır,
+// yanlışta yerinde kalır. Yol 100: 7 doğru = 105 (ulaşır), 6 doğru = 90 (kaçırır). Süre 30 sn.
+const AV = { YOL: 100, SURE: 30, ATILMA: 15 };
 let av = null;
 function avOynandiMi() { return d.avGunu === bugunNo(); }
 function avDugmeCiz() {
@@ -918,7 +942,7 @@ document.getElementById("av-dugme").onclick = () => {
     t.onclick = () => { document.getElementById("perde").classList.remove("aktif"); avBasla(); }; p.appendChild(t);
     return;
   }
-  pencere("🐟", "Günün balık avı", "10 kelime, 30 saniye. Kedi balığa doğru yürüyor: doğru bildikçe atılır, bilemezsen duraklar. Balıkçı fark etmeden balığa ulaştır! Günde bir kez oynanır.", "Başla", avBasla);
+  pencere("🐟", "Günün balık avı", "10 kelime, 30 saniye. Her doğru cevapta kedi balığa doğru atılır, bilemezsen yerinde kalır. 10 kelimenin 7'sini bilirsen balığa ulaşırsın. Balıkçı fark etmeden yetiş! Günde bir kez oynanır.", "Başla", avBasla);
 };
 function avKelimeleri() {
   // Önce çalışılmış kelimeler (tekrar işlevi görür), yetmezse yenileri
@@ -933,23 +957,25 @@ function avBasla() {
   document.getElementById("av-kedi").textContent = "🐱";
   const gs = document.getElementById("geri-sayim"); gs.classList.add("aktif");
   let say = 3; gs.textContent = say;
+  const oyunu = av;
   const t = setInterval(() => {
+    if (av !== oyunu) return clearInterval(t);
     say--; if (say > 0) { gs.textContent = say; return; }
     clearInterval(t); gs.classList.remove("aktif");
-    av.kilit = false; av.son = performance.now(); document.getElementById("av-kedi").classList.add("kosuyor");
-    requestAnimationFrame(avDongu);
+    av.kilit = false; av.son = performance.now();
+    const oyun = av; requestAnimationFrame(t => avDongu(t, oyun));
   }, 700);
 }
-function avDongu(simdi) {
-  if (!av || av.bitti) return;
+function avDongu(simdi, oyun) {
+  if (!av || av !== oyun || av.bitti) return; // eski oyunun döngüsü yeni oyuna karışmasın
   const dt = Math.min(.1, (simdi - av.son) / 1000); av.son = simdi;
   av.kalan -= dt;
-  if (av.durma > 0) av.durma -= dt; else av.konum += AV.HIZ * dt;
-  if (av.atilma > 0) { const adim = Math.min(av.atilma, 45 * dt); av.konum += adim; av.atilma -= adim; } // atılma 0,15 sn'de akar
+  if (av.atilma > 0) { const adim = Math.min(av.atilma, 80 * dt); av.konum += adim; av.atilma -= adim; } // atılma 0,15 sn'de akar
   if (av.konum >= AV.YOL) return avBitir(true);
   if (av.kalan <= 0) return avBitir(false);
+  if (av.i >= av.kelimeler.length && av.atilma <= 0) return avBitir(false); // kelimeler bitti, yetişemedi
   avKonumCiz();
-  requestAnimationFrame(avDongu);
+  requestAnimationFrame(t => avDongu(t, oyun));
 }
 function avKonumCiz() {
   const pist = document.getElementById("pist"), kedi = document.getElementById("av-kedi");
@@ -960,7 +986,9 @@ function avKonumCiz() {
   const c = document.getElementById("av-sure-cubuk"); c.style.width = (s / AV.SURE * 100) + "%"; c.classList.toggle("az", s < 8);
 }
 function avSoruCiz() {
-  if (av.i >= av.kelimeler.length) { document.getElementById("av-kelime").textContent = "Kelimeler bitti, koş kedi koş! 🏃"; document.getElementById("av-siklar").innerHTML = ""; return; }
+  if (av.i >= av.kelimeler.length) { // kelimeler bitti; ulaşamadıysa süreyi beklemeye gerek yok
+    document.getElementById("av-siklar").innerHTML = "";
+    return; } // bitiş kontrolü oyun döngüsünde
   const k = av.kelimeler[av.i];
   document.getElementById("av-kelime").textContent = k[0];
   const siklar = [k[1], ...KELIMELER.filter(x => x[0] !== k[0]).sort(() => Math.random() - .5).slice(0, 3).map(x => x[1])].sort(() => Math.random() - .5);
@@ -974,9 +1002,9 @@ function avCevap(b, dogru, k) {
     b.classList.add("dogru"); av.dogru++; av.atilma += AV.ATILMA; avEfekt("💨");
     kedi.animate([{ transform: kedi.style.transform + " scaleX(1.3)" }, { transform: kedi.style.transform }], { duration: 200 });
   } else {
-    b.classList.add("yanlis"); av.yanlis++; av.durma = AV.DURMA; avEfekt("💦");
+    b.classList.add("yanlis"); av.yanlis++; avEfekt("💦");
     document.querySelectorAll(".av-sik").forEach(x => { if (x.textContent === k[1]) x.classList.add("dogru"); });
-    kedi.textContent = "😿"; setTimeout(() => { if (av && !av.bitti) kedi.textContent = "🐱"; }, AV.DURMA * 1000);
+    kedi.textContent = "😿"; setTimeout(() => { if (av && !av.bitti) kedi.textContent = "🐱"; }, 900);
     if (av.yanlis >= 2) { document.getElementById("av-balikci").classList.add("dondu"); setTimeout(() => document.getElementById("av-balikci").classList.remove("dondu"), 600); }
   }
   // Bilinen kelime kart sistemine de işlenir: yanlış bilinen yarın tekrar gelir

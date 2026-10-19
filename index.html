@@ -240,9 +240,10 @@
   /* ---------- Kedi sekmesi ---------- */
   .kedi-sahne { position: relative; margin-top: 58px; border-radius: 30px; padding: 18px 12px 14px; display: flex; flex-direction: column; align-items: center; box-shadow: var(--golge); overflow: hidden; }
   .kedi-kutu { position: relative; width: 200px; height: 200px; cursor: pointer; }
-  .kedi-kutu .kedi-resim { width: 100%; height: 100%; object-fit: contain; animation: nefes 3.2s ease-in-out infinite; transform-origin: 50% 95%; }
+  .kedi-kutu .kedi-govde { position: relative; width: 100%; height: 100%; } /* nefes animasyonu kaldırıldı (Serhat) */
+  .kedi-kutu .kedi-resim { width: 100%; height: 100%; object-fit: contain; display: block; }
   @keyframes nefes { 50% { transform: scale(1.015, .985); } }
-  .kedi-kutu .esya { position: absolute; transform: translate(-50%, -50%); pointer-events: none; animation: nefes 3.2s ease-in-out infinite; }
+  .kedi-kutu .esya { position: absolute; transform: translate(-50%, -50%); pointer-events: none; } /* animasyon yok: transform'u ezip eşyayı oynatıyordu */
   .kedi-kutu.mirr { animation: mirr .18s linear 6; }
   @keyframes mirr { 50% { transform: translateX(2px) rotate(1deg); } }
   .kedi-kutu .kuyruk { transform-origin: 140px 165px; animation: kuyruk 2.4s ease-in-out infinite; }
@@ -1255,13 +1256,13 @@ const ESYA_YERI = { kasket: [57, 11, 52], hasir: [57, 12, 62], silindir: [57, 9,
 const KURK_SUZGEC = { turuncu: "none", krem: "sepia(.35) saturate(.55) brightness(1.12)", gri: "grayscale(1) brightness(1.08)", siyah: "grayscale(1) brightness(.55) contrast(1.25)" };
 function kediHali() { return d.kilo < 4.5 ? "fit" : d.kilo < 6 ? "pofuduk" : d.kilo < 7.5 ? "tombis" : "mega"; }
 function kediHTML() {
-  let h = `<img class="kedi-resim" src="resim/kedi_${kediHali()}.png" alt="${d.kediAd}" style="filter:${KURK_SUZGEC[d.kurk] || "none"}">`;
+  let h = `<div class="kedi-govde"><img class="kedi-resim" src="resim/kedi_${kediHali()}.png" alt="${d.kediAd}" style="filter:${KURK_SUZGEC[d.kurk] || "none"}">`;
   for (const yer of ["boyun", "goz", "sapka"]) {
     const e = ESYALAR.find(x => x.id === d.giyili[yer]); if (!e) continue;
     const [x, y, w] = ESYA_YERI[e.id];
     h += `<img class="esya" src="resim/esya_${e.id}.png" alt="" style="left:${x}%;top:${y}%;width:${w}%">`;
   }
-  return h;
+  return h + "</div>";
 }
 let dolapYer = "sapka";
 function kediCiz() {

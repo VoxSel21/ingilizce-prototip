@@ -850,11 +850,17 @@ function yukle() {
   if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
   // Deneme kolaylığı: linkin sonuna ?altin=500 eklenirse o kadar altın verilir, sonra adres temizlenir
   // (yenileyince tekrar vermesin). Gerçek uygulamada olmayacak.
-  const hediyeAltin = parseInt(new URLSearchParams(location.search).get("altin"), 10);
+  const linkte = new URLSearchParams(location.search);
+  if (location.search) history.replaceState(null, "", location.pathname);
+  const hediyeAltin = parseInt(linkte.get("altin"), 10);
   if (hediyeAltin > 0) {
     d.yildiz += Math.min(hediyeAltin, 9999); kaydet();
-    history.replaceState(null, "", location.pathname);
     setTimeout(() => bildir(`🪙 ${Math.min(hediyeAltin, 9999)} altın eklendi`), 400);
+  }
+  // ?hepsi=1 → tüm eşyalar, kürkler ve arka planlar açılır (deneme kolaylığı)
+  if (linkte.get("hepsi")) {
+    d.esyalar = ESYALAR.map(e => e.id); d.kurklar = Object.keys(KURK_SUZGEC); d.temalar = Object.keys(TEMALAR); kaydet();
+    setTimeout(() => bildir("🎁 Tüm eşyalar açıldı"), 400);
   }
 }
 function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }

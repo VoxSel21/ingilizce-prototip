@@ -1,0 +1,16 @@
+{
+  "name": "Pati ile İngilizce (prototip)",
+  "short_name": "Pati",
+  "description": "Kedili İngilizce kelime prototipi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8EE",
+  "theme_color": "#FFF8EE",
+  "lang": "tr",
+  "icons": [
+    { "src": "resim/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "resim/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -848,6 +848,14 @@ function yukle() {
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
   if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
+  // Deneme kolaylığı: linkin sonuna ?altin=500 eklenirse o kadar altın verilir, sonra adres temizlenir
+  // (yenileyince tekrar vermesin). Gerçek uygulamada olmayacak.
+  const hediyeAltin = parseInt(new URLSearchParams(location.search).get("altin"), 10);
+  if (hediyeAltin > 0) {
+    d.yildiz += Math.min(hediyeAltin, 9999); kaydet();
+    history.replaceState(null, "", location.pathname);
+    setTimeout(() => bildir(`🪙 ${Math.min(hediyeAltin, 9999)} altın eklendi`), 400);
+  }
 }
 function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }
 

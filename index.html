@@ -263,6 +263,14 @@
   .esya-kart .al { font-size: 13px; padding: 6px 10px; }
   .renk-top { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--cizgi); }
 
+  /* ---------- Kedinin kilosu ---------- */
+  .kilo-kutu { width: 100%; margin-top: 10px; background: rgba(255,255,255,.88); border-radius: 18px; padding: 10px 14px 8px; }
+  .kilo-ust { display: flex; justify-content: space-between; font-weight: 900; font-size: 14px; }
+  .kilo-cubuk { position: relative; height: 12px; border-radius: 999px; background: linear-gradient(90deg, #5CC9A7, #FFC94D 55%, #FF8A7A); margin: 9px 4px 5px; }
+  .kilo-cubuk i { position: absolute; top: -5px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--murekkep); transform: translateX(-50%); transition: left .6s cubic-bezier(.3,1.4,.5,1); }
+  .kilo-etiket { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--soluk); }
+  .kedi-kutu svg .govde { transition: all .6s cubic-bezier(.3,1.4,.5,1); }
+
   /* ---------- Günlük balık avı (mini oyun) ---------- */
   .av-dugme { position: absolute; right: 0; top: -4px; width: 64px; height: 64px; border-radius: 22px; background: #fff; box-shadow: var(--golge); display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: none; }
   .av-dugme span { font-size: 28px; line-height: 1; animation: zipzip 1.4s ease-in-out infinite; }
@@ -381,10 +389,20 @@
       <div class="balon" id="kedi-balon">Miyav! 👋</div>
       <div class="kedi-kutu" id="kedi-kutu"></div>
       <button class="sev-dugme" id="sev-dugme">💕 Sev</button>
+      <div class="kilo-kutu">
+        <div class="kilo-ust"><span id="kilo-durum">Pofuduk</span><span id="kilo-kg">4.0 kg</span></div>
+        <div class="kilo-cubuk"><i id="kilo-isaret"></i></div>
+        <div class="kilo-etiket"><span>Fit</span><span>Pofuduk</span><span>Tombiş</span><span>Mega Chonk</span></div>
+      </div>
     </div>
     <button class="kart av-kart" id="av-kart">
       <span class="av-kart-ikon">🎣</span>
       <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙</small></div>
+      <span class="ok">›</span>
+    </button>
+    <button class="kart av-kart" id="spor-kart" style="background:var(--mercan-a);">
+      <span class="av-kart-ikon">🏋️</span>
+      <div><b>Kedi spor salonu</b><small>Eski kelimeleri tekrar et, Pati kilo versin</small></div>
       <span class="ok">›</span>
     </button>
     <h2>Gardırop</h2>
@@ -531,11 +549,12 @@ function yeniDurum() {
   // Prototipte takvim boş görünmesin diye son 4 gün çalışılmış sayılır.
   return { yildiz: 3, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
     bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {},
-    kediAd: "Pati", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
+    kediAd: "Pati", kilo: 4.0, kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
 }
 function yukle() {
   try { d = JSON.parse(localStorage.getItem(ANAHTAR)); } catch (e) { d = null; }
   if (!d) d = yeniDurum();
+  if (d.kilo == null) d.kilo = 4.0;
   if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
 }
 function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }
@@ -624,7 +643,7 @@ function kartlariAc() {
     karistir(grup).forEach(k => sira.push({ tip: "soru", k, yeni: true }));
   }
   karistir(eski).forEach(k => sira.push({ tip: "soru", k }));
-  kO = { sira, i: 0, dogru: 0, yanlis: 0, kilit: false };
+  kO = { sira, i: 0, dogru: 0, yanlis: 0, kilit: false, kiloBas: d.kilo };
   tamAc("kartlar"); adimGoster();
 }
 function adimGoster() {
@@ -694,6 +713,8 @@ function cevapla(a, dogru, el) {
   const k = a.k, c = d.kartlar[k[0]], bugun = bugunNo();
   if (dogru) {
     kO.dogru++; konfeti(el, 6);
+    // Yeni kelime = Pati beslenir; eski kelime tekrarı = spor. Spor salonunda daha çok yakar.
+    kiloDegis(kO.spor ? -0.15 : !c ? 0.1 : a.tekrar ? 0 : -0.1);
     if (a.tekrar || !c) d.kartlar[k[0]] = { kutu: 1, sira: bugun + 1 };   // yeni ya da bu turda bir kez kaçırılmış: yarın tekrar
     else { const kutu = Math.min(4, c.kutu + 1); d.kartlar[k[0]] = { kutu, sira: bugun + ARALIK[kutu] }; }
   } else {
@@ -715,7 +736,7 @@ function ilerle() {
   if (kO.i >= kO.sira.length) {
     tamKapat();
     if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
-    else pencere("🃏", "Tur bitti!", `${kO.dogru} doğru, ${kO.yanlis} yanlış. Bugün toplam ${d.bugun.sayi} soru çözdün.`, "Tamam");
+    else { const fark = d.kilo - kO.kiloBas; pencere(kO.spor ? "🏋️" : "🃏", kO.spor ? "Antrenman bitti!" : "Tur bitti!", `${kO.dogru} doğru, ${kO.yanlis} yanlış. ${d.kediAd}: ${fark >= 0 ? "+" : ""}${fark.toFixed(1)} kg (${d.kilo.toFixed(1)} kg, ${kiloDurumu().ad}).`, "Tamam"); }
   } else adimGoster();
 }
 function seslendir(metin) {
@@ -936,13 +957,15 @@ const ESYALAR = [
 ];
 // Eşyaların kedi üstündeki yeri (200×200 kutuda yüzde) ve boyu
 const YERLESIM = { sapka: [50, 17, 64], goz: [50, 46, 56], boyun: [50, 63, 36] };
-function kediSvg(kurk) {
+function kediSvg(kurk, kilo = 4) {
   const k = KURKLER[kurk] || KURKLER.turuncu;
+  const f = 0.82 + (Math.min(9.5, Math.max(3, kilo)) - 3.5) * 0.11; // 3,5 kg: ince · 8,5 kg: yuvarlak
+  const kx = 128 + 10 * f; // kuyruk gövdenin kenarından çıksın
   return `<svg viewBox="0 0 200 200">
-    <path class="kuyruk" d="M138 168 Q 192 162 180 112 Q 175 98 163 106 Q 172 142 132 152 Z" fill="${k.ana}"/>
-    <ellipse cx="100" cy="158" rx="50" ry="36" fill="${k.ana}"/>
-    <ellipse cx="100" cy="166" rx="27" ry="21" fill="#FFF4E6" opacity=".85"/>
-    <ellipse cx="80" cy="190" rx="15" ry="8" fill="${k.ana}"/><ellipse cx="120" cy="190" rx="15" ry="8" fill="${k.ana}"/>
+    <path class="kuyruk" d="M${kx} 168 Q ${kx + 54} 162 ${kx + 42} 112 Q ${kx + 37} 98 ${kx + 25} 106 Q ${kx + 34} 142 ${kx - 6} 152 Z" fill="${k.ana}"/>
+    <ellipse class="govde" cx="100" cy="${160 - 4 * (f - 1)}" rx="${50 * f}" ry="${36 * (0.92 + 0.2 * (f - 0.82))}" fill="${k.ana}"/>
+    <ellipse class="govde" cx="100" cy="167" rx="${27 * f}" ry="${21 * (0.9 + 0.2 * (f - 0.82))}" fill="#FFF4E6" opacity=".85"/>
+    <ellipse cx="${100 - 20 * f}" cy="190" rx="15" ry="8" fill="${k.ana}"/><ellipse cx="${100 + 20 * f}" cy="190" rx="15" ry="8" fill="${k.ana}"/>
     <polygon points="56,72 64,26 98,58" fill="${k.ana}"/><polygon points="144,72 136,26 102,58" fill="${k.ana}"/>
     <polygon points="66,60 69,40 86,56" fill="#F6B2B5"/><polygon points="134,60 131,40 114,56" fill="#F6B2B5"/>
     <ellipse cx="100" cy="92" rx="50" ry="44" fill="${k.ana}"/>
@@ -956,7 +979,7 @@ function kediSvg(kurk) {
   </svg>`;
 }
 function kediHTML() {
-  let h = kediSvg(d.kurk);
+  let h = kediSvg(d.kurk, d.kilo);
   for (const yer of ["boyun", "goz", "sapka"]) {
     const e = ESYALAR.find(x => x.id === d.giyili[yer]); if (!e) continue;
     const [x, y, boy] = YERLESIM[yer];
@@ -970,6 +993,10 @@ function kediCiz() {
   const t = TEMALAR[d.tema];
   document.getElementById("kedi-sahne").style.background = `linear-gradient(#DDF0FB 0 62%, ${t.tepe[0]} 62% 78%, ${t.tepe[1]} 78%)`;
   document.getElementById("kedi-kutu").innerHTML = kediHTML();
+  const kd = kiloDurumu();
+  document.getElementById("kilo-durum").textContent = kd.ad;
+  document.getElementById("kilo-kg").textContent = d.kilo.toFixed(1) + " kg";
+  document.getElementById("kilo-isaret").style.left = ((d.kilo - 3) / 6.5 * 100) + "%";
   // Günün avı kartı
   const oynandi = avOynandiMi();
   document.getElementById("av-kart").classList.toggle("oynandi", oynandi);
@@ -1024,6 +1051,7 @@ function kediLafi() {
   const secenek = [`Miyav! Bugün ${d.bugun.sayi} kart çalıştın 💪`];
   if (calisilan.length) { const k = calisilan[Math.floor(Math.random() * calisilan.length)]; secenek.push(`"${k[0]}" = ${k[1]} ${k[2]} Unutma!`, `${k[2]} ${k[0]}... ${k[0]}... aklımda kalsın diye tekrar ediyorum`); }
   if (!avOynandiMi()) secenek.push("Kovada balık var... günün avına çıkalım mı? 🎣");
+  secenek.push(kiloDurumu().lafi);
   if (d.yildiz === 0) secenek.push("Kumbaramız bomboş 🥺 Biraz kelime çalışalım mı?");
   return secenek[Math.floor(Math.random() * secenek.length)];
 }
@@ -1039,6 +1067,29 @@ document.getElementById("kedi-ad").onclick = () => {
 };
 document.getElementById("av-kart").onclick = () => avAc();
 
+// ================= KİLO VE SPOR SALONU =================
+// Arkadaşın uygulamasındaki gibi: Fit 3,5 · Tombiş 6 · Mega Chonk 8,5 kg. Kilo 3–9,5 arasında kalır.
+function kiloDurumu() {
+  const k = d.kilo;
+  return k < 4.5 ? { ad: "Fit 💪", lafi: "Bugün çok çevikim, balığa koşmaya hazırım!" }
+    : k < 6 ? { ad: "Pofuduk 🐾", lafi: "Ne fit ne tombiş, tam kıvamındayım 😸" }
+    : k < 7.5 ? { ad: "Tombiş 🍙", lafi: "Biraz tombişledim galiba... spor salonuna mı gitsek?" }
+    : { ad: "Mega Chonk 🙀", lafi: "Kalkamıyorum! Eski kelimelerle biraz spor lazım." };
+}
+function kiloDegis(fark) {
+  if (!fark) return;
+  d.kilo = Math.round(Math.min(9.5, Math.max(3, d.kilo + fark)) * 100) / 100;
+  kaydet();
+}
+function sporAc() {
+  // Spor = öğrenilmiş kelimelerden 10 soru; her doğru cevap 0,15 kg verdirir
+  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
+  if (calisilan.length < 3) { pencere("🏋️", "Önce birkaç kelime öğren", "Spor salonunda eski kelimeler tekrar edilir. En az 3 kelimeyle tanışınca gel!", "Tamam"); return; }
+  kO = { sira: karistir(calisilan).slice(0, 10).map(k => ({ tip: "soru", k })), i: 0, dogru: 0, yanlis: 0, kilit: false, kiloBas: d.kilo, spor: true };
+  tamAc("kartlar"); adimGoster();
+}
+document.getElementById("spor-kart").onclick = () => sporAc();
+
 // ================= GÜNLÜK BALIK AVI =================
 // Denge (Serhat, 2026-10-18): kedi kendiliğinden yürümez. Sadece doğru cevapta 15 birim atılır,
 // yanlışta yerinde kalır. Yol 100: 7 doğru = 105 (ulaşır), 6 doğru = 90 (kaçırır). Süre 30 sn.
@@ -1047,6 +1098,10 @@ let av = null;
 function avOynandiMi() { return d.avGunu === bugunNo(); }
 function avDugmeCiz() {} // ana sayfa butonu kaldırıldı; durum kedi sekmesindeki kartta gösterilir
 function avAc() {
+  if (d.kilo >= 8 && !avOynandiMi()) {
+    pencere("🙀", `${d.kediAd} çok tombiş!`, "Balığa koşacak hali yok. Önce spor salonunda biraz eski kelime tekrarı yapalım, sonra ava çıkarız.", "Spora git", sporAc);
+    return;
+  }
   if (avOynandiMi()) {
     pencere("🐟", "Bugünkü avını yaptın", d.avSonuc || "Yarın yeni balık gelecek.", "Tamam", null);
     // Prototipte denemeyi kolaylaştırmak için tekrar oynama yolu
@@ -1136,6 +1191,7 @@ function avBitir(ulasti) {
   const yuzde = ulasti ? 100 : Math.min(99, Math.floor(av.konum / AV.YOL * 100));
   // Ödül kademeli: ulaşırsa büyük ödül, ulaşamazsa yaklaştığı kadar küçük teselli
   const odul = ulasti ? 1 : 0; // Serhat: oyunu bitirmek 1 altın
+  if (ulasti) kiloDegis(0.5); // balığı yedi
   d.yildiz += odul; d.avGunu = bugunNo();
   d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🪙`;
   kaydet(); avDugmeCiz();

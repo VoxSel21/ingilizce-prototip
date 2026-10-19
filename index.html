@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#FFF8EE">
 <title>İngilizce Prototip</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --krem: #FFF8EE; --murekkep: #3B3355; --soluk: #7A7192; --cizgi: #EDE6DA;
+    --baslik: 'Fredoka', 'Nunito', system-ui, sans-serif;
+    --krem: #FFFBF4; --murekkep: #3B3355; --soluk: #7A7192; --cizgi: #EDE6DA;
     --mercan: #FF8A7A; --nane: #5CC9A7; --lavanta: #9F8BEA; --gunes: #FFC94D; --gok: #6DB8EE;
     --mercan-a: #FFE3DE; --nane-a: #DDF5EC; --lavanta-a: #ECE6FF; --gunes-a: #FFF1C9; --gok-a: #DDEFFD;
     --golge: 0 5px 0 rgba(59,51,85,.10);
@@ -23,7 +24,10 @@
   @media (min-width: 600px) { #uygulama { height: min(880px, 100% - 32px); margin-top: 16px; border-radius: 40px; box-shadow: 0 20px 60px rgba(59,51,85,.25); } }
 
   /* ---------- Arka plan sahnesi ---------- */
-  .sahne { position: absolute; inset: 0 0 auto 0; height: 300px; overflow: hidden; z-index: 0; transition: background 1s; }
+  .sahne { position: absolute; inset: 0; overflow: hidden; z-index: 0; background: #DDEFF8 center top / cover no-repeat; }
+  .sahne::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(255,251,244,0) 0 38%, rgba(255,251,244,.55) 62%, rgba(255,251,244,.8)); }
+  .sahne[data-vakit="aksam"]::before { content: ""; position: absolute; inset: 0; background: rgba(255,170,120,.18); }
+  .sahne[data-vakit="gece"]::before { content: ""; position: absolute; inset: 0; background: rgba(60,50,120,.32); }
   .sahne .gok-cisim { position: absolute; width: 64px; height: 64px; border-radius: 50%; top: 40px; right: 40px; }
   .sahne .bulut { position: absolute; background: rgba(255,255,255,.85); border-radius: 999px; height: 22px; animation: kay linear infinite; }
   .sahne .bulut::before, .sahne .bulut::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
@@ -52,7 +56,7 @@
   .buyuk-dugme:disabled { background: #D6D0C6; box-shadow: 0 5px 0 #BDB6AA; }
 
   /* ---------- Ana sayfa ---------- */
-  .selam { color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.18); margin: 18px 4px 24px; }
+  .selam { margin: 18px 4px 24px; }
   .selam p { font-weight: 800; opacity: .95; }
   .hedef { display: flex; align-items: center; gap: 16px; }
   .halka { --yuzde: 0; width: 84px; height: 84px; border-radius: 50%; flex: none; display: grid; place-items: center;
@@ -236,9 +240,10 @@
   /* ---------- Kedi sekmesi ---------- */
   .kedi-sahne { position: relative; margin-top: 58px; border-radius: 30px; padding: 18px 12px 14px; display: flex; flex-direction: column; align-items: center; box-shadow: var(--golge); overflow: hidden; }
   .kedi-kutu { position: relative; width: 200px; height: 200px; cursor: pointer; }
-  .kedi-kutu svg { width: 100%; height: 100%; overflow: visible; }
-  .kedi-kutu .esya { position: absolute; transform: translate(-50%, -50%); line-height: 1; pointer-events: none; }
-  .kedi-kutu.mirr svg { animation: mirr .18s linear 6; }
+  .kedi-kutu .kedi-resim { width: 100%; height: 100%; object-fit: contain; animation: nefes 3.2s ease-in-out infinite; transform-origin: 50% 95%; }
+  @keyframes nefes { 50% { transform: scale(1.015, .985); } }
+  .kedi-kutu .esya { position: absolute; transform: translate(-50%, -50%); pointer-events: none; animation: nefes 3.2s ease-in-out infinite; }
+  .kedi-kutu.mirr { animation: mirr .18s linear 6; }
   @keyframes mirr { 50% { transform: translateX(2px) rotate(1deg); } }
   .kedi-kutu .kuyruk { transform-origin: 140px 165px; animation: kuyruk 2.4s ease-in-out infinite; }
   @keyframes kuyruk { 50% { transform: rotate(10deg); } }
@@ -258,10 +263,27 @@
   .dolap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .esya-kart { background: #fff; border-radius: 20px; padding: 12px 6px 10px; text-align: center; box-shadow: var(--golge); display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .esya-kart.giyili { outline: 3px solid var(--nane); }
-  .esya-kart .e-ikon { font-size: 34px; height: 40px; display: grid; place-items: center; }
+  .esya-kart .e-ikon { height: 48px; display: grid; place-items: center; }
+  .esya-kart .e-ikon img { max-width: 56px; max-height: 46px; object-fit: contain; }
   .esya-kart b { font-size: 13px; font-weight: 900; line-height: 1.2; }
   .esya-kart .al { font-size: 13px; padding: 6px 10px; }
   .renk-top { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--cizgi); }
+
+  /* ---------- Tema (2026-10-19): yuvarlak başlık yazısı, yumuşak gölgeler ---------- */
+  h1, h2, h3, .buyuk-dugme, nav button, .hap, .gorev b, .seviye-sec button, .kelime, .anlam, .s-ana, .tr-cumle, .ay-bas b { font-family: var(--baslik); font-weight: 600; letter-spacing: .2px; }
+  h1 { font-weight: 700; }
+  .kart, .gorev, .rozet, .liste-dugme, .tanis, .soru-kart, .esya-kart { box-shadow: 0 4px 0 rgba(120,100,80,.08), 0 8px 24px rgba(120,100,80,.08); }
+  .buyuk-dugme { border-radius: 26px; }
+  nav { background: rgba(255,255,255,.94); }
+  #ekran-ana .kart, #ekran-kedi .kart { background: rgba(255,255,255,.93); }
+  .selam h1, .selam p { color: #4A3F35; text-shadow: 0 1px 0 rgba(255,255,255,.7); }
+
+  /* ---------- Seviye seçici ---------- */
+  .seviye-sec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .seviye-sec button { background: #fff; border-radius: 16px; padding: 8px 2px; box-shadow: var(--golge); font-weight: 900; font-size: 16px; line-height: 1.1; }
+  .seviye-sec button small { display: block; font-size: 10.5px; color: var(--soluk); font-weight: 800; margin-top: 2px; }
+  .seviye-sec button.aktif { background: var(--lavanta); color: #fff; }
+  .seviye-sec button.aktif small { color: #fff; opacity: .9; }
 
   /* ---------- Kedinin kilosu ---------- */
   .kilo-kutu { width: 100%; margin-top: 10px; background: rgba(255,255,255,.88); border-radius: 18px; padding: 10px 14px 8px; }
@@ -328,6 +350,7 @@
       </div>
     </div>
 
+    <div class="seviye-sec" id="seviye-sec"></div>
     <div style="margin-top:14px;"><button class="buyuk-dugme" id="basla-dugme">Kartlara başla</button></div>
 
     <h2>Alıştırmalar</h2>
@@ -376,10 +399,14 @@
   <!-- ========== ÖDÜLLER ========== -->
   <section class="ekran" id="ekran-oduller">
     <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">🪙 0</span></div>
-    <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Başarımlar</h2>
+    <h2 style="margin-top:60px;">Başarımlar</h2>
     <div class="rozetler" id="rozetler"></div>
     <h2>Dükkân</h2>
     <div class="magaza" id="magaza"></div>
+    <div class="kart" style="margin-top:16px;">
+      <b style="font-weight:900;">📚 Kaynaklar</b>
+      <p class="soluk" style="font-size:12.5px;margin-top:4px;">Kelime seviyeleri: The CEFR-J Wordlist Version 1.5, Yukio Tono, Tokyo University of Foreign Studies (cefr-j.org). Örnek cümleler: Tatoeba (tatoeba.org), CC BY 2.0 FR. Türkçe anlamlar prototip için yazıldı, kontrol edilecek.</p>
+    </div>
   </section>
 
   <!-- ========== KEDİ ========== -->
@@ -424,7 +451,7 @@
   <!-- ========== ARKADAŞLAR ========== -->
   <section class="ekran" id="ekran-arkadaslar">
     <div class="ust"><span class="hap">👥 Arkadaşlar</span><button class="hap" id="ekle-dugme">＋ Ekle</button></div>
-    <h2 style="margin-top:60px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.18);">Bu haftanın ligi</h2>
+    <h2 style="margin-top:60px;">Bu haftanın ligi</h2>
     <div class="kart lig" id="lig"></div>
     <h2>Arkadaşların bugün</h2>
     <div id="gelen-miyav"></div>
@@ -494,47 +521,306 @@
 
 <script>
 // ================= İÇERİK (A1 başlangıç destesi) =================
+// Veri: kelime seviyeleri CEFR-J Wordlist 1.5 (Tono Lab, TUFS); örnek cümleler Tatoeba (CC BY 2.0 FR).
+// Ayrıntı ve üretim yöntemi: veri/KAYNAKLAR.md. Biçim: [en, tr, emoji, örnek_en, örnek_tr, seviye, somut]
 const KELIMELER = [
-  ["apple","elma","🍎","I eat an apple every day.","Her gün bir elma yerim."],
-  ["water","su","💧","Can I have some water?","Biraz su alabilir miyim?"],
-  ["cat","kedi","🐱","The cat is sleeping.","Kedi uyuyor."],
-  ["dog","köpek","🐶","My dog likes the park.","Köpeğim parkı seviyor."],
-  ["house","ev","🏠","This is my house.","Burası benim evim."],
-  ["book","kitap","📖","I read a book at night.","Geceleri kitap okurum."],
-  ["sun","güneş","☀️","The sun is hot today.","Bugün güneş sıcak."],
-  ["friend","arkadaş","🤝","She is my best friend.","O benim en iyi arkadaşım."],
-  ["bread","ekmek","🍞","We buy bread in the morning.","Sabahları ekmek alırız."],
-  ["tree","ağaç","🌳","There is a big tree in the garden.","Bahçede büyük bir ağaç var."],
-  ["car","araba","🚗","His car is red.","Onun arabası kırmızı."],
-  ["school","okul","🏫","I go to school by bus.","Okula otobüsle giderim."],
-  ["happy","mutlu","😊","I am happy today.","Bugün mutluyum."],
-  ["rain","yağmur","🌧️","I like the sound of rain.","Yağmurun sesini severim."],
-  ["phone","telefon","📱","Where is my phone?","Telefonum nerede?"],
-  ["music","müzik","🎵","We listen to music together.","Birlikte müzik dinleriz."],
-  ["tea","çay","🍵","Do you want tea?","Çay ister misin?"],
-  ["moon","ay","🌙","The moon is beautiful tonight.","Bu gece ay çok güzel."],
-  ["fish","balık","🐟","The fish lives in the sea.","Balık denizde yaşar."],
-  ["flower","çiçek","🌸","This flower smells nice.","Bu çiçek güzel kokuyor."],
-  ["shoe","ayakkabı","👟","My shoes are new.","Ayakkabılarım yeni."],
-  ["key","anahtar","🔑","I can't find my key.","Anahtarımı bulamıyorum."],
-  ["cold","soğuk","🥶","It is cold outside.","Dışarısı soğuk."],
-  ["family","aile","👨‍👩‍👧","I love my family.","Ailemi seviyorum."],
-  ["egg","yumurta","🥚","I have two eggs for breakfast.","Kahvaltıda iki yumurta yerim."],
-  ["bird","kuş","🐦","A bird is singing.","Bir kuş şarkı söylüyor."],
-  ["door","kapı","🚪","Please close the door.","Lütfen kapıyı kapat."],
-  ["milk","süt","🥛","The baby drinks milk.","Bebek süt içiyor."],
-  ["star","yıldız","⭐","I can see a star.","Bir yıldız görebiliyorum."],
-  ["clock","saat","⏰","The clock is on the wall.","Saat duvarda."],
+  ["apple", "elma", "🍎", "She cut the apple in two.", "Elmayı ikiye böldü.", "A1", 1],
+  ["bag", "çanta", "👜", "Only you can carry the bag.", "Çantayı sadece siz taşıyabilirsiniz.", "A1", 1],
+  ["ball", "top", "⚽", "Hold the ball with both hands.", "Topu her iki elinle tut.", "A1", 1],
+  ["bed", "yatak", "🛏️", "She was sick in bed yesterday.", "O, dün yatakta hastaydı.", "A1", 1],
+  ["bicycle", "bisiklet", "🚲", "She can't ride a bicycle yet.", "O, henüz bir bisiklet süremiyor.", "A1", 1],
+  ["bird", "kuş", "🐦", "The girl let the bird go.", "Kız kuşu azat etti.", "A1", 1],
+  ["book", "kitap", "📖", "I will give you this book.", "Bu kitabı sana vereceğim.", "A1", 1],
+  ["bread", "ekmek", "🍞", "I like bread more than rice.", "Ekmeği pirinçten daha çok severim.", "A1", 1],
+  ["brother", "erkek kardeş", "👦", "My little brother is watching TV.", "Küçük erkek kardeşim televizyon izliyor.", "A1", 0],
+  ["bus", "otobüs", "🚌", "I go to school by bus.", "Okula otobüs ile giderim.", "A1", 1],
+  ["cake", "pasta, kek", "🎂", "My mother is making a cake.", "Annem bir pasta yapıyor.", "A1", 1],
+  ["car", "araba", "🚗", "Look out! There's a car coming.", "Dikkat! Gelen bir araba var.", "A1", 1],
+  ["cat", "kedi", "🐱", "There's a cat on the table.", "Masanın üzerinde bir kedi var.", "A1", 1],
+  ["chair", "sandalye", "🪑", "The cat is under the chair.", "Kedi sandalyenin altındadır.", "A1", 1],
+  ["child", "çocuk", "🧒", "This child looks like its father.", "Bu çocuk babasına benziyor.", "A1", 1],
+  ["city", "şehir", "🏙️", "I live in a big city.", "Ben büyük bir şehirde yaşıyorum.", "A1", 1],
+  ["coffee", "kahve", "☕", "Don't put sugar in my coffee.", "Kahveme şeker koyma.", "A1", 1],
+  ["cold", "soğuk", "🥶", "It was very cold this morning.", "Bu sabah hava çok soğuktu.", "A1", 0],
+  ["dog", "köpek", "🐶", "A dog is a clever animal.", "Köpek akıllı bir hayvandır.", "A1", 1],
+  ["door", "kapı", "🚪", "Close the door when you leave.", "Çıkarken kapıyı kapat.", "A1", 1],
+  ["egg", "yumurta", "🥚", "This egg has a bad smell.", "Bu yumurtanın kötü bir kokusu var.", "A1", 1],
+  ["eye", "göz", "👁️", "There is something in my eye.", "Gözümde bir şey var.", "A1", 1],
+  ["family", "aile", "👨‍👩‍👧", "We are a family of five.", "Beş kişilik bir aileyiz.", "A1", 0],
+  ["father", "baba", "👨", "My father is fifty years old.", "Babam elli yaşında.", "A1", 0],
+  ["fish", "balık", "🐟", "We have fish for dinner today.", "Bugün akşam yemeğinde balık var.", "A1", 1],
+  ["flower", "çiçek", "🌸", "The girl is smelling the flowers.", "Kız çiçekleri kokluyor.", "A1", 1],
+  ["friend", "arkadaş", "🤝", "My best friend is a book.", "Benim en iyi dostum bir kitaptır.", "A1", 0],
+  ["garden", "bahçe", "🏡", "The garden is behind the house.", "Bahçe evin arkasında.", "A1", 1],
+  ["girl", "kız", "👧", "Look at that pretty little girl.", "O güzel küçük kıza bakın.", "A1", 0],
+  ["happy", "mutlu", "😊", "I was happy to see him.", "Onu gördüğüme sevinmiştim.", "A1", 0],
+  ["hat", "şapka", "👒", "She showed us a beautiful hat.", "O, bize güzel bir şapka gösterdi.", "A1", 1],
+  ["horse", "at", "🐴", "I want to ride a horse.", "Bir ata binmek istiyorum.", "A1", 1],
+  ["hot", "sıcak", "🔥", "Don't use all the hot water.", "Sıcak suyun tümünü kullanma.", "A1", 0],
+  ["house", "ev", "🏠", "My house is near the station.", "Evim istasyona yakın.", "A1", 1],
+  ["juice", "meyve suyu", "🧃", "Two glasses of orange juice, please.", "İki bardak portakal suyu, lütfen.", "A1", 1],
+  ["key", "anahtar", "🔑", "The key is on the desk.", "Anahtar masanın üstünde.", "A1", 1],
+  ["milk", "süt", "🥛", "Give me a glass of milk.", "Bana bir bardak süt ver.", "A1", 1],
+  ["money", "para", "💰", "He is always asking for money.", "O her zaman para istiyor.", "A1", 1],
+  ["moon", "ay", "🌙", "The moon is behind the clouds.", "Ay bulutların arkasındadır.", "A1", 1],
+  ["morning", "sabah", "🌅", "I take a walk every morning.", "Her sabah yürüyüşe çıkarım.", "A1", 0],
+  ["mother", "anne", "👩", "He looks just like his mother.", "Tıpkı annesine benziyor.", "A1", 0],
+  ["music", "müzik", "🎵", "I am listening to the music.", "Müzik dinliyorum.", "A1", 0],
+  ["night", "gece", "🌃", "The baby was quiet all night.", "Bebek bütün gece sessizdi.", "A1", 0],
+  ["park", "park", "🌳", "Don't play baseball in the park.", "Parkta beyzbol oynama.", "A1", 0],
+  ["rain", "yağmur", "🌧️", "I wish the rain would stop.", "Keşke yağmur dursa.", "A1", 1],
+  ["river", "nehir", "🏞️", "I was swimming in the river.", "Nehirde yüzüyordum.", "A1", 1],
+  ["room", "oda", "🚪", "There wasn't anyone in the room.", "Odada hiç kimse yoktu.", "A1", 0],
+  ["school", "okul", "🏫", "I go to school by bus.", "Okula otobüs ile giderim.", "A1", 1],
+  ["sea", "deniz", "🌊", "Her house is near the sea.", "Evi denize yakın.", "A1", 1],
+  ["shoe", "ayakkabı", "👟", "She was wearing dark brown shoes.", "O koyu kahverengi ayakkabılar giyiyordu.", "A1", 1],
+  ["sister", "kız kardeş", "👧", "That pretty girl is my sister.", "O güzel kız benim kız kardeşim.", "A1", 0],
+  ["sleep", "uyumak", "😴", "We usually sleep in this room.", "Genellikle bu odada uyuruz.", "A1", 0],
+  ["snow", "kar", "❄️", "That mountain is covered with snow.", "O dağ kar ile kaplıdır.", "A1", 1],
+  ["sun", "güneş", "☀️", "Cats like playing in the sun.", "Kediler güneşte oynamayı severler.", "A1", 1],
+  ["table", "masa", "🍽️", "The books are on the table.", "Kitaplar masanın üzerinde.", "A1", 0],
+  ["tea", "çay", "🍵", "We put sugar in our tea.", "Biz çayımıza şeker koyarız.", "A1", 1],
+  ["tree", "ağaç", "🌳", "He was sleeping under the tree.", "O, ağacın altında uyuyordu.", "A1", 1],
+  ["water", "su", "💧", "The lady is now drinking water.", "Bayan şimdi su içiyor.", "A1", 1],
+  ["window", "pencere", "🪟", "She looked out of the window.", "O, pencereden dışarıya baktı.", "A1", 1],
+  ["eat", "yemek (yemek yemek)", "🍽️", "You don't have to eat it.", "Onu yemek zorunda değilsiniz.", "A1", 0],
+  ["run", "koşmak", "🏃", "Please don't run in the classroom.", "Lütfen sınıfta koşma.", "A1", 0],
+  ["swim", "yüzmek", "🏊", "He can swim on his back.", "O, sırt üstü yüzebilir.", "A1", 0],
+  ["big", "büyük", "🐘", "He lives in a big house.", "O, büyük bir evde yaşıyor.", "A1", 0],
+  ["small", "küçük", "🐭", "I live in a small town.", "Küçük bir kasabada yaşıyorum.", "A1", 0],
+  ["old", "yaşlı, eski", "👴", "He was too old to walk.", "Yürüyemeyecek kadar yaşlıydı.", "A1", 0],
+  ["beautiful", "güzel", "✨", "She showed us a beautiful hat.", "O, bize güzel bir şapka gösterdi.", "A1", 0],
+  ["hungry", "aç", "🤤", "Babies cry when they are hungry.", "Bebekler aç olduklarında ağlarlar.", "A1", 0],
+  ["tired", "yorgun", "🥱", "He is too tired to work.", "O çalışmak için çok yorgun.", "A1", 0],
+  ["busy", "meşgul", "📅", "I will be busy this afternoon.", "Bu öğleden sonra meşgul olacağım.", "A1", 0],
+  ["clean", "temiz; temizlemek", "🧼", "She always keeps her room clean.", "Odasını her zaman temiz tutar.", "A1", 0],
+  ["dirty", "kirli", "🧦", "Change your shirt. It's very dirty.", "Gömleğini değiştir. O çok kirli.", "A1", 0],
+  ["fast", "hızlı", "⚡", "Run as fast as you can.", "Koşabildiğin kadar hızlı koş.", "A1", 0],
+  ["slow", "yavaş; (saat) geri", "🐢", "My watch is five minutes slow.", "Saatim beş dakika geri kalmış.", "A1", 0],
+  ["cook", "aşçı; pişirmek", "🧑‍🍳", "Her husband is an excellent cook.", "Kocası mükemmel bir aşçıdır.", "A1", 0],
+  ["dance", "dans etmek; dans", "💃", "No one did anything but dance.", "Hiç kimse dans etmekten başka bir şey yapmadı.", "A1", 0],
+  ["sing", "şarkı söylemek", "🎤", "I want to sing a song.", "Ben bir şarkı söylemek istiyorum.", "A1", 0],
+  ["walk", "yürümek; yürüyüş", "🚶", "I take a walk every morning.", "Her sabah yürüyüşe çıkarım.", "A1", 0],
+  ["wait", "beklemek", "⏳", "I'll wait here until she comes.", "O gelene kadar burada bekleyeceğim.", "A1", 0],
+  ["help", "yardım; yardım etmek", "🙋", "I asked for my father's help.", "Babamın yardımını istedim.", "A1", 0],
+  ["airport", "havaalanı", "✈️", "I'll drive you to the airport.", "Seni havaalanına götüreceğim.", "A1", 1],
+  ["angry", "kızgın", "😠", "He was angry with his son.", "O, oğluna kızmıştı.", "A1", 0],
+  ["borrow", "ödünç almak", "🤲", "I need to borrow your pen.", "Dolma kalemini ödünç almalıyım.", "A1", 0],
+  ["careful", "dikkatli", "⚠️", "You need to be more careful.", "Daha dikkatli olmalısın.", "A1", 0],
+  ["cloud", "bulut", "☁️", "That mountain is in the clouds.", "O dağ bulutların içindedir.", "A1", 1],
+  ["dream", "rüya; hayal", "💭", "The little boy has a dream.", "Küçük çocuğun bir hayali var.", "A1", 0],
+  ["forget", "unutmak", "🤔", "Don't forget to write to us.", "Bize yazmayı unutma.", "A1", 0],
+  ["gift", "hediye", "🎁", "Thank you for the wonderful gift.", "Harika hediye için teşekkürler.", "A1", 1],
+  ["guest", "misafir", "🛎️", "The guests should be arriving soon.", "Misafirler yakında geliyor olmalı.", "A1", 0],
+  ["healthy", "sağlıklı", "💪", "That baby is fat and healthy.", "O bebek tombul ve sağlıklı.", "A1", 0],
+  ["heavy", "ağır", "🏋️", "My book bag is very heavy.", "Benim okul çantam çok ağır.", "A1", 0],
+  ["island", "ada", "🏝️", "You can't live on that island.", "O adada yaşayamazsınız.", "A1", 1],
+  ["kitchen", "mutfak", "🍳", "Our cat is in the kitchen.", "Bizim kedimiz mutfaktadır.", "A1", 1],
+  ["lazy", "tembel", "🦥", "A lot of people are lazy.", "Birçok insan tembeldir.", "A1", 0],
+  ["library", "kütüphane", "📚", "We live near a big library.", "Biz büyük bir kütüphanenin yakınında yaşıyoruz.", "A1", 1],
+  ["map", "harita", "🗺️", "Take a look at this map.", "Bu haritaya bir göz at.", "A1", 1],
+  ["medicine", "ilaç", "💊", "Take this medicine every six hours.", "Bu ilacı her altı saatte bir al.", "A1", 1],
+  ["mountain", "dağ", "⛰️", "We plan to climb that mountain.", "O dağa tırmanmayı planlıyoruz.", "A1", 1],
+  ["neighbor", "komşu", "🏘️", "My neighbors are very nice people.", "Komşularım çok iyi insanlar.", "A1", 0],
+  ["pocket", "cep", "👖", "Put the money in your pocket.", "Parayı cebine koy.", "A1", 0],
+  ["quiet", "sessiz", "🤫", "It is quiet here at night.", "Geceleri burası sessizdir.", "A1", 0],
+  ["remember", "hatırlamak", "🧠", "I remember posting your letter yesterday.", "Dün mektubunu postaladığımı hatırlıyorum.", "A1", 0],
+  ["rich", "zengin", "🤑", "He worked for a rich man.", "O, zengin bir adam için çalıştı.", "A1", 0],
+  ["sell", "satmak", "🏷️", "I'm not going to sell it.", "Ben onu satmayacağım.", "A1", 0],
+  ["shy", "utangaç", "🙈", "She's shy and doesn't talk much.", "Utangaç ve çok konuşmaz.", "A1", 0],
+  ["smile", "gülümseme; gülümsemek", "😄", "He greeted me with a smile.", "O bir tebessümle beni selamladı.", "A1", 0],
+  ["strange", "garip, tuhaf", "👽", "They saw a strange animal there.", "Orada garip bir hayvan gördüler.", "A1", 0],
+  ["umbrella", "şemsiye", "☂️", "Let me in under your umbrella.", "Şemsiyenin altına girmeme izin ver.", "A1", 1],
+  ["weather", "hava (durumu)", "🌤️", "It's ideal weather for a picnic.", "Bu piknik için ideal hava.", "A1", 0],
+  ["lucky", "şanslı", "🍀", "I have been lucky until now.", "Şu ana kadar şanslıydım.", "A1", 0],
+  ["dark", "karanlık; koyu", "🌑", "Bats usually fly in the dark.", "Yarasalar genellikle karanlıkta uçar.", "A1", 0],
+  ["hide", "saklanmak, saklamak", "🫣", "I know where you can hide.", "Nerede saklanabileceğini biliyorum.", "A1", 0],
+  ["win", "kazanmak", "🏆", "You can't win all the time.", "Her zaman kazanamazsın.", "A1", 0],
+  ["carry", "taşımak", "📦", "He had to carry the bag.", "O çantayı taşımak zorunda kaldı.", "A1", 0],
+  ["climb", "tırmanmak", "🧗", "We plan to climb that mountain.", "O dağa tırmanmayı planlıyoruz.", "A1", 0],
+  ["celebrate", "kutlamak", "🎉", "We now have something to celebrate.", "Şimdi kutlayacak bir şeyimiz var.", "A1", 0],
+  ["lonely", "yalnız", "🥀", "I feel very lonely these days.", "Bu günlerde çok yalnız hissediyorum.", "A1", 0],
+  ["cheap", "ucuz", "🏷️", "I'm looking for a cheap hotel.", "Ucuz bir otel arıyorum.", "A2", 0],
+  ["castle", "kale, şato", "🏰", "The castle is across the river.", "Kale nehrin karşısındadır.", "A2", 1],
+  ["dangerous", "tehlikeli", "☠️", "The world is a dangerous place.", "Dünya tehlikeli bir yerdir.", "A2", 0],
+  ["dentist", "diş hekimi", "🦷", "I'm going to the dentist tomorrow.", "Yarın dişçiye gidiyorum.", "A2", 1],
+  ["empty", "boş", "🫙", "I want a few empty glasses.", "Birkaç boş bardak istiyorum.", "A2", 0],
+  ["forest", "orman", "🌲", "He lived alone in the forest.", "Ormanda yalnız başına yaşadı.", "A2", 1],
+  ["invite", "davet etmek", "💌", "Don't invite him to the party.", "Sakın onu partiye çağırma.", "A2", 0],
+  ["journey", "yolculuk", "🧳", "I wished him a good journey.", "Ona iyi bir yolculuk diledim.", "A2", 0],
+  ["noisy", "gürültülü", "📢", "Don't be noisy in this room.", "Bu odada gürültü etmeyin.", "A2", 0],
+  ["storm", "fırtına", "⛈️", "There's going to be a storm.", "Bir fırtına olacak.", "A2", 1],
+  ["thief", "hırsız", "🦹", "Yesterday, a thief entered the house.", "Dün, eve bir hırsız girdi.", "A2", 0],
+  ["village", "köy", "🛖", "I'm going to the village tomorrow.", "Yarın köye gidiyorum.", "A2", 1],
+  ["wallet", "cüzdan", "👛", "I left my wallet at home.", "Cüzdanımı evde bıraktım.", "A2", 1],
+  ["wedding", "düğün", "💒", "I was invited to their wedding.", "Onların düğününe davet edildim.", "A2", 1],
+  ["fix", "tamir etmek", "🔧", "Don't worry. I can fix it.", "Endişelenme. Tamir edebilirim.", "A2", 0],
+  ["lose", "kaybetmek", "😩", "There is no time to lose.", "Kaybedecek zaman yok.", "A2", 0],
+  ["achieve", "başarmak", "🏅", "I want to achieve something great.", "Harika bir şeye ulaşmak istiyorum.", "A2", 0],
+  ["advice", "tavsiye, öğüt", "💬", "Let me give you some advice.", "Sana biraz tavsiye vereyim.", "A2", 0],
+  ["ancient", "antik, çok eski", "🏛️", "Ancient people lived close to nature.", "Eski insanlar doğaya yakın yaşadı.", "A2", 0],
+  ["attitude", "tavır", "😏", "She may not like his attitude.", "Onun tavrından hoşlanmayabilir.", "A2", 0],
+  ["avoid", "kaçınmak", "🙅", "You must avoid making such mistakes.", "Böyle hatalar yapmaktan kaçınmalısın.", "A2", 0],
+  ["brave", "cesur", "🦁", "The brave captain saved his ship.", "Cesur kaptan gemisini kurtardı.", "A2", 0],
+  ["challenge", "zorluk, meydan okuma", "🧗", "This will be an interesting challenge.", "Bu ilginç bir meydan okuma olacak.", "A2", 0],
+  ["confident", "emin, kendinden emin", "😎", "I'm confident I can do that.", "Onu yapabileceğime eminim.", "A2", 0],
+  ["disappointed", "hayal kırıklığına uğramış", "😞", "I am disappointed at the news.", "Bu habere hayal kırıklığına uğradım.", "A2", 0],
+  ["experience", "deneyim", "🧭", "We learn a lot from experience.", "Deneyimden çok şey öğreniriz.", "A2", 0],
+  ["explore", "keşfetmek", "🔭", "Let's explore the forest!", "Ormanı keşfedelim!", "A2", 0],
+  ["impress", "etkilemek", "🤩", "I'm not trying to impress you.", "Seni etkilemeye çalışmıyorum.", "A2", 0],
+  ["improve", "geliştirmek, gelişmek", "📈", "I would like to improve myself.", "Kendimi geliştirmek isterim.", "A2", 0],
+  ["knowledge", "bilgi", "📘", "I get knowledge by reading books.", "Kitap okuyarak bilgi alırım.", "A2", 0],
+  ["nervous", "gergin", "😬", "Bill is nervous about the exam.", "Bill sınav konusunda gergin.", "A2", 0],
+  ["opportunity", "fırsat", "🚪", "This will be a great opportunity.", "Bu büyük bir fırsat olacak.", "A2", 0],
+  ["patient", "sabırlı; hasta", "🧘", "Be patient please. It takes time.", "Sabırlı olun lütfen. Bu zaman alır.", "A2", 0],
+  ["polite", "kibar", "🎩", "He is being very polite today.", "O bugün çok kibar.", "A2", 0],
+  ["purpose", "amaç (on purpose: bilerek)", "🎯", "I didn't do it on purpose.", "Bilerek yapmadım.", "A2", 0],
+  ["rumor", "söylenti", "🗣️", "Actually it was only a rumor.", "Aslında o sadece bir söylentiydi.", "A2", 0],
+  ["silly", "aptalca, saçma", "🤪", "I don't want to look silly.", "Aptalca görünmek istemiyorum.", "A2", 0],
+  ["solution", "çözüm", "💡", "I think I have a solution.", "Sanırım bir çözümüm var.", "A2", 0],
+  ["suggest", "önermek", "👉", "I suggest we take the stairs.", "Ben merdivenlerden çıkmayı öneririm.", "A2", 0],
+  ["survive", "hayatta kalmak", "🛟", "Without water, we can not survive.", "Su olmazsa hayatta kalamayız.", "A2", 0],
+  ["tidy", "düzenli; toplamak", "🧹", "You must keep your room tidy.", "Odanızı düzenli tutmalısınız.", "A2", 0],
+  ["wisdom", "bilgelik", "🦉", "As time passes, wisdom increases.", "Zaman geçerken bilgelik artar.", "A2", 0],
+  ["anxious", "endişeli", "😟", "We are anxious about her health.", "Biz, onun sağlığı hakkında endişeliyiz.", "A2", 0],
+  ["consequence", "sonuç", "↩️", "They need to face the consequences.", "Onlar sonuçlarla yüzleşmeli.", "A2", 0],
+  ["precise", "kesin, tam", "📏", "He didn't give a precise answer.", "O kesin bir cevap vermedi.", "A2", 0],
+  ["ocean", "okyanus", "🌊", "We like swimming in the ocean.", "Biz okyanusta yüzmeyi severiz.", "B1", 1],
+  ["afford", "(parası) yetmek, göze almak", "💸", "I can't afford a new car.", "Yeni bir araba almaya gücüm yetmez.", "B1", 0],
+  ["career", "kariyer", "💼", "My family comes before my career.", "Ailem kariyerimden önce gelir.", "B1", 0],
+  ["curious", "meraklı", "🧐", "I thought you might be curious.", "Meraklı olabileceğini düşündüm.", "B1", 0],
+  ["decision", "karar", "⚖️", "I'll leave the decision to you.", "Kararı sana bırakacağım.", "B1", 0],
+  ["deliver", "teslim etmek", "🚚", "We can deliver it this evening.", "Onu bu akşam teslim edebiliriz.", "B1", 0],
+  ["essential", "gerekli, temel", "🔑", "Patience is essential for a teacher.", "Sabır bir öğretmen için gereklidir.", "B1", 0],
+  ["generous", "cömert", "🎁", "He is generous to his friends.", "O, arkadaşlarına karşı cömerttir.", "B1", 0],
+  ["honest", "dürüst", "🙂", "I doubt if he is honest.", "Onun dürüst olup olmadığından şüphe ediyorum.", "B1", 0],
+  ["ignore", "görmezden gelmek", "🙉", "We don't want to ignore facts.", "Gerçekleri görmezden gelmek istemiyoruz.", "B1", 0],
+  ["injury", "yaralanma", "🩹", "We all escaped without injury.", "Hepimiz yaralanmadan kaçtık.", "B1", 0],
+  ["jealous", "kıskanç", "😒", "Everybody was jealous of my success.", "Herkes benim başarımı kıskanıyordu.", "B1", 0],
+  ["mess", "dağınıklık", "🌪️", "I know my room's a mess.", "Odamın darmadağın olduğunu biliyorum.", "B1", 0],
+  ["persuade", "ikna etmek", "🗣️", "I won't try to persuade you.", "Seni ikna etmeye çalışmayacağım.", "B1", 0],
+  ["proud", "gururlu", "🥹", "He is proud of his son.", "O, oğlu ile gurur duyar.", "B1", 0],
+  ["recommend", "tavsiye etmek", "👍", "I can recommend a good restaurant.", "İyi bir restoran tavsiye edebilirim.", "B1", 0],
+  ["reliable", "güvenilir", "🛡️", "His view isn't very reliable.", "Onun görüşü çok güvenilir değil.", "B1", 0],
+  ["valuable", "değerli", "💎", "Nothing is more valuable than health.", "Hiçbir şey sağlıktan daha değerli değildir.", "B1", 0],
+  ["abandon", "vazgeçmek, terk etmek", "🏳️", "We had to abandon our plan.", "Biz planımızdan vazgeçmek zorundaydık.", "B1", 0],
+  ["accurate", "doğru, isabetli", "🎯", "I think your answer is accurate.", "Sanırım senin yanıtın doğru.", "B1", 0],
+  ["acknowledge", "kabul etmek", "🤝", "You should acknowledge your failure.", "Başarısızlığını kabul etmelisin.", "B1", 0],
+  ["ambitious", "hırslı", "🚀", "I was young and ambitious once.", "Bir zamanlar genç ve hırslıydım.", "B1", 0],
+  ["assume", "varsaymak", "🤷", "I assume you don't want this.", "Sanırım bunu istemiyorsun.", "B1", 0],
+  ["cautious", "tedbirli", "🦺", "We need to be extremely cautious.", "Fazlasıyla dikkatli olmamız gerek.", "B1", 0],
+  ["collapse", "çökmek", "🏚️", "This building is about to collapse.", "Bu bina çökmek üzere.", "B1", 0],
+  ["convince", "ikna etmek", "🤝", "It wasn't easy to convince her.", "Onu ikna etmek kolay olmadı.", "B1", 0],
+  ["eager", "istekli", "🙋", "He is eager to go there.", "O, oraya gitmek için istekli.", "B1", 0],
+  ["embarrassed", "mahcup, utanmış", "😳", "There's no need to be embarrassed.", "Mahcup olmaya gerek yok.", "B1", 0],
+  ["frustrated", "hüsrana uğramış; boşa çıkmış", "😤", "The bad weather frustrated our plans.", "Kötü hava planlarımızı boşa çıkardı.", "B1", 0],
+  ["hesitate", "tereddüt etmek", "😶", "Don't hesitate to ask for advice.", "Tavsiye istemekten çekinme.", "B1", 0],
+  ["inevitable", "kaçınılmaz", "⏰", "Changes in the country are inevitable.", "Ülkedeki değişimler kaçınılmazdır.", "B1", 0],
+  ["insist", "ısrar etmek", "☝️", "I'll do it, if you insist.", "Eğer ısrar ederseniz, onu yaparım.", "B1", 0],
+  ["interrupt", "sözünü kesmek", "✋", "Don't interrupt me while I'm speaking.", "Konuşurken sözümü kesme.", "B1", 0],
+  ["obvious", "belli, açık", "👀", "It's obvious why your stomach hurts.", "Midenizin neden ağrıdığı belli.", "B1", 0],
+  ["overcome", "üstesinden gelmek", "🏔️", "We have to overcome many difficulties.", "Birçok zorluğun üstesinden gelmek zorundayız.", "B1", 0],
+  ["rely", "güvenmek", "🫂", "You can certainly rely on him.", "Kesinlikle ona güvenebilirsiniz.", "B1", 0],
+  ["stubborn", "inatçı", "🐐", "He is stubborn as a mule.", "O bir katır kadar inatçıdır.", "B1", 0],
+  ["temper", "öfke, huy", "😡", "He lost his temper with me.", "Bana sinirlendi.", "B1", 0],
+  ["thorough", "titiz", "🔍", "He is very thorough about everything.", "Her şey hakkında çok titizdir.", "B1", 0],
+  ["tremendous", "muazzam", "🌋", "The earthquake created a tremendous sea wave.", "Deprem büyük bir deniz dalgası yarattı.", "B1", 0],
+  ["vague", "belirsiz", "🌫️", "The similarity is pretty vague.", "Benzerlik oldukça belirsiz.", "B1", 0],
+  ["environment", "çevre, ortam", "🌍", "This is bad for the environment.", "Bu, çevre için kötü.", "B2", 0],
+  ["tough", "sert, çetin", "💪", "The elephant's skin is very tough.", "Filin derisi çok serttir.", "B2", 0],
+  ["arrogant", "kibirli", "😤", "Ignorant people tend to be arrogant.", "Cahil insanlar kibirli olma eğilimindedir.", "B2", 0],
+  ["crucial", "çok önemli", "❗", "Sunday's match will be crucial.", "Pazar günkü maç çok önemli olacak.", "B2", 0],
+  ["deliberately", "kasten, bilerek", "🎯", "I didn't do it deliberately.", "Kasten yapmadım.", "B2", 0],
+  ["dilemma", "ikilem", "🔀", "It was a dilemma for me.", "Benim için bir ikilemdi.", "B2", 0],
+  ["exaggerate", "abartmak", "📣", "Let's not exaggerate the facts.", "Gerçekleri abartmayalım.", "B2", 0],
+  ["flexible", "esnek", "🤸", "You must be flexible in your thinking.", "Düşünürken esnek olmalısın.", "B2", 0],
+  ["genuine", "gerçek, hakiki", "💯", "It was a genuine mistake.", "O gerçek bir hataydı.", "B2", 0],
+  ["mature", "olgun", "🧑", "You're very mature for your age.", "Sen yaşına göre çok olgunsun.", "B2", 0],
+  ["modest", "alçakgönüllü", "🙇", "She is modest about her achievement.", "O, başarısı konusunda alçakgönüllü.", "B2", 0],
+  ["reluctant", "isteksiz", "😮‍💨", "He was reluctant to go there.", "O oraya gitmeye isteksizdi.", "B2", 0],
+  ["subtle", "ince, incelikli", "🪶", "We need something a bit more subtle.", "Biraz daha incelikli bir şeye ihtiyacımız var.", "B2", 0],
+  ["sustain", "sürdürmek", "♻️", "We know we can't sustain that.", "Onu devam ettiremeyeceğimizi biliyoruz.", "B2", 0],
+  ["absurd", "saçma", "🙃", "The idea seemed absurd at first.", "Fikir ilk başta saçma görünüyordu.", "B2", 0],
+  ["adore", "bayılmak, çok sevmek", "😍", "I adore going to the cinema.", "Ben sinemaya gitmeyi çok severim.", "B2", 0],
+  ["amaze", "hayrete düşürmek", "😲", "You never cease to amaze me.", "Beni şaşırtmaktan hiç vazgeçmiyorsun.", "B2", 0],
+  ["anticipate", "öngörmek, beklemek", "🔮", "We anticipate a heavy rainfall tomorrow.", "Yarın şiddetli yağış bekliyoruz.", "B2", 0],
+  ["betray", "ihanet etmek", "🗡️", "No one here will betray you.", "Hiç kimse sana burada ihanet etmeyecek.", "B2", 0],
+  ["bizarre", "tuhaf, acayip", "🦄", "Something bizarre happened to me last week.", "Geçen hafta bana tuhaf bir şey oldu.", "B2", 0],
+  ["bossy", "otoriter, patronluk taslayan", "👑", "You're being bossy, aren't you?", "Sen patronluk taslıyorsun değil mi?", "B2", 0],
+  ["charming", "büyüleyici, hoş", "🥰", "That baby has charming eyes.", "Şu bebeğin büyüleyici gözleri var.", "B2", 0],
+  ["cheat", "aldatmak, hile yapmak", "🃏", "I'm not trying to cheat you.", "Seni aldatmaya çalışmıyorum.", "B2", 0],
+  ["clumsy", "beceriksiz, sakar", "🫨", "You're a very clumsy guy.", "Sen çok beceriksiz bir adamsın.", "B2", 0],
+  ["confess", "itiraf etmek", "🙊", "Stop pretending and confess the truth.", "Numara yapmayı kes ve gerçeği itiraf et.", "B2", 0],
+  ["decent", "makul, düzgün", "👌", "A skilled mechanic makes decent money.", "Yetenekli bir tamirci iyi para kazanır.", "B2", 0],
+  ["determined", "kararlı", "🔥", "He was determined to go abroad.", "O, yurt dışına gitmeye kararlıydı.", "B2", 0],
+  ["devoted", "adanmış, sadık", "💞", "She devoted her life to music.", "O, hayatını müziğe adadı.", "B2", 0],
+  ["dreadful", "korkunç, berbat", "😱", "I had a dreadful dream last night.", "Dün gece korkunç bir rüya gördüm.", "B2", 0],
+  ["elegant", "zarif, şık", "🦢", "Your handwriting is quite elegant.", "El yazınız oldukça şık.", "B2", 0],
+  ["exhausting", "yorucu", "😵", "This was a really exhausting trip.", "Bu gerçekten yorucu bir geziydi.", "B2", 0],
+  ["fabulous", "muhteşem", "🌟", "You look fabulous in black.", "Siyah içinde harika görünüyorsun.", "B2", 0],
+  ["fierce", "vahşi, şiddetli", "🐺", "A fierce dog attacked the girl.", "Vahşi bir köpek kıza saldırdı.", "B2", 0],
+  ["furious", "öfkeli", "🤬", "She was furious with her sister.", "O, kız kardeşine öfkelendi.", "B2", 0],
+  ["gloomy", "kasvetli", "🌧️", "The room is very gloomy.", "Oda çok karanlık.", "B2", 0],
+  ["hilarious", "çok komik", "🤣", "I thought it was hilarious.", "Bence çok komikti.", "B2", 0],
+  ["humble", "mütevazı", "🙏", "I am just a humble teacher.", "Ben sadece mütevazı bir öğretmenim.", "B2", 0],
+  ["identical", "tıpatıp aynı", "👯", "Your chair is identical to mine.", "Senin sandalyen benimki ile tamamen aynı.", "B2", 0],
+  ["ignorant", "bilgisiz, cahil", "🤷", "She is quite ignorant of cooking.", "O, yemek pişirmede oldukça bilgisizdir.", "B2", 0],
+  ["impulsive", "dürtüsel, aceleci", "💥", "Tom is very impulsive.", "Tom çok dürtüsel biri.", "B2", 0],
+  ["invisible", "görünmez", "👻", "The moon is invisible behind the clouds.", "Ay, bulutların arkasında görünmez.", "B2", 0],
+  ["moody", "huysuz", "🌦️", "She can be moody at times.", "O bazen huysuz olabilir.", "B2", 0],
+  ["naughty", "yaramaz", "😜", "I was a naughty boy.", "Ben yaramaz bir çocuktum.", "B2", 0],
+  ["obedient", "itaatkâr, söz dinleyen", "🐕", "This dog is very obedient.", "Bu köpek çok itaatkâr.", "B2", 0],
+  ["flawless", "kusursuz", "💎", "Everything must be flawless.", "Her şey kusursuz olmalı.", "B2", 0],
 ];
 const CUMLELER = [
-  ["Ben her gün su içerim.", "I drink water every day", ["tea","night"]],
-  ["Kedi kanepede uyuyor.", "The cat is sleeping on the sofa", ["dog","eats"]],
-  ["Bu benim yeni telefonum.", "This is my new phone", ["old","your"]],
-  ["Biz okula otobüsle gideriz.", "We go to school by bus", ["car","they"]],
-  ["Bugün hava soğuk.", "It is cold today", ["hot","tomorrow"]],
-  ["O benim en iyi arkadaşım.", "She is my best friend", ["family","bad"]],
-  ["Kahvaltıda ekmek yeriz.", "We eat bread for breakfast", ["drink","dinner"]],
-  ["Ay bu gece çok güzel.", "The moon is very beautiful tonight", ["sun","morning"]],
+  ["Bu kitap çok ilginç.", "This book is very interesting", [], "A1"],
+  ["O şapka ona yakışıyor.", "That hat looks good on him", [], "A1"],
+  ["O evde garip şeyler oldu.", "Strange things happened in that house", [], "A1"],
+  ["Yarın yağmur yağabilir.", "It could rain tomorrow", [], "A1"],
+  ["Bu paraya ihtiyacımız var.", "We need the money", [], "A1"],
+  ["Bu ağacın meyvesi güzel.", "The fruit of this tree is good", [], "A1"],
+  ["Onun evi nehre yakın.", "His house is near the river", [], "A1"],
+  ["Masa kırmızı.", "The table is red", [], "A1"],
+  ["Atın çok güzel.", "Your horse is beautiful", [], "A1"],
+  ["Gerçekten hızlı konuşuyorsun.", "You talk really fast", [], "A1"],
+  ["Yardıma ihtiyacım yok.", "I don't need help", [], "A1"],
+  ["Dans etmek istiyorum.", "I want to dance", [], "A1"],
+  ["Dün gece garip rüyalar gördüm.", "I had strange dreams last night", [], "A2"],
+  ["Pencereden içeri girdi.", "He entered through the window", [], "A2"],
+  ["Dün gece televizyon izledim.", "I watched TV last night", [], "A2"],
+  ["Pek kibar değilsin.", "You're not very polite", [], "A2"],
+  ["Köyünü seviyorum.", "I like your village", [], "A2"],
+  ["Tavsiye tuz gibidir.", "Advice is like salt", [], "A2"],
+  ["Annem kahvaltı hazırlıyor.", "My mother is preparing breakfast", [], "A2"],
+  ["Güneş yüzüme vuruyor.", "The sun is shining in my face", [], "A2"],
+  ["Gözlerim çok çabuk yoruluyor.", "My eyes get tired very easily", [], "A2"],
+  ["Çok çabuk öğreniyorsun.", "You are a fast learner", [], "A2"],
+  ["Ormanda hava karanlıktı.", "It was dark in the forest", [], "A2"],
+  ["Ekinlerin yağmura ihtiyacı var.", "The crops need rain", [], "B1"],
+  ["Hava dondurucu soğuk.", "It is freezing cold", [], "B1"],
+  ["Bu dağınıklığı senin için toplarım.", "I'll clean up this mess for you", [], "B1"],
+  ["Bize yardım edebilir.", "She might be able to help us", [], "B1"],
+  ["Sabır bir öğretmen için şarttır.", "Patience is essential for a teacher", [], "B1"],
+  ["Karar kesin değil.", "The decision is not final", [], "B1"],
+  ["Geniş nehir yavaşça akar.", "The broad river flows slowly", [], "B1"],
+  ["Adayı uzakta gördük.", "We saw the island in the distance", [], "B1"],
+  ["Sözüne güveniyorum.", "I rely on your promise", [], "B1"],
+  ["O, ata binmekte iyidir.", "He is good at riding a horse", [], "B1"],
+  ["Seninle konuşmaya çok istekli.", "He's eager to speak to you", [], "B1"],
+  ["Su yaşam için şarttır.", "Water is essential to life", [], "B1"],
+  ["Bu fabrikalar çevreyi kirletiyor.", "These factories are polluting the environment", [], "B2"],
+  ["Odada başta hiç mobilya yoktu.", "The room originally had no furniture", [], "B2"],
+  ["İtiraf ediyorum, çok mutsuzum.", "I confess I'm miserable", [], "B2"],
+  ["Burası düzgün bir kasaba.", "This is a decent town", [], "B2"],
+  ["Yangın şehri yok etti.", "The fire wiped out the city", [], "B2"],
+  ["Zengin bir tarihi mirasımız var.", "We have a rich historical heritage", [], "B2"],
+  ["Babam usta bir balıkçı.", "My father is a skilled fisherman", [], "B2"],
+  ["Okuluna bayılırdı.", "He adored his school", [], "B2"],
+  ["Toplantı odası sessizdi.", "The conference room was silent", [], "B2"],
+  ["Ön kapıyı kilitli bulduk.", "We found the front door locked", [], "B2"],
+  ["Uçak havalimanına indi.", "The aircraft has landed at the airport", [], "B2"],
+  ["Doktor hastaya ilaç yazdı.", "The doctor prescribed medicine for the patient", [], "B2"],
+  ["Kendini hep müziğe adadı.", "He has always devoted himself to music", [], "B2"],
 ];
 
 // ================= DURUM (telefonda saklanır) =================
@@ -549,12 +835,14 @@ function yeniDurum() {
   // Prototipte takvim boş görünmesin diye son 4 gün çalışılmış sayılır.
   return { yildiz: 3, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
     bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {},
-    kediAd: "Pati", kilo: 4.0, kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
+    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
 }
 function yukle() {
   try { d = JSON.parse(localStorage.getItem(ANAHTAR)); } catch (e) { d = null; }
   if (!d) d = yeniDurum();
   if (d.kilo == null) d.kilo = 4.0;
+  if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
+  if (!d.seviye) d.seviye = "A1";
   if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
 }
 function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }
@@ -574,7 +862,7 @@ const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler() {
   const b = bugunNo();
   const eski = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b);
-  const yeni = KELIMELER.filter(k => !d.kartlar[k[0]]);
+  const yeni = KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye);
   return eski.concat(yeni.slice(0, Math.max(0, 10 - eski.length)));
 }
 
@@ -588,23 +876,23 @@ const TEMALAR = {
 function sahneCiz() {
   const s = document.getElementById("sahne"), saat = new Date().getHours();
   const vakit = saat >= 6 && saat < 17 ? "gunduz" : saat >= 17 && saat < 20 ? "aksam" : "gece";
-  const gok = { gunduz: "linear-gradient(#7CC3F2, #BFE3FA)", aksam: "linear-gradient(#F59E9E, #FFD39A)", gece: "linear-gradient(#2E2A5A, #6A5BA8)" }[vakit];
-  const t = TEMALAR[d.tema];
-  s.style.background = gok;
-  let h = `<div class="gok-cisim" style="background:${vakit === "gece" ? "#FFF6D6;box-shadow:0 0 30px #FFF6D6" : vakit === "aksam" ? "#FFB36B" : "#FFD95C;box-shadow:0 0 40px #FFE38A"}"></div>`;
-  if (vakit === "gece") for (let i = 0; i < 18; i++) h += `<i class="yildizcik" style="left:${(i * 53) % 100}%;top:${(i * 37) % 60}%;animation-delay:${i * .3}s"></i>`;
-  for (let i = 0; i < 3; i++) h += `<div class="bulut" style="width:${70 + i * 15}px;top:${30 + i * 45}px;animation-duration:${40 + i * 18}s;animation-delay:-${i * 14}s;${vakit === "gece" ? "opacity:.25" : ""}"></div>`;
-  h += `<svg viewBox="0 0 430 120" preserveAspectRatio="none">
-    <path d="M0 70 Q 90 20 190 60 T 430 50 V120 H0Z" fill="${t.tepe[1]}"/>
-    <path d="M0 95 Q 120 55 240 88 T 430 80 V120 H0Z" fill="${t.tepe[0]}"/>
-    <path d="M0 112 Q 215 96 430 112 V120 H0Z" fill="#FFF8EE"/></svg>`;
-  s.innerHTML = h;
+  s.style.backgroundImage = `url(resim/bg_${d.tema}.jpg)`;
+  s.dataset.vakit = vakit; // akşam ve gece için yumuşak renk perdesi (CSS)
   const baslik = { gunduz: "Günaydın! ☀️", aksam: "İyi akşamlar! 🌇", gece: "İyi geceler! 🌙" }[vakit];
   document.getElementById("selam-baslik").textContent = saat < 12 && saat >= 6 ? baslik : vakit === "gunduz" ? "Merhaba! ☀️" : baslik;
 }
 
 // ================= ANA SAYFA =================
+const SEVIYELER = [["A1", "Başlangıç"], ["A2", "Temel"], ["B1", "Orta"], ["B2", "İleri-orta"]];
+function seviyeCiz() {
+  document.getElementById("seviye-sec").innerHTML = SEVIYELER.map(([s, ad]) => {
+    const top = KELIMELER.filter(k => k[5] === s).length, bilinen = KELIMELER.filter(k => k[5] === s && d.kartlar[k[0]]).length;
+    return `<button class="${d.seviye === s ? "aktif" : ""}" data-seviye="${s}">${s}<small>${ad} · ${bilinen}/${top}</small></button>`;
+  }).join("");
+  document.querySelectorAll("[data-seviye]").forEach(b => b.onclick = () => { d.seviye = b.dataset.seviye; kaydet(); bildir(`Seviye: ${d.seviye} 📚 Yeni kelimeler bu seviyeden gelecek`); herSeyiCiz(); });
+}
 function anaCiz() {
+  seviyeCiz();
   const sr = seri(), say = d.bugun.sayi, bek = bekleyenler().length;
   document.getElementById("seri-hap").textContent = "🔥 " + sr;
   ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🪙 " + d.yildiz);
@@ -672,6 +960,7 @@ function soruTipi(a) {
   const c = d.kartlar[a.k[0]];
   let tipler = a.yeni ? ["resim", "anlam"] : (!c || c.kutu <= 2) ? ["resim", "anlam", "ters", "dinle"] : ["ters", "dinle", "harf"];
   if (a.k[0].length > 7) tipler = tipler.filter(t => t !== "harf");
+  if (!a.k[6]) tipler = tipler.filter(t => t !== "resim"); // soyut kelimenin resmi cevabı ele vermez, tahmin ettirir
   return tipler[Math.floor(Math.random() * tipler.length)] || "ters";
 }
 function soruCiz(a) {
@@ -746,7 +1035,8 @@ function seslendir(metin) {
 // ================= CÜMLE =================
 let cDeste = [], cIndex = 0, dizilen = [], cTurDogru = 0;
 function cumleAc() {
-  cDeste = [...CUMLELER].sort(() => Math.random() - .5).slice(0, 5);
+  const uygun = CUMLELER.filter(c => c[3] === d.seviye);
+  cDeste = [...(uygun.length >= 3 ? uygun : CUMLELER)].sort(() => Math.random() - .5).slice(0, 5);
   cIndex = 0; cTurDogru = 0; tamAc("cumle"); cumleGoster();
 }
 function cumleGoster() {
@@ -754,7 +1044,9 @@ function cumleGoster() {
   document.getElementById("c-tr").textContent = c[0];
   document.getElementById("c-sayac").textContent = `${cIndex}/${cDeste.length}`;
   document.getElementById("c-cubuk").style.width = (cIndex / cDeste.length * 100) + "%";
-  const bloklar = c[1].split(" ").concat(c[2]).sort(() => Math.random() - .5);
+  const cumleKel = c[1].toLowerCase().split(" ");
+  const celdirici = c[2].length ? c[2] : KELIMELER.filter(k => k[5] === c[3] && !cumleKel.includes(k[0])).sort(() => Math.random() - .5).slice(0, 2).map(k => k[0]);
+  const bloklar = c[1].split(" ").concat(celdirici).sort(() => Math.random() - .5);
   dizilen = [];
   document.getElementById("havuz").innerHTML = bloklar.map((b, i) => `<button class="blok" data-i="${i}">${b}</button>`).join("");
   document.getElementById("dizi").innerHTML = "";
@@ -944,46 +1236,30 @@ const KURKLER = {
   siyah:   { ad: "Gece", ana: "#4A4458", koyu: "#2E2A3A", fiyat: 5 },
 };
 const ESYALAR = [
-  { id: "kasket", yer: "sapka", ikon: "🧢", ad: "Kasket", fiyat: 2 },
-  { id: "hasir", yer: "sapka", ikon: "👒", ad: "Hasır şapka", fiyat: 3 },
-  { id: "silindir", yer: "sapka", ikon: "🎩", ad: "Silindir", fiyat: 5 },
-  { id: "kep", yer: "sapka", ikon: "🎓", ad: "Mezuniyet kepi", fiyat: 0, rozet: "ogrendi" },
-  { id: "tac", yer: "sapka", ikon: "👑", ad: "Taç", fiyat: 10 },
-  { id: "fiyonk", yer: "boyun", ikon: "🎀", ad: "Fiyonk", fiyat: 2 },
-  { id: "zil", yer: "boyun", ikon: "🔔", ad: "Zilli tasma", fiyat: 3 },
-  { id: "atki", yer: "boyun", ikon: "🧣", ad: "Atkı", fiyat: 4 },
-  { id: "gozluk", yer: "goz", ikon: "👓", ad: "Gözlük", fiyat: 3 },
-  { id: "gunes", yer: "goz", ikon: "🕶️", ad: "Güneş gözlüğü", fiyat: 5 },
+  { id: "kasket", yer: "sapka", ad: "Kasket", fiyat: 2 },
+  { id: "hasir", yer: "sapka", ad: "Hasır şapka", fiyat: 3 },
+  { id: "silindir", yer: "sapka", ad: "Silindir", fiyat: 5 },
+  { id: "kep", yer: "sapka", ad: "Mezuniyet kepi", fiyat: 0, rozet: "ogrendi" },
+  { id: "tac", yer: "sapka", ad: "Taç", fiyat: 10 },
+  { id: "fiyonk", yer: "boyun", ad: "Papyon", fiyat: 2 },
+  { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: 3 },
+  { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: 3 },
+  { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: 5 },
 ];
-// Eşyaların kedi üstündeki yeri (200×200 kutuda yüzde) ve boyu
-const YERLESIM = { sapka: [50, 17, 64], goz: [50, 46, 56], boyun: [50, 63, 36] };
-function kediSvg(kurk, kilo = 4) {
-  const k = KURKLER[kurk] || KURKLER.turuncu;
-  const f = 0.82 + (Math.min(9.5, Math.max(3, kilo)) - 3.5) * 0.11; // 3,5 kg: ince · 8,5 kg: yuvarlak
-  const kx = 128 + 10 * f; // kuyruk gövdenin kenarından çıksın
-  return `<svg viewBox="0 0 200 200">
-    <path class="kuyruk" d="M${kx} 168 Q ${kx + 54} 162 ${kx + 42} 112 Q ${kx + 37} 98 ${kx + 25} 106 Q ${kx + 34} 142 ${kx - 6} 152 Z" fill="${k.ana}"/>
-    <ellipse class="govde" cx="100" cy="${160 - 4 * (f - 1)}" rx="${50 * f}" ry="${36 * (0.92 + 0.2 * (f - 0.82))}" fill="${k.ana}"/>
-    <ellipse class="govde" cx="100" cy="167" rx="${27 * f}" ry="${21 * (0.9 + 0.2 * (f - 0.82))}" fill="#FFF4E6" opacity=".85"/>
-    <ellipse cx="${100 - 20 * f}" cy="190" rx="15" ry="8" fill="${k.ana}"/><ellipse cx="${100 + 20 * f}" cy="190" rx="15" ry="8" fill="${k.ana}"/>
-    <polygon points="56,72 64,26 98,58" fill="${k.ana}"/><polygon points="144,72 136,26 102,58" fill="${k.ana}"/>
-    <polygon points="66,60 69,40 86,56" fill="#F6B2B5"/><polygon points="134,60 131,40 114,56" fill="#F6B2B5"/>
-    <ellipse cx="100" cy="92" rx="50" ry="44" fill="${k.ana}"/>
-    <g stroke="${k.koyu}" stroke-width="5" stroke-linecap="round"><path d="M100 50 v13"/><path d="M87 53 l3 10"/><path d="M113 53 l-3 10"/></g>
-    <g class="goz-kapak"><ellipse cx="80" cy="92" rx="7" ry="9" fill="#3B3355"/><ellipse cx="120" cy="92" rx="7" ry="9" fill="#3B3355"/>
-      <circle cx="82.5" cy="88.5" r="2.6" fill="#fff"/><circle cx="122.5" cy="88.5" r="2.6" fill="#fff"/></g>
-    <circle cx="66" cy="107" r="8" fill="#FF9FA8" opacity=".55"/><circle cx="134" cy="107" r="8" fill="#FF9FA8" opacity=".55"/>
-    <path d="M95 103 L105 103 L100 109 Z" fill="#F27C8A"/>
-    <path d="M100 109 Q 95 116 89 112 M100 109 Q 105 116 111 112" stroke="#3B3355" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <g stroke="${k.koyu}" stroke-width="2" opacity=".55" stroke-linecap="round"><path d="M60 103 L36 99"/><path d="M60 110 L36 114"/><path d="M140 103 L164 99"/><path d="M140 110 L164 114"/></g>
-  </svg>`;
-}
+// Çizimler Gemini'den (cizim/gemini-komutlari.md), cizim/hazirla.py ile temizlendi.
+// Kedi dört kilo halinde de aynı pozda; eşyaların yeri tek ayarla hepsine oturur.
+// [merkez x %, merkez y %, genişlik %] — 400×400 kedi resmine göre, önizlemeyle ölçüldü.
+const ESYA_YERI = { kasket: [57, 11, 52], hasir: [57, 12, 62], silindir: [57, 9, 38], kep: [57, 10, 52], tac: [57, 11, 30],
+  fiyonk: [59, 55, 26], zil: [59, 54, 42], gozluk: [59, 33, 44], gunes: [59, 33, 46] };
+// Kürk rengi tek çizimden renk süzgeciyle üretilir (prototip için; gerçek uygulamada ayrı çizim olabilir)
+const KURK_SUZGEC = { turuncu: "none", krem: "sepia(.35) saturate(.55) brightness(1.12)", gri: "grayscale(1) brightness(1.08)", siyah: "grayscale(1) brightness(.55) contrast(1.25)" };
+function kediHali() { return d.kilo < 4.5 ? "fit" : d.kilo < 6 ? "pofuduk" : d.kilo < 7.5 ? "tombis" : "mega"; }
 function kediHTML() {
-  let h = kediSvg(d.kurk, d.kilo);
+  let h = `<img class="kedi-resim" src="resim/kedi_${kediHali()}.png" alt="${d.kediAd}" style="filter:${KURK_SUZGEC[d.kurk] || "none"}">`;
   for (const yer of ["boyun", "goz", "sapka"]) {
     const e = ESYALAR.find(x => x.id === d.giyili[yer]); if (!e) continue;
-    const [x, y, boy] = YERLESIM[yer];
-    h += `<span class="esya" style="left:${x}%;top:${y}%;font-size:${boy}px">${e.ikon}</span>`;
+    const [x, y, w] = ESYA_YERI[e.id];
+    h += `<img class="esya" src="resim/esya_${e.id}.png" alt="" style="left:${x}%;top:${y}%;width:${w}%">`;
   }
   return h;
 }
@@ -991,7 +1267,7 @@ let dolapYer = "sapka";
 function kediCiz() {
   document.getElementById("kedi-ad").textContent = `🐱 ${d.kediAd} ✏️`;
   const t = TEMALAR[d.tema];
-  document.getElementById("kedi-sahne").style.background = `linear-gradient(#DDF0FB 0 62%, ${t.tepe[0]} 62% 78%, ${t.tepe[1]} 78%)`;
+  document.getElementById("kedi-sahne").style.background = `url(resim/bg_${d.tema}.jpg) center 62% / cover`;
   document.getElementById("kedi-kutu").innerHTML = kediHTML();
   const kd = kiloDurumu();
   document.getElementById("kilo-durum").textContent = kd.ad;
@@ -1007,7 +1283,7 @@ function kediCiz() {
   if (dolapYer === "kurk") {
     for (const [id, k] of Object.entries(KURKLER)) {
       const var_ = d.kurklar.includes(id), secili = d.kurk === id;
-      h += `<div class="esya-kart ${secili ? "giyili" : ""}"><div class="e-ikon"><span class="renk-top" style="background:${k.ana}"></span></div><b>${k.ad}</b>
+      h += `<div class="esya-kart ${secili ? "giyili" : ""}"><div class="e-ikon"><img src="resim/kedi_pofuduk.png" alt="" style="filter:${KURK_SUZGEC[id]}"></div><b>${k.ad}</b>
         <button class="al ${secili ? "secili" : ""}" data-kurk="${id}" ${!var_ && d.yildiz < k.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Seç" : "🪙 " + k.fiyat}</button></div>`;
     }
   } else {
@@ -1015,14 +1291,14 @@ function kediCiz() {
       const var_ = d.esyalar.includes(e.id) || (e.rozet && d.rozet[e.rozet]), giyili = d.giyili[e.yer] === e.id;
       const kilit = e.rozet && !d.rozet[e.rozet];
       const etiket = giyili ? "Çıkar" : var_ ? "Giy" : kilit ? "🔒 Başarım" : "🪙 " + e.fiyat;
-      h += `<div class="esya-kart ${giyili ? "giyili" : ""}"><div class="e-ikon">${e.ikon}</div><b>${e.ad}</b>
+      h += `<div class="esya-kart ${giyili ? "giyili" : ""}"><div class="e-ikon"><img src="resim/esya_${e.id}.png" alt=""></div><b>${e.ad}</b>
         <button class="al ${giyili ? "secili" : ""}" data-esya="${e.id}" ${kilit || (!var_ && d.yildiz < e.fiyat) ? "disabled" : ""}>${etiket}</button></div>`;
     }
   }
   document.getElementById("dolap").innerHTML = h;
   document.querySelectorAll("[data-esya]").forEach(b => b.onclick = () => {
     const e = ESYALAR.find(x => x.id === b.dataset.esya);
-    if (!d.esyalar.includes(e.id) && !(e.rozet && d.rozet[e.rozet])) { d.yildiz -= e.fiyat; d.esyalar.push(e.id); bildir(`${e.ikon} ${e.ad} alındı!`); }
+    if (!d.esyalar.includes(e.id) && !(e.rozet && d.rozet[e.rozet])) { d.yildiz -= e.fiyat; d.esyalar.push(e.id); bildir(`✨ ${e.ad} alındı!`); }
     d.giyili[e.yer] = d.giyili[e.yer] === e.id ? null : e.id;
     kaydet(); rozetKontrol(); herSeyiCiz(); kediSoyle(d.giyili[e.yer] ? "Yakıştı mı? 😸" : "Böyle de fena değilim 😼");
   });
@@ -1035,7 +1311,7 @@ function kediCiz() {
   let s = "";
   for (const [k, t2] of Object.entries(TEMALAR)) {
     const var_ = d.temalar.includes(k), secili = d.tema === k;
-    s += `<div class="kart urun"><div class="u-ikon" style="background:linear-gradient(${t2.tepe[0]},${t2.tepe[1]})">${t2.ikon}</div><div><b>${t2.ad}</b><small>Ana sayfa ve kedinin arka planı</small></div>
+    s += `<div class="kart urun"><div class="u-ikon" style="background:url(resim/bg_${k}.jpg) center 60% / cover"></div><div><b>${t2.ad}</b><small>Ana sayfa ve kedinin arka planı</small></div>
       <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t2.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : "🪙 " + t2.fiyat}</button></div>`;
   }
   document.getElementById("sahneler").innerHTML = s;
@@ -1114,7 +1390,7 @@ function avAc() {
 }
 function avKelimeleri() {
   // Önce çalışılmış kelimeler (tekrar işlevi görür), yetmezse yenileri
-  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]), diger = KELIMELER.filter(k => !d.kartlar[k[0]]);
+  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]), diger = KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye);
   return [...calisilan].sort(() => Math.random() - .5).concat([...diger].sort(() => Math.random() - .5)).slice(0, 10);
 }
 function avBasla() {

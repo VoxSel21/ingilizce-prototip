@@ -327,6 +327,43 @@
   .dolap-sekme { display: flex; gap: 6px; margin-bottom: 10px; }
   .dolap-sekme button { flex: 1; border-radius: 14px; padding: 8px 2px; font-weight: 900; font-size: 13px; background: #fff; box-shadow: var(--golge); }
   .dolap-sekme button.aktif { background: var(--lavanta-a); color: #6B55C9; }
+  /* Sosyal: arkadaşlar / çete */
+  .sosyal-sekme button { font-size: 15px; padding: 10px 2px; }
+  .ikili-kart { margin-bottom: 10px; }
+  .ikili-kart .g-ust { display: flex; align-items: center; gap: 10px; }
+  .ikili-kart .g-ust div { flex: 1; } .ikili-kart b { font-weight: 900; } .ikili-kart small { display: block; color: var(--soluk); font-weight: 700; font-size: 13px; }
+  .ikili-satir { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; font-weight: 800; }
+  .ikili-satir span { width: 56px; } .ikili-satir .cete-cubuk { flex: 1; margin: 0; }
+  .ikili-dugme { margin-top: 10px; width: 100%; height: 40px; border-radius: 999px; font-weight: 900; background: var(--nane-a); color: #2E8C6E; }
+  .sablon-sec { display: grid; gap: 8px; margin-top: 10px; text-align: left; }
+  .sablon-sec button { border-radius: 16px; padding: 10px 12px; background: var(--krem); font-weight: 800; font-size: 14px; display: flex; gap: 10px; align-items: center; }
+  .cete-bas { display: flex; align-items: center; gap: 12px; background: var(--lavanta-a); }
+  .cete-bas .c-ikon { font-size: 40px; } .cete-bas b { font-weight: 900; font-size: 18px; display: block; } .cete-bas small { color: var(--soluk); font-weight: 700; }
+  .savas-skor { display: flex; align-items: center; gap: 10px; font-weight: 900; }
+  .savas-skor .taraf { flex: 1; text-align: center; } .savas-skor .taraf b { display: block; font-size: 26px; font-family: var(--baslik); }
+  .savas-cubuk { display: flex; height: 14px; border-radius: 999px; overflow: hidden; margin: 10px 0 4px; background: var(--mercan-a); }
+  .savas-cubuk i { display: block; background: linear-gradient(90deg, var(--lavanta), var(--nane)); }
+  .savas-modlar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .savas-modlar button { border-radius: 18px; padding: 10px; background: #fff; box-shadow: var(--golge); text-align: left; }
+  .savas-modlar button .m-ikon { font-size: 26px; display: block; } .savas-modlar button b { font-weight: 900; font-size: 14px; display: block; }
+  .savas-modlar button small { color: var(--soluk); font-weight: 700; font-size: 12px; }
+  .sohbet-onizleme { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; }
+  .sohbet-onizleme .h-ikon { font-size: 28px; } .sohbet-onizleme div { flex: 1; min-width: 0; } .sohbet-onizleme b { font-weight: 900; display: block; }
+  .sohbet-onizleme small { color: var(--soluk); font-weight: 700; font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Sohbet ekranı */
+  .sohbet-kural { background: var(--gunes-a); border-radius: 14px; padding: 8px 12px; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .sohbet-liste { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px 2px 8px; }
+  .mesaj { max-width: 82%; background: #fff; border-radius: 18px 18px 18px 6px; padding: 8px 12px; box-shadow: var(--golge); font-size: 15px; position: relative; }
+  .mesaj .kim { font-size: 12px; font-weight: 900; display: block; margin-bottom: 2px; }
+  .mesaj.ben { align-self: flex-end; background: var(--lavanta-a); border-radius: 18px 18px 6px 18px; }
+  .mesaj .bildir { position: absolute; top: 4px; right: 6px; font-size: 12px; opacity: .45; }
+  .mesaj .ogrendi { display: block; margin-top: 4px; font-size: 12px; font-weight: 800; color: #2E8C6E; }
+  .mesaj mark { background: var(--nane-a); border-radius: 6px; padding: 0 3px; }
+  .sohbet-oneri { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0; }
+  .sohbet-oneri button { flex: none; border-radius: 999px; background: var(--krem); padding: 6px 12px; font-weight: 800; font-size: 13px; }
+  .sohbet-yaz { display: flex; gap: 8px; padding-bottom: 4px; }
+  .sohbet-yaz input { flex: 1; border-radius: 999px; border: 2px solid var(--cizgi); padding: 10px 14px; font: inherit; font-size: 15px; background: #fff; }
+  .sohbet-yaz button { width: 46px; border-radius: 50%; background: var(--lavanta); color: #fff; font-size: 18px; font-weight: 900; }
   .dolap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .esya-kart { background: #fff; border-radius: 20px; padding: 12px 6px 10px; text-align: center; box-shadow: var(--golge); display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .esya-kart.giyili { outline: 3px solid var(--nane); }
@@ -525,20 +562,31 @@
 
   <!-- ========== ARKADAŞLAR ========== -->
   <section class="ekran" id="ekran-arkadaslar">
-    <div class="ust"><span class="hap">🐾 Çete</span><button class="hap" id="ekle-dugme">＋ Çeteye kat</button></div>
-    <h2 style="margin-top:60px;">Çetenin ortak görevleri</h2>
-    <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Hep birlikte bitirin, ödülü herkes alır. Haftalık, pazartesi yenilenir.</p>
-    <div id="cete-gorevler"></div>
-    <h2>Bu haftanın ligi</h2>
-    <div class="kart lig" id="lig"></div>
-    <h2>Çete üyeleri bugün</h2>
-    <div id="gelen-miyav"></div>
-    <div id="arkadas-listesi"></div>
-    <div class="kart" style="background:var(--lavanta-a);">
-      <b style="font-weight:900;">💬 Mesajlaşma yok, bilerek</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Sadece hazır tepkiler var. Böylece kimse kimseye kötü bir şey yazamaz.</p>
+    <div class="ust"><span class="hap">🐾 Sosyal</span><button class="hap" id="ekle-dugme">＋ Ekle</button></div>
+    <div class="dolap-sekme sosyal-sekme" id="sosyal-sekme" style="margin-top:60px;">
+      <button data-sosyal="arkadas" class="aktif">👫 Arkadaşlar</button><button data-sosyal="cete">🐾 Çete</button>
     </div>
-    <p class="prototip-not">Çete üyeleri ve katkıları örnek: gerçek uygulamada hesaplarla gelecek.</p>
+    <div id="sosyal-arkadas">
+      <h2>Birlikte görevler</h2>
+      <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Bir arkadaşını seç, ikiniz birlikte bitirin. Bitince ikiniz de ödül alırsınız.</p>
+      <div id="ikili-gorevler"></div>
+      <h2>Arkadaşların bugün</h2>
+      <div id="gelen-miyav"></div>
+      <div id="arkadas-listesi"></div>
+      <h2>Bu haftanın ligi</h2>
+      <div class="kart lig" id="lig"></div>
+    </div>
+    <div id="sosyal-cete" style="display:none;">
+      <div class="kart cete-bas"><span class="c-ikon">🐾</span><div><b>Patiler Çetesi</b><small id="cete-uye-yazi">5 üye · kod KUZU-4821</small></div></div>
+      <h2>⚔️ Çete savaşı</h2>
+      <div id="savas-kart"></div>
+      <h2>💬 Çete sohbeti</h2>
+      <button class="kart sohbet-onizleme" id="sohbet-ac"><span class="h-ikon">💬</span><div><b>Sadece İngilizce konuşulur</b><small id="sohbet-son"></small></div><span class="ok">›</span></button>
+      <h2>Haftalık ortak görevler</h2>
+      <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Hep birlikte bitirin, ödülü herkes alır. Pazartesi yenilenir.</p>
+      <div id="cete-gorevler"></div>
+    </div>
+    <p class="prototip-not">Arkadaşlar, çete üyeleri, mesajları ve puanları örnek: gerçek uygulamada hesaplarla gelecek.</p>
   </section>
 
   <!-- ========== KELİME ÇALIŞMA: önce tanış, sonra sorularla tekrar (Serhat, 2026-10-18) ========== -->
@@ -572,6 +620,23 @@
     <p class="soru">Eşleri bul! Bir İngilizce, bir Türkçe kart seç.</p>
     <div class="esles" id="esles"></div>
     <p class="soluk" id="e-not" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Yanlış eşleştirme +2 saniye ekler.</p>
+  </section>
+
+  <!-- ========== ÇETE SOHBETİ (örnek; gerçek mesajlaşma sunucu ve moderasyon ister) ========== -->
+  <section class="tam" id="tam-sohbet">
+    <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap">💬 Patiler Çetesi</span><span class="hap" style="font-size:13px;">🇬🇧 English only</span></div>
+    <div class="sohbet-kural">🐾 Çete kuralı: İngilizce yaz, nazik ol. Öğrendiğin kelimeleri kullanırsan yeşil yanar. Kötü mesajı 🚩 ile bildir.</div>
+    <div class="sohbet-liste" id="sohbet-liste"></div>
+    <div class="sohbet-oneri" id="sohbet-oneri"></div>
+    <div class="sohbet-yaz"><input id="sohbet-girdi" placeholder="Write in English..." autocomplete="off" maxlength="160"><button id="sohbet-gonder" aria-label="Gönder">➤</button></div>
+  </section>
+
+  <!-- ========== ÇETE SAVAŞI: hızlı modlar (kelime yarışı, kulak kabart) ========== -->
+  <section class="tam" id="tam-savas">
+    <div class="sure"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="sv-cubuk"></i></div><b id="sv-sure">45</b></div>
+    <div class="kart av-soru"><div class="soluk" style="font-size:14px;" id="sv-yon"></div><div class="s-kelime" id="sv-soru"></div></div>
+    <div class="av-siklar" id="sv-siklar"></div>
+    <p class="soluk" id="sv-puan" style="text-align:center;font-weight:900;font-size:18px;margin-top:auto;padding-top:10px;">⚔️ 0 puan</p>
   </section>
 
   <!-- ========== CÜMLE (tam ekran) ========== -->
@@ -617,7 +682,7 @@
     <button data-sekme="takvim"><span>📅</span>Takvim</button>
     <button data-sekme="kedi"><span>🐱</span>Kedi</button>
     <button data-sekme="oduller"><span>🏆</span>Ödüller</button>
-    <button data-sekme="arkadaslar"><span>🐾</span>Çete</button>
+    <button data-sekme="arkadaslar"><span>🐾</span>Sosyal</button>
   </nav>
 </div>
 
@@ -3416,8 +3481,8 @@ function eslesKelimeleri() {
   for (const k of tanis.concat(yeni)) { if (secilen.length >= 12) break; if (!anlamlar.has(k[1])) { secilen.push(k); anlamlar.add(k[1]); } }
   return secilen;
 }
-function eslesAc() {
-  es = { kelimeler: eslesKelimeleri(), tur: 0, bulunan: 0, ceza: 0, bas: performance.now(), secili: null, bitti: false };
+function eslesAc(savas = false) {
+  es = { kelimeler: eslesKelimeleri(), tur: 0, bulunan: 0, ceza: 0, bas: performance.now(), secili: null, bitti: false, savas };
   tamAc("esles"); eslesTurCiz();
   const oyun = es;
   const t = setInterval(() => { if (es !== oyun || es.bitti) return clearInterval(t); eslesSureCiz(); }, 100);
@@ -3456,6 +3521,7 @@ function eslesSec(b) {
 }
 function eslesBitir() {
   es.bitti = true; const sure = eslesSure();
+  if (es.savas) { const puan = Math.max(20, Math.round(240 - sure * 4)); Ses.dogru(); setTimeout(() => savasSonuc("esles", puan), 500); return; }
   const rekor = !d.eslesRekor || sure < d.eslesRekor;
   if (rekor) d.eslesRekor = Math.round(sure * 10) / 10;
   const odul = sure < 45 && d.eslesGunu !== bugunNo() ? 1 : 0;
@@ -3489,7 +3555,7 @@ document.getElementById("yedek-yukle").onclick = () => {
 };
 
 // ================= CÜMLE =================
-let cDeste = [], cIndex = 0, dizilen = [], cTurDogru = 0;
+let cDeste = [], cIndex = 0, dizilen = [], cTurDogru = 0, cSavas = false;
 function cumleAc() {
   // Önce tanıştığın kelime ve phrasal verb'lerin cümleleri (kutusu düşük olan öne: tekrar gibi çalışır),
   // yetmezse seçili seviyenin genel cümleleri.
@@ -3542,6 +3608,7 @@ document.getElementById("kontrol").onclick = () => {
 document.getElementById("gb-devam").onclick = () => {
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
+  if (cIndex >= cDeste.length && cSavas) { cSavas = false; savasSonuc("cumle", cTurDogru * 30); return; }
   if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else cumleGoster();
 };
 
@@ -3589,8 +3656,10 @@ const ROZETLER = [
   ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 10],
   ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 2],
   ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren", () => KELIMELER.some(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 4), 3],
-  ["sosyal", "💌", "Neşe kaynağı", "Çete üyesine tepki gönder", () => d.tepki >= 1, 1],
+  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 1],
   ["cete", "🐾", "Çete ruhu", "Bir haftanın tüm ortak görevlerini bitir", () => ceteHaftaTamam(), 5],
+  ["ikili", "🤝", "Takım oyuncusu", "Bir arkadaşınla birlikte görev bitir", () => (d.ikiliBiten || 0) >= 1, 2],
+  ["savas", "⚔️", "Çete savaşçısı", "Bir haftada savaşın 4 modunu da oyna", () => d.savas && Object.keys(d.savas.en).length >= 4, 3],
   ["tema", "🎨", "Dekoratör", "Kedine bir eşya al", () => d.esyalar.length > 0, 1],
 ];
 function rozetKontrol() {
@@ -3686,11 +3755,11 @@ const haftaBasi = () => { const b = bugunNo(); return b - ((new Date().getDay() 
 const haftaSay = obj => Object.keys(obj || {}).filter(g => +g >= haftaBasi() && +g <= bugunNo()).length;
 const CETE_GOREVLER = [
   { id: "tanis", ikon: "🃏", ad: "Çetece 60 yeni kelimeyle tanışın", hedef: 60, odul: 2,
-    uyeler: [["Ahmet", 18], ["Elif", 19], ["Mert", 4]], sen: () => Object.keys(d.kartlar).length },
+    uyeler: [["Ahmet", 18], ["Elif", 19], ["Mert", 4], ["Zeynep", 11]], sen: () => Object.keys(d.kartlar).length },
   { id: "gun", ikon: "📅", ad: "Herkes bu hafta en az 3 gün çalışsın", hedef: 3, herkes: true, odul: 3,
-    uyeler: [["Ahmet", 4], ["Elif", 3], ["Mert", 2]], sen: () => haftaSay(d.gunler) },
+    uyeler: [["Ahmet", 4], ["Elif", 3], ["Mert", 2], ["Zeynep", 3]], sen: () => haftaSay(d.gunler) },
   { id: "av", ikon: "🎣", ad: "Çetece 6 balık avına çıkın", hedef: 6, odul: 2,
-    uyeler: [["Ahmet", 2], ["Elif", 2], ["Mert", 0]], sen: () => haftaSay(d.avlar) },
+    uyeler: [["Ahmet", 2], ["Elif", 2], ["Mert", 0], ["Zeynep", 1]], sen: () => haftaSay(d.avlar) },
 ];
 function ceteDurum(g) {
   const sen = g.sen(), hepsi = g.uyeler.concat([["Sen", sen]]);
@@ -3715,7 +3784,12 @@ function ceteCiz() {
   });
 }
 function arkadasCiz() {
-  ceteCiz();
+  document.querySelectorAll("[data-sosyal]").forEach(b => b.classList.toggle("aktif", b.dataset.sosyal === sosyalBolum));
+  document.getElementById("sosyal-arkadas").style.display = sosyalBolum === "arkadas" ? "" : "none";
+  document.getElementById("sosyal-cete").style.display = sosyalBolum === "cete" ? "" : "none";
+  ceteCiz(); ikiliCiz(); savasCiz();
+  const sonMesaj = (d.sohbet && d.sohbet.length) ? d.sohbet[d.sohbet.length - 1] : { kim: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][0], metin: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][1] };
+  document.getElementById("sohbet-son").textContent = `${sonMesaj.kim}: ${sonMesaj.metin}`;
   const sen = ["Sen", "#9F8BEA", seri(), d.bugun.sayi * 10 + d.cumleDogru * 15 + 80];
   const lig = ARKADASLAR.map(a => a.slice(0, 4)).concat([sen]).sort((a, b) => b[3] - a[3]);
   document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${["🥇","🥈","🥉"][i] || i + 1}</span><div class="avatar" style="background:${a[1]};width:40px;height:40px;font-size:16px;">${a[0][0]}</div><div><b>${a[0]}</b><small>🔥 ${a[2]} gün</small></div><b>${a[3]} XP</b></div>`).join("");
@@ -3723,7 +3797,9 @@ function arkadasCiz() {
   document.getElementById("arkadas-listesi").innerHTML = ARKADASLAR.map((a, i) => `<div class="kart arkadas-kart">
     <div class="arkadas"><div class="avatar" style="background:${a[1]}">${a[0][0]}</div><div><b>${a[0]}</b><small>${a[4]}</small></div></div>
     <div class="alt-satir">${["👏","🔥","💜"].map(t => `<button class="tepki ${tepkiler[i + t] ? "gonderildi" : ""}" data-t="${i}|${t}">${t}</button>`).join("")}
-      <button class="miyav-dugme ${d.miyav[a[0]] === bugun ? "gonderildi" : ""}" data-miyav="${i}">${d.miyav[a[0]] === bugun ? "😺 Miyavlandı" : "🐱 Miyavla"}</button></div></div>`).join("");
+      <button class="miyav-dugme ${d.miyav[a[0]] === bugun ? "gonderildi" : ""}" data-miyav="${i}">${d.miyav[a[0]] === bugun ? "😺 Miyavlandı" : "🐱 Miyavla"}</button></div>
+    ${(d.ikili || []).some(g => g.arkadas === a[0]) ? "" : `<button class="ikili-dugme" data-ikili="${i}">🤝 Birlikte görev</button>`}</div>`).join("");
+  document.querySelectorAll("[data-ikili]").forEach(b => b.onclick = () => ikiliBaslat(+b.dataset.ikili));
   // Prototip: Elif sana miyavlamış gibi gösterilir
   const elifeDondun = d.miyav["Elif"] === bugun;
   document.getElementById("gelen-miyav").innerHTML = `<div class="kart gelen-miyav"><span class="g-ikon">😺</span>
@@ -3748,7 +3824,219 @@ function miyavla(i, b) {
   tb.classList.add("acik"); clearTimeout(tbZaman); tbZaman = setTimeout(() => tb.classList.remove("acik"), 3200);
   arkadasCiz();
 }
-document.getElementById("ekle-dugme").onclick = () => pencere("🐾", "Çeteye kat", "Gerçek uygulamada burada arkadaşının kodu ya da kullanıcı adı yazılacak. Senin çete kodun: <b style='color:#6B55C9'>KUZU-4821</b>", "Tamam");
+document.getElementById("ekle-dugme").onclick = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : "Arkadaş ekle", sosyalBolum === "cete" ? "Gerçek uygulamada arkadaşın bu kodla çetene katılacak. Çete kodun: <b style='color:#6B55C9'>KUZU-4821</b>" : "Gerçek uygulamada arkadaşının kullanıcı adını ya da davet kodunu yazacaksın. Senin kodun: <b style='color:#6B55C9'>PATI-1907</b>", "Tamam");
+
+// ================= SOSYAL: bölümler =================
+let sosyalBolum = "arkadas";
+document.querySelectorAll("[data-sosyal]").forEach(b => b.onclick = () => { sosyalBolum = b.dataset.sosyal; Ses.pop(); arkadasCiz(); });
+
+// ================= BİRLİKTE GÖREVLER (arkadaşla ikili) =================
+// Seçilen arkadaşla ortak hedef. Senin ilerlemen gerçek, arkadaşınki örnek (gün geçtikçe ilerler).
+const IKILI_SABLON = [
+  { id: "gun3", ikon: "📅", ad: "3 gün boyunca ikiniz de çalışın", hedef: 3, odul: 3, birim: "gün",
+    sen: g => Object.keys(d.gunler).filter(x => +x >= g.bas).length },
+  { id: "kelime20", ikon: "🌱", ad: "20 yeni kelimeyle tanışın", hedef: 20, odul: 2, birim: "kelime",
+    sen: g => Math.max(0, Object.keys(d.kartlar).length - g.basKelime) },
+  { id: "cumle5", ikon: "🧩", ad: "5 cümleyi doğru kurun", hedef: 5, odul: 2, birim: "cümle",
+    sen: g => Math.max(0, d.cumleDogru - g.basCumle) },
+];
+function ikiliArkadasIlerleme(g, sablon) {
+  // Örnek veri: arkadaş her gün hedefin yaklaşık üçte birini yapar (Mert daha yavaş)
+  const gecen = bugunNo() - g.bas + 1, hiz = g.arkadas === "Mert" ? .25 : .4;
+  return Math.min(sablon.hedef, Math.floor(sablon.hedef * hiz * gecen));
+}
+function ikiliCiz() {
+  d.ikili = d.ikili || [];
+  const el = document.getElementById("ikili-gorevler");
+  if (!d.ikili.length) { el.innerHTML = `<div class="kart ikili-kart"><p class="soluk" style="font-size:14px;">Henüz birlikte görevin yok. Aşağıdan bir arkadaşının kartında "🤝 Birlikte görev"e dokun.</p></div>`; return; }
+  el.innerHTML = d.ikili.map((g, i) => {
+    const sb = IKILI_SABLON.find(x => x.id === g.sablon), sen = Math.min(sb.hedef, sb.sen(g)), o = ikiliArkadasIlerleme(g, sb);
+    const bitti = sen >= sb.hedef && o >= sb.hedef;
+    return `<div class="kart ikili-kart"><div class="g-ust"><span style="font-size:28px">${sb.ikon}</span><div><b>${g.arkadas} ile: ${sb.ad}</b><small>Ödül: ikinize de ${sb.odul} 🪙</small></div></div>
+      <div class="ikili-satir"><span>Sen</span><div class="cete-cubuk"><i style="width:${sen / sb.hedef * 100}%"></i></div>${sen}/${sb.hedef}</div>
+      <div class="ikili-satir"><span>${g.arkadas}</span><div class="cete-cubuk"><i style="width:${o / sb.hedef * 100}%"></i></div>${o}/${sb.hedef}</div>
+      ${bitti ? `<button class="ikili-dugme" data-ikili-al="${i}">🎉 Ödülü al (+${sb.odul} 🪙)</button>` : ""}</div>`;
+  }).join("");
+  document.querySelectorAll("[data-ikili-al]").forEach(b => b.onclick = () => {
+    const g = d.ikili[+b.dataset.ikiliAl], sb = IKILI_SABLON.find(x => x.id === g.sablon);
+    d.yildiz += sb.odul; d.ikiliBiten = (d.ikiliBiten || 0) + 1; d.ikili.splice(+b.dataset.ikiliAl, 1);
+    kaydet(); Ses.zafer(); konfeti(b, 12); bildir(`🤝 ${g.arkadas} ile görev bitti! +${sb.odul} 🪙`); rozetKontrol(); herSeyiCiz();
+  });
+}
+function ikiliBaslat(i) {
+  const a = ARKADASLAR[i];
+  if ((d.ikili || []).some(g => g.arkadas === a[0])) { bildir(`${a[0]} ile zaten bir görevin var`); return; }
+  const p = document.getElementById("pencere");
+  p.innerHTML = `<div class="p-ikon">🤝</div><h3>${a[0]} ile ne yapalım?</h3><p>Görevi seç, ${a[0]}'e davet gider.</p>
+    <div class="sablon-sec">${IKILI_SABLON.map(sb => `<button data-sablon="${sb.id}"><span style="font-size:24px">${sb.ikon}</span><span>${sb.ad}<br><small class="soluk">İkinize de ${sb.odul} 🪙</small></span></button>`).join("")}</div>
+    <button class="buyuk-dugme" id="p-dugme" style="margin-top:12px;background:var(--krem);color:var(--murekkep);box-shadow:none;">Vazgeç</button>`;
+  document.getElementById("perde").classList.add("aktif");
+  document.getElementById("p-dugme").onclick = () => document.getElementById("perde").classList.remove("aktif");
+  p.querySelectorAll("[data-sablon]").forEach(b => b.onclick = () => {
+    d.ikili = d.ikili || [];
+    d.ikili.push({ arkadas: a[0], sablon: b.dataset.sablon, bas: bugunNo(), basKelime: Object.keys(d.kartlar).length, basCumle: d.cumleDogru });
+    kaydet(); Ses.pop(); document.getElementById("perde").classList.remove("aktif");
+    bildir(`🤝 ${a[0]} daveti kabul etti!`); herSeyiCiz();
+  });
+}
+
+// ================= ÇETE SOHBETİ (örnek) =================
+// Amaç: gerçek insanlarla öğrendiğin dilde pratik. Prototipte mesajlar örnek, cevaplar hazır.
+// Gerçekte: sunucu, moderasyon, bildir/engelle, yaş kuralları gerekir (README).
+const CETE_UYELER = [["Ahmet", "#FF8A7A"], ["Elif", "#5CC9A7"], ["Mert", "#6DB8EE"], ["Zeynep", "#F5A3C7"]];
+const SOHBET_ORNEK = [
+  ["Elif", "Good morning team! I learned the word \"journey\" today 🧳"],
+  ["Ahmet", "Nice! Can you make a sentence with it?"],
+  ["Elif", "My journey to school takes twenty minutes."],
+  ["Mert", "I am tired but I will study ten cards tonight 💪"],
+  ["Zeynep", "Who wants to practice phrasal verbs? I can't figure out \"put up with\" 😅"],
+];
+const SOHBET_CEVAP = ["Great sentence! 👏", "Nice! I didn't know that word.", "Good job! Keep going 💪", "Haha, me too 😄", "Can you use it in another sentence?", "Wow, your English is getting better!"];
+const YASAKLI = ["stupid", "idiot", "shut up", "hate you", "dumb", "aptal", "salak", "gerizekal", "mal "];
+const bildirilen = new Set();
+function sohbetMesajHTML(kim, metin, ben, n) {
+  const renk = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
+  return `<div class="mesaj ${ben ? "ben" : ""}">${ben ? "" : `<span class="kim" style="color:${renk}">${kim}</span><button class="bildir" data-bildir="${n}" aria-label="Bildir">🚩</button>`}${metin}</div>`;
+}
+function ogrenilenleriIsaretle(metin) {
+  const kullanilan = [];
+  const html = metin.replace(/[A-Za-z']+/g, w => {
+    const k = KELIMELER.find(x => x[0] === w.toLowerCase());
+    if (k && d.kartlar[k[0]] && !kullanilan.includes(k[0])) { kullanilan.push(k[0]); return `<mark>${w}</mark>`; }
+    return w;
+  });
+  return { html, kullanilan };
+}
+function sohbetCiz() {
+  d.sohbet = d.sohbet || [];
+  const liste = document.getElementById("sohbet-liste");
+  let h = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? "" : sohbetMesajHTML(kim, m, false, "o" + n)).join("");
+  const bas = Math.max(0, d.sohbet.length - 30);
+  h += d.sohbet.slice(bas).map((m, n) => bildirilen.has("s" + (bas + n)) ? "" : m.kim === "Sen"
+    ? (() => { const o = ogrenilenleriIsaretle(m.metin); return sohbetMesajHTML("Sen", o.html + (o.kullanilan.length ? `<span class="ogrendi">✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın</span>` : ""), true); })()
+    : sohbetMesajHTML(m.kim, m.metin, false, "s" + (bas + n))).join("");
+  liste.innerHTML = h; liste.scrollTop = liste.scrollHeight;
+  liste.querySelectorAll("[data-bildir]").forEach(b => b.onclick = () => {
+    bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Bildirildi. Moderatör inceleyecek, mesaj senden gizlendi."); sohbetCiz();
+  });
+  // Öneri çipleri: son öğrendiğin kelimelerden
+  const son = KELIMELER.filter(k => d.kartlar[k[0]]).slice(-6).map(k => k[0]);
+  document.getElementById("sohbet-oneri").innerHTML = (son.length ? son : ["hello", "today", "study"]).map(w => `<button data-oner="${w}">${w}</button>`).join("");
+  document.querySelectorAll("[data-oner]").forEach(b => b.onclick = () => { const g = document.getElementById("sohbet-girdi"); g.value = (g.value + " " + b.dataset.oner).trim() + " "; g.focus(); });
+}
+function sohbetGonder() {
+  const g = document.getElementById("sohbet-girdi"), metin = g.value.trim();
+  if (!metin) return;
+  const kucuk = metin.toLocaleLowerCase("tr");
+  if (YASAKLI.some(y => kucuk.includes(y))) { Ses.yanlis(); pencere("🙀", "Bu mesaj gönderilemedi", "Çete'de nazik dil kuralı var. Başka türlü söylemeyi dene.", "Tamam"); return; }
+  if (/[çğıöşüÇĞİÖŞÜ]/.test(metin)) { Ses.yanlis(); bildir("🇬🇧 Çete sohbeti İngilizce. Öneri çiplerindeki kelimelerle dene!"); return; }
+  const o = ogrenilenleriIsaretle(metin);
+  d.sohbet = d.sohbet || []; d.sohbet.push({ kim: "Sen", metin: metin.replace(/[<>]/g, "") });
+  let odul = 0;
+  if (o.kullanilan.length && d.sohbetOdulGunu !== bugunNo()) { odul = 1; d.yildiz += 1; d.sohbetOdulGunu = bugunNo(); }
+  d.gunler[bugunNo()] = 1; kaydet(); Ses.pop(); g.value = ""; sohbetCiz();
+  if (odul) { Ses.altin(); bildir(`✨ Öğrendiğin kelimeyi gerçek sohbette kullandın! +1 🪙 (günde bir kez)`); }
+  // Örnek cevap: bir çete üyesi yazar
+  setTimeout(() => {
+    if (!document.getElementById("tam-sohbet").classList.contains("aktif")) return;
+    const uye = CETE_UYELER[Math.floor(Math.random() * CETE_UYELER.length)][0];
+    const cevap = o.kullanilan.length && Math.random() < .6 ? `Nice use of "${o.kullanilan[0]}"! 👏` : SOHBET_CEVAP[Math.floor(Math.random() * SOHBET_CEVAP.length)];
+    d.sohbet.push({ kim: uye, metin: cevap }); kaydet(); Ses.pop(); sohbetCiz();
+  }, 1400);
+}
+document.getElementById("sohbet-gonder").onclick = sohbetGonder;
+document.getElementById("sohbet-girdi").onkeydown = e => { if (e.key === "Enter") sohbetGonder(); };
+document.getElementById("sohbet-ac").onclick = () => { sohbetCiz(); tamAc("sohbet"); };
+
+// ================= ÇETE SAVAŞI =================
+// Haftalık, eş zamansız: her üye 4 moddan puan toplar; modda en iyi puanın çeteye yazılır.
+// Rakip ve üyelerin puanı örnek veri. "Savaş" bir oyun modu adı: hepsi dil pratiği.
+const SAVAS_MODLAR = [
+  { id: "hiz", ikon: "⚡", ad: "Kelime Yarışı", acik: "45 sn, en çok doğru", ac: () => savasHizliAc("hiz") },
+  { id: "dinle", ikon: "🎧", ad: "Kulak Kabart", acik: "Duy, doğru yazılışı seç", ac: () => savasHizliAc("dinle") },
+  { id: "cumle", ikon: "🧩", ad: "Cümle Düellosu", acik: "5 cümle, her doğru 30", ac: () => { cSavas = true; cumleAc(); } },
+  { id: "esles", ikon: "🐾", ad: "Pati Çabukluğu", acik: "Ne kadar hızlı, o kadar puan", ac: () => eslesAc(true) },
+];
+const SAVAS_UYE_PUAN = [["Ahmet", 420], ["Elif", 510], ["Mert", 180], ["Zeynep", 350]];
+function savasDurum() {
+  if (!d.savas || d.savas.hafta !== haftaBasi()) d.savas = { hafta: haftaBasi(), en: {} };
+  const gun = bugunNo() - haftaBasi(); // 0 = pazartesi
+  const benim = Object.values(d.savas.en).reduce((a, b) => a + b, 0);
+  const biz = SAVAS_UYE_PUAN.reduce((a, u) => a + Math.round(u[1] * (0.4 + gun * 0.1)), 0) + benim;
+  const rakip = 1200 + gun * 130;
+  return { gun, benim, biz, rakip, kalan: 6 - gun };
+}
+function savasCiz() {
+  const s = savasDurum(), oran = s.biz / (s.biz + s.rakip) * 100;
+  document.getElementById("savas-kart").innerHTML = `<div class="kart">
+    <div class="savas-skor"><div class="taraf">🐾 Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">🦊 Tilkiler<b>${s.rakip}</b></div></div>
+    <div class="savas-cubuk"><i style="width:${oran}%"></i></div>
+    <p class="soluk" style="font-size:13px;text-align:center;">${s.biz >= s.rakip ? "Öndeyiz! 🎉" : `${s.rakip - s.biz} puan gerideyiz`} · ${s.kalan > 0 ? `${s.kalan} gün kaldı` : "son gün!"} · Senin katkın: ${s.benim}</p>
+    <div class="savas-modlar">${SAVAS_MODLAR.map((m, i) => `<button data-mod="${i}"><span class="m-ikon">${m.ikon}</span><b>${m.ad}</b><small>${d.savas.en[m.id] ? "En iyin: " + d.savas.en[m.id] : m.acik}</small></button>`).join("")}</div>
+    <p class="soluk" style="font-size:12px;margin-top:8px;">Her modda en iyi puanın çetene yazılır. Hafta sonunda kazanan çeteye ödül.</p></div>`;
+  document.querySelectorAll("[data-mod]").forEach(b => b.onclick = () => SAVAS_MODLAR[+b.dataset.mod].ac());
+}
+function savasSonuc(mod, puan) {
+  savasDurum();
+  const m = SAVAS_MODLAR.find(x => x.id === mod), eski = d.savas.en[mod] || 0, rekor = puan > eski;
+  if (rekor) d.savas.en[mod] = puan;
+  d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
+  rekor ? Ses.zafer() : Ses.dogru();
+  tamKapat();
+  pencere(m.ikon, rekor ? "Yeni en iyi puan!" : `${m.ad} bitti`, `${puan} puan. ${rekor ? `Çetene ${puan - eski} puan eklendi ⚔️` : `En iyin ${eski}; çeteye en iyi puanın sayılır.`}`, "Tamam");
+}
+// Hızlı modlar: Kelime Yarışı (İngilizce → Türkçe) ve Kulak Kabart (duy → doğru yazılış)
+let sv = null;
+function savasKelimeleri() {
+  const tanis = karistir(KELIMELER.filter(k => d.kartlar[k[0]]));
+  return tanis.concat(karistir(KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye))).slice(0, 30);
+}
+function savasHizliAc(mod) {
+  sv = { mod, kelimeler: savasKelimeleri(), i: 0, puan: 0, dogru: 0, sure: mod === "hiz" ? 45 : 60, bas: performance.now(), kilit: false, bitti: false };
+  if (mod === "dinle") sv.kelimeler = sv.kelimeler.slice(0, 8);
+  document.getElementById("sv-yon").textContent = mod === "hiz" ? "Türkçesi ne? (her doğru 10)" : "Dinle, doğru yazılışı seç (her doğru 15)";
+  tamAc("savas"); savasSoru();
+  const oyun = sv;
+  const t = setInterval(() => {
+    if (sv !== oyun || sv.bitti) return clearInterval(t);
+    const kalan = Math.max(0, sv.sure - (performance.now() - sv.bas) / 1000);
+    document.getElementById("sv-sure").textContent = Math.ceil(kalan);
+    document.getElementById("sv-cubuk").style.width = (kalan / sv.sure * 100) + "%";
+    if (kalan <= 0) savasHizliBitir();
+  }, 100);
+}
+function savasSoru() {
+  if (sv.i >= sv.kelimeler.length) return savasHizliBitir();
+  const k = sv.kelimeler[sv.i];
+  let siklar, dogru;
+  if (sv.mod === "hiz") {
+    document.getElementById("sv-soru").textContent = k[0];
+    dogru = k[1]; siklar = [k[1], ...karistir(KELIMELER.filter(x => x[1] !== k[1])).slice(0, 3).map(x => x[1])];
+  } else {
+    document.getElementById("sv-soru").innerHTML = `<button class="dinle-dugme" id="sv-ses" style="margin:4px auto 0;">🔊</button>`;
+    document.getElementById("sv-ses").onclick = () => seslendir(k[0]);
+    setTimeout(() => seslendir(k[0]), 200);
+    // Çeldiriciler: benzer uzunlukta, aynı harfle başlayan kelimeler (duyulana benzesin)
+    const benzer = KELIMELER.filter(x => x[0] !== k[0] && !x[0].includes(" ") && (x[0][0] === k[0][0] || Math.abs(x[0].length - k[0].length) <= 1));
+    dogru = k[0]; siklar = [k[0], ...karistir(benzer).slice(0, 3).map(x => x[0])];
+  }
+  document.getElementById("sv-siklar").innerHTML = karistir(siklar).map(x => `<button class="av-sik">${x}</button>`).join("");
+  sv.kilit = false;
+  document.querySelectorAll("#sv-siklar .av-sik").forEach(b => b.onclick = () => {
+    if (sv.kilit || sv.bitti) return; sv.kilit = true;
+    const ok = b.textContent === dogru;
+    b.classList.add(ok ? "dogru" : "yanlis");
+    if (!ok) document.querySelectorAll("#sv-siklar .av-sik").forEach(x => { if (x.textContent === dogru) x.classList.add("dogru"); });
+    if (ok) { sv.dogru++; sv.puan += sv.mod === "hiz" ? 10 : 15; Ses.dogru(); } else Ses.yanlis();
+    document.getElementById("sv-puan").textContent = `⚔️ ${sv.puan} puan`;
+    setTimeout(() => { if (!sv || sv.bitti) return; sv.i++; savasSoru(); }, ok ? 250 : 700);
+  });
+}
+function savasHizliBitir() {
+  if (!sv || sv.bitti) return; sv.bitti = true;
+  const mod = sv.mod, puan = sv.puan; sv = null;
+  savasSonuc(mod, puan);
+}
 
 // ================= GEZİNME =================
 function sekme(ad) {
@@ -3757,7 +4045,7 @@ function sekme(ad) {
   herSeyiCiz();
 }
 function tamAc(ad) { document.getElementById("tam-" + ad).classList.add("aktif"); }
-function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } herSeyiCiz(); }
+function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; herSeyiCiz(); }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
 document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
 const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc() };

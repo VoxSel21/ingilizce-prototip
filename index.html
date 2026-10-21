@@ -194,6 +194,8 @@
   .blok.bos { visibility: hidden; }
   .geri-bildirim { position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 18px 24px; border-radius: 28px 28px 0 0; transform: translateY(110%); transition: transform .3s; z-index: 3; }
   .geri-bildirim.acik { transform: none; }
+  /* Kapalı panel yalnız ekran dışına kaymasın, gerçekten gizlensin: içindeki Devam odak alamaz, Enter'la çalışmaz. */
+  .geri-bildirim:not(.acik) { visibility: hidden; transition: transform .3s, visibility 0s .3s; }
   .geri-bildirim.dogru { background: var(--nane-a); }
   .geri-bildirim.yanlis { background: var(--mercan-a); }
   .geri-bildirim h3 { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
@@ -3595,11 +3597,11 @@ function cevapla(a, dogru, el) {
   kaydet(); rozetKontrol();
   sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
   const gb = document.getElementById("k-gb");
-  gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
+  gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("k-gb-devam");
   document.getElementById("k-gb-baslik").textContent = dogru ? ["Harika! 🎉", "Süpersin! ✨", "Aynen öyle! 😸"][Math.floor(Math.random() * 3)] : "Bir dahakine! 💪";
   document.getElementById("k-gb-yazi").textContent = `${k[2]} ${k[0]} = ${k[1]}${dogru ? "" : " · Turun sonunda bir daha soracağım."}`;
 }
-document.getElementById("k-gb-devam").onclick = () => { document.getElementById("k-gb").className = "geri-bildirim"; ilerle(); };
+document.getElementById("k-gb-devam").onclick = () => { if (!panelAcik("k-gb")) return; document.getElementById("k-gb").className = "geri-bildirim"; ilerle(); alistirmaOdak(); };
 function ilerle() {
   kO.i++;
   if (kO.i >= kO.sira.length) {
@@ -3786,15 +3788,16 @@ function kurAdim() {
     gunuYenile(); d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
     sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
     const gb = document.getElementById("kur-gb");
-    gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
+    gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("kur-gb-devam");
     document.getElementById("kur-gb-baslik").textContent = dogru ? ["Harika! 🎉", "Aynen öyle! 😸", "Süpersin! ✨"][Math.floor(Math.random() * 3)] : "Neredeyse! 💪";
     document.getElementById("kur-gb-yazi").textContent = `${k[2]} ${k[0]} = ${k[1]}${dogru ? "" : " · Doğrusu: " + k[0]}`;
   });
 }
 document.getElementById("kur-gb-devam").onclick = () => {
+  if (!panelAcik("kur-gb")) return;
   document.getElementById("kur-gb").className = "geri-bildirim";
   kur.i++;
-  if (kur.i < kur.liste.length) return kurAdim();
+  if (kur.i < kur.liste.length) { kurAdim(); return alistirmaOdak(); }
   const sonuc = kur; kur = null; tamKapat();
   if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi();
   pencere("🔤", "Kelime Kur bitti!", `${sonuc.dogru}/${sonuc.liste.length} kelimeyi doğru kurdun. Bir sonraki turda kaldığın yerden devam edersin.`, "Tamam");
@@ -3871,7 +3874,7 @@ document.getElementById("kontrol").onclick = () => {
   const cevap = [...document.querySelectorAll("#dizi .blok")].map(b => b.textContent).join(" ");
   const dogru = cevap.toLowerCase() === c[1].toLowerCase();
   const gb = document.getElementById("geri-bildirim");
-  gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
+  gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("gb-devam");
   document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
   document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
   if (dogru) { d.cumleDogru++; cTurDogru++; konfeti(document.getElementById("kontrol"), 10); }
@@ -3879,10 +3882,11 @@ document.getElementById("kontrol").onclick = () => {
   d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
 };
 document.getElementById("gb-devam").onclick = () => {
+  if (!panelAcik("geri-bildirim") || !cDegerlendi) return; // cevaplanmamış soru Devam'la atlanamaz
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
   if (cIndex >= cDeste.length && cSavas) { cSavas = false; savasSonuc("cumle", cTurDogru * 30); return; }
-  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else cumleGoster();
+  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
 };
 
 // ================= PENCERELER / ÖDÜL =================
@@ -4327,6 +4331,17 @@ function sekme(ad) {
 }
 // Tam ekran alıştırma açılınca klavye odağı ona geçer, arkadaki ekranlar "inert" olur (Tab'la ulaşılmaz);
 // kapanınca odak açan düğmeye döner.
+// Cevap paneli: Devam yalnız panel açıkken çalışır; panel açılınca odak Devam'a, yeni soru gelince sorunun ilk düğmesine geçer.
+const panelAcik = id => document.getElementById(id).classList.contains("acik");
+const devamaOdak = id => setTimeout(() => document.getElementById(id).focus(), 60);
+function alistirmaOdak() {
+  setTimeout(() => {
+    // Odak yeni sorunun alanına gider (bir şıkka değil): Enter yanlışlıkla cevap vermez, Tab ilk seçeneğe geçer.
+    const t = document.querySelector(".tam.aktif"); if (!t) return;
+    const alan = t.querySelector(".k-alan, .tr-cumle"); if (!alan) return;
+    alan.tabIndex = -1; alan.focus({ preventScroll: true });
+  }, 80);
+}
 let tamAcan = null;
 const arkaPlan = () => document.querySelectorAll("#uygulama > .sahne, #uygulama > .ekran, #uygulama > nav");
 function tamAc(ad) {

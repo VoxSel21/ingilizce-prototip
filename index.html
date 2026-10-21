@@ -388,6 +388,23 @@
   .seviye-sec button small { display: block; font-size: 10.5px; color: var(--soluk); font-weight: 800; margin-top: 2px; }
   .seviye-sec button.aktif { background: var(--lavanta); color: #fff; }
   .seviye-sec button.aktif small { color: #fff; opacity: .9; }
+  .konu-sec { display: flex; gap: 6px; overflow-x: auto; padding: 10px 2px 2px; scrollbar-width: none; }
+  .konu-sec::-webkit-scrollbar { display: none; }
+  .konu-sec button { flex: none; border-radius: 999px; background: #fff; box-shadow: var(--golge); padding: 7px 12px; font-weight: 800; font-size: 13px; white-space: nowrap; }
+  .konu-sec button small { color: var(--soluk); font-weight: 800; margin-left: 4px; }
+  .konu-sec button.aktif { background: var(--nane); color: #fff; } .konu-sec button.aktif small { color: #fff; }
+  .harf-yuva span.dolu { cursor: pointer; color: #6B55C9; }
+  .harf-yuva.dogru span { border-color: var(--nane); color: #2E8C6E; } .harf-yuva.yanlis span { border-color: var(--mercan); color: #C9503E; }
+  .harf-eylem { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .harf-eylem button { border-radius: 999px; padding: 10px 18px; font-weight: 900; background: var(--krem); }
+  .harf-eylem .onayla { background: var(--lavanta); color: #fff; padding: 10px 26px; }
+  .harf-eylem .onayla:disabled { opacity: .4; }
+  .mikrofon { width: 92px; height: 92px; border-radius: 50%; background: var(--mercan); color: #fff; font-size: 40px; display: grid; place-items: center; margin: 14px auto 6px; box-shadow: 0 6px 0 #D96A5A; }
+  .mikrofon.dinliyor { animation: nabiz 1s infinite; background: #E2574C; }
+  .konus-durum { text-align: center; font-weight: 800; color: var(--soluk); min-height: 22px; font-size: 14px; }
+  .konus-gec { display: block; margin: 12px auto 0; font-weight: 800; color: var(--soluk); text-decoration: underline; font-size: 13px; }
+  .tanis .soyle-dugme { margin-top: 10px; border-radius: 999px; padding: 7px 14px; background: var(--mercan-a); font-weight: 900; font-size: 14px; }
+  .tanis .soyle-sonuc { font-size: 13px; font-weight: 800; margin-top: 4px; min-height: 18px; }
 
   /* ---------- Kedinin kilosu ---------- */
   .kilo-kutu { width: 100%; margin-top: 10px; background: rgba(255,255,255,.88); border-radius: 18px; padding: 10px 14px 8px; }
@@ -455,13 +472,15 @@
     </div>
 
     <div class="seviye-sec" id="seviye-sec"></div>
+    <div class="konu-sec" id="konu-sec"></div>
     <div style="margin-top:14px;"><button class="buyuk-dugme" id="basla-dugme">Kartlara başla</button></div>
 
     <h2>Alıştırmalar</h2>
     <div class="gorevler">
       <button class="gorev" style="background:var(--gunes-a)" data-ac="pv"><span class="ikon">🔗</span><b>Phrasal verbs</b><small id="pv-yazi">get up, give up...</small></button>
       <button class="gorev" style="background:var(--lavanta-a)" data-ac="cumle"><span class="ikon">🧩</span><b>Cümle kur</b><small>Blokları sıraya diz</small></button>
-      <button class="gorev genis" style="background:var(--nane-a)" data-ac="esles"><span class="ikon">🐾</span><div><b>Pati Çabukluğu</b><small id="esles-yazi">Kelimeyle anlamını eşleştir, süreye karşı</small></div></button>
+      <button class="gorev" style="background:var(--mercan-a)" data-ac="kur"><span class="ikon">🔤</span><b>Kelime Kur</b><small id="kur-yazi">Harfleri dizip kelimeyi yaz</small></button>
+      <button class="gorev" style="background:var(--nane-a)" data-ac="esles"><span class="ikon">🐾</span><b>Pati Çabukluğu</b><small id="esles-yazi">Eşleştir, süreye karşı</small></button>
     </div>
 
     <h2>Kelime kutuların</h2>
@@ -637,6 +656,13 @@
     <div class="kart av-soru"><div class="soluk" style="font-size:14px;" id="sv-yon"></div><div class="s-kelime" id="sv-soru"></div></div>
     <div class="av-siklar" id="sv-siklar"></div>
     <p class="soluk" id="sv-puan" style="text-align:center;font-weight:900;font-size:18px;margin-top:auto;padding-top:10px;">⚔️ 0 puan</p>
+  </section>
+
+  <!-- ========== KELİME KUR: öğrenilen kelimeleri harflerden kurma (arkadaşın önerisi, 2026-10-21) ========== -->
+  <section class="tam" id="tam-kur">
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="kur-cubuk" style="background:var(--mercan)"></i></div><b id="kur-sayac">0/8</b></div>
+    <div class="k-alan" id="kur-alan"></div>
+    <div class="geri-bildirim" id="kur-gb"><h3 id="kur-gb-baslik"></h3><p id="kur-gb-yazi"></p><button class="buyuk-dugme" id="kur-gb-devam">Devam</button></div>
   </section>
 
   <!-- ========== CÜMLE (tam ekran) ========== -->
@@ -3207,7 +3233,7 @@ const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {
   const b = bugunNo();
   const eski = deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b);
-  let yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye);
+  let yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye && (deste !== KELIMELER || !d.konu || konuOf(k[0]) === d.konu));
   // Phrasal verb'ler az: seçili seviyede yeni kalmadıysa diğer seviyelerden gelsin
   if (deste === PHRASAL && !yeni.length) yeni = deste.filter(k => !d.kartlar[k[0]]);
   const tur = deste === PHRASAL ? 6 : 10;
@@ -3232,12 +3258,102 @@ function sahneCiz() {
 
 // ================= ANA SAYFA =================
 const SEVIYELER = [["A1", "Başlangıç"], ["A2", "Temel"], ["B1", "Orta"], ["B2", "İleri-orta"]];
+// Konular (arkadaşın önerisi, 2026-10-21): seviyenin içinde istediğin konudan öğren.
+// CEFR-J'de konu bilgisi yok; ayırma Violet'in (veri/konular.txt). Listede olmayan kelime "Temel kelimeler".
+const KONULAR = [
+  ["yemek", "🍎 Mutfak ve Yemek", ["apple", "bread", "cake", "coffee", "egg", "juice", "milk", "tea", "eat", "cook", "hungry", "kitchen", "dinner", "food", "lunch", "breakfast", "meat", "cup", "restaurant", "cooking", "bake", "fresh", "salt", "oil", "pour", "thirsty", "taste", "pie", "vegetarian", "chop", "peel", "nut", "cherry", "chew", "salty", "stew", "wheat", "peach", "recipe", "starve", "melt"]],
+  ["ev", "🏠 Ev ve Eşyalar", ["bed", "chair", "door", "house", "key", "room", "table", "window", "clean", "dirty", "home", "wash", "box", "wall", "desk", "seat", "empty", "tidy", "apartment", "upstairs", "roof", "blanket", "mirror", "fence", "garage", "wood", "carpet", "curtain", "switch", "ceiling", "laundry", "lid", "backyard", "porch", "cabinet", "sweep", "mess", "neat"]],
+  ["giyim", "👕 Giysiler", ["hat", "shoe", "umbrella", "wear", "clothes", "coat", "shirt", "sweater", "sock", "glove", "fashion", "pocket", "purse", "costume", "pajamas", "outfit", "clothing", "mask", "zip", "dye", "wallet"]],
+  ["insan", "👨‍👩‍👧 Aile ve İnsanlar", ["brother", "child", "family", "father", "friend", "girl", "mother", "sister", "neighbor", "guest", "boy", "person", "kid", "son", "wife", "parent", "woman", "baby", "daughter", "married", "couple", "stranger", "member", "crowd", "friendship", "relative", "twin", "marriage", "relationship", "engaged", "roommate", "colleague", "adopted", "engagement", "community", "young", "old"]],
+  ["beden", "🩺 Vücut ve Sağlık", ["eye", "healthy", "medicine", "tired", "hand", "hair", "face", "head", "heart", "health", "leg", "arm", "sick", "hurt", "dentist", "sleepy", "asleep", "weight", "injury", "pain", "breath", "blind", "skin", "illness", "surgery", "allergic", "cough", "disease", "shave", "finger", "beard", "tongue", "height", "nap", "ambulance", "medication", "throat", "scar", "massage", "bruise", "vitamin", "therapist", "unconscious", "snore", "yawn", "blink", "wink", "rub", "mustache", "sleep", "tall"]],
+  ["duygu", "😊 Duygular ve Kişilik", ["happy", "angry", "lonely", "shy", "lucky", "afraid", "glad", "sorry", "sad", "excited", "funny", "interested", "worry", "hope", "love", "smile", "laugh", "cry", "brave", "confident", "disappointed", "nervous", "polite", "silly", "anxious", "worried", "surprised", "upset", "crazy", "bored", "unhappy", "fear", "happiness", "curious", "generous", "honest", "jealous", "proud", "ambitious", "cautious", "eager", "embarrassed", "frustrated", "stubborn", "temper", "calm", "concerned", "guilty", "satisfied", "ashamed", "shocked", "patience", "anger", "confidence", "scary", "annoyed", "selfish", "miserable", "careless", "unlucky", "fortunate", "courage", "desire", "cruel", "humor", "arrogant", "mature", "modest", "reluctant", "adore", "bossy", "charming", "clumsy", "decent", "determined", "devoted", "gloomy", "humble", "impulsive", "moody", "naughty", "obedient", "impressed", "willing", "friendly", "suspicious", "optimistic", "coward", "sensitive", "relieved", "motivated", "puzzled", "irritated", "pessimistic", "sincere", "astonished", "creepy", "picky", "nerves", "thrilled", "passionate", "conscience", "irresponsible", "doubtful", "attentive", "childish", "unsure", "truthful", "unwilling", "furious", "fierce", "hilarious", "lazy", "rich", "poor", "strange", "kind", "lonely"]],
+  ["okul", "🎓 Okul ve Öğrenme", ["book", "school", "library", "dream", "teacher", "student", "learn", "word", "study", "homework", "class", "language", "test", "question", "answer", "letter", "exam", "university", "novel", "explain", "knowledge", "wisdom", "meaning", "translate", "examination", "theory", "mathematics", "professor", "experiment", "puzzle", "register", "document", "translation", "genius", "interpreter", "translator", "educated", "astronomy", "data", "remember", "forget", "idea"]],
+  ["is", "💼 İş ve Para", ["money", "sell", "buy", "job", "pay", "work", "business", "price", "dollar", "bank", "office", "card", "company", "boss", "manager", "customer", "cash", "earn", "expert", "professional", "retired", "cost", "rent", "career", "afford", "deliver", "hire", "owe", "debt", "tax", "service", "insurance", "economy", "amount", "contract", "salary", "employee", "loan", "stock", "profit", "purchase", "client", "millionaire", "savings", "wage", "retirement", "overtime", "programmer", "investment", "payment", "resign", "employ", "candidate", "conference", "project", "meeting", "expensive", "cheap", "borrow"]],
+  ["yol", "✈️ Seyahat ve Ulaşım", ["bicycle", "bus", "car", "airport", "map", "travel", "trip", "ticket", "train", "station", "drive", "driver", "hotel", "journey", "suitcase", "abroad", "flight", "gate", "traffic", "road", "cross", "passport", "motorcycle", "engine", "parking", "reservation", "distance", "mile", "helicopter", "sail", "crew", "trunk", "evacuate", "arrive", "leave"]],
+  ["doga", "🌳 Doğa ve Hayvanlar", ["bird", "cat", "dog", "fish", "flower", "horse", "moon", "rain", "river", "sea", "snow", "sun", "tree", "weather", "cloud", "mountain", "island", "garden", "forest", "storm", "earth", "lake", "plant", "land", "space", "natural", "ocean", "spider", "season", "cave", "deer", "fox", "goat", "wolf", "barn", "dawn", "blossom", "solar", "tail", "environment", "animal", "star", "cold", "hot", "warm", "fire", "light", "dark", "heat", "wet", "bark"]],
+  ["sehir", "🏙️ Şehir ve Yerler", ["city", "park", "town", "street", "hospital", "castle", "village", "museum", "market", "neighborhood", "department", "lobby", "gym", "world", "country", "place"]],
+  ["zaman", "⏰ Zaman", ["morning", "night", "day", "tomorrow", "week", "year", "hour", "minute", "monday", "early", "late", "soon", "yesterday", "tonight", "later", "afternoon", "evening", "month", "weekend", "sunday", "summer", "future", "moment", "age", "noon", "midnight", "forever", "finally", "schedule", "appointment", "beginning", "lately", "whenever", "timing", "always", "often", "usually", "once", "sometimes", "rarely", "seldom"]],
+  ["eglence", "🎾 Spor ve Eğlence", ["music", "ball", "dance", "sing", "swim", "play", "game", "movie", "party", "song", "tennis", "guitar", "piano", "fun", "birthday", "team", "golf", "chess", "skiing", "joke", "hero", "race", "jazz", "artist", "swimmer", "compete", "prize", "jogging", "knit", "score", "celebrate", "gift", "surprise", "picture", "story", "news", "win", "run", "climb", "walk"]],
+  ["konusma", "💬 Konuşma ve İlişkiler", ["talk", "tell", "say", "ask", "speak", "call", "meet", "invite", "message", "visit", "thank", "kiss", "agree", "advice", "suggest", "promise", "lie", "complain", "apologize", "reply", "mention", "argue", "argument", "shout", "scream", "contact", "voice", "opinion", "secret", "disagree", "persuade", "recommend", "insist", "interrupt", "convince", "comment", "yell", "apology", "invitation", "misunderstanding", "praise", "quarrel", "insult", "confess", "consult", "contradict", "assure", "quote", "criticism", "hint", "rumor", "listen", "hear", "sound"]],
+  ["hukuk", "⚖️ Hukuk ve Güvenlik", ["police", "thief", "steal", "law", "danger", "attack", "safe", "soldier", "guard", "government", "permission", "criminal", "witness", "guilty", "innocent", "punish", "proof", "victim", "security", "election", "army", "president", "detective", "rescue", "sue", "jury", "trial", "ban", "prohibit", "elect", "minister", "diplomat", "violate", "cheat", "deceive", "betray", "revenge", "dangerous", "accident", "warning", "safety", "lawyer", "politician", "navy", "obey"]],
+];
+const KONU_GENEL = ["genel", "⭐ Temel kelimeler"];
+const KELIME_KONU = {};
+KONULAR.forEach(([kod, , ws]) => ws.forEach(w => { if (!KELIME_KONU[w]) KELIME_KONU[w] = kod; }));
+const konuOf = w => KELIME_KONU[w] || "genel";
+function konuCiz() {
+  const seviyede = KELIMELER.filter(k => k[5] === d.seviye);
+  const liste = KONULAR.map(([kod, ad]) => [kod, ad]).concat([KONU_GENEL])
+    .map(([kod, ad]) => { const ks = seviyede.filter(k => konuOf(k[0]) === kod); return { kod, ad, top: ks.length, bilinen: ks.filter(k => d.kartlar[k[0]]).length }; })
+    .filter(x => x.top >= 4);
+  if (d.konu && !liste.some(x => x.kod === d.konu)) d.konu = "";
+  document.getElementById("konu-sec").innerHTML = `<button class="${!d.konu ? "aktif" : ""}" data-konu="">📚 Hepsi</button>` +
+    liste.map(x => `<button class="${d.konu === x.kod ? "aktif" : ""}" data-konu="${x.kod}">${x.ad}<small>${x.bilinen}/${x.top}</small></button>`).join("");
+  document.querySelectorAll("[data-konu]").forEach(b => b.onclick = () => {
+    d.konu = b.dataset.konu; kaydet(); Ses.pop();
+    const ad = (liste.find(x => x.kod === d.konu) || {}).ad;
+    bildir(d.konu ? `${ad}: yeni kelimeler bu konudan gelecek` : `Konu: hepsi (${d.seviye})`); herSeyiCiz();
+  });
+  const secili = document.querySelector("#konu-sec .aktif"); if (secili) secili.scrollIntoView({ block: "nearest", inline: "center" });
+}
+
+// ================= HARF DİZME (Kelime Kur ve kartlardaki harf sorusu ortak) =================
+// Harflere sırayla dokun, boşluklara dolar. Dolu boşluğa dokununca o harf geri döner. Bitince "Onayla".
+function harfDizme(kok, kelime, bitti) {
+  const harfler = karistir([...kelime]);
+  kok.insertAdjacentHTML("beforeend", `<div class="harf-yuva">${[...kelime].map(() => "<span></span>").join("")}</div>
+    <div class="harf-havuz">${harfler.map((c, i) => `<button class="blok" data-hi="${i}">${c}</button>`).join("")}</div>
+    <div class="harf-eylem"><button class="temizle">↺ Temizle</button><button class="onayla" disabled>Onayla ✓</button></div>`);
+  const yuva = kok.querySelector(".harf-yuva"), bloklar = [...kok.querySelectorAll(".harf-havuz .blok")];
+  const onayla = kok.querySelector(".onayla"); let secilen = [], kilit = false;
+  const ciz = () => {
+    [...yuva.children].forEach((sp, i) => { sp.textContent = secilen[i] !== undefined ? harfler[secilen[i]] : ""; sp.classList.toggle("dolu", secilen[i] !== undefined); });
+    bloklar.forEach((b, i) => b.classList.toggle("bos", secilen.includes(i)));
+    onayla.disabled = secilen.length !== kelime.length;
+  };
+  bloklar.forEach((b, i) => b.onclick = () => { if (kilit || secilen.includes(i) || secilen.length >= kelime.length) return; secilen.push(i); Ses.pop(); ciz(); });
+  [...yuva.children].forEach((sp, i) => sp.onclick = () => { if (kilit || secilen[i] === undefined) return; secilen.splice(i, 1); ciz(); });
+  kok.querySelector(".temizle").onclick = () => { if (kilit) return; secilen = []; ciz(); };
+  onayla.onclick = () => {
+    if (kilit) return; kilit = true;
+    const yazilan = secilen.map(i => harfler[i]).join(""), dogru = yazilan === kelime;
+    yuva.classList.add(dogru ? "dogru" : "yanlis");
+    kok.querySelector(".harf-eylem").style.visibility = "hidden";
+    bitti(dogru, yuva);
+  };
+}
+
+// ================= MİKROFONLA SÖYLEME =================
+// Tarayıcının konuşma tanıması: telaffuzu puanlamaz, "söylediğin kelime anlaşıldı mı" diye bakar.
+// Chrome/Android ve Safari'de çalışır; ses tanıma için Google/Apple sunucusuna gider (README).
+const KonusmaTanima = window.SpeechRecognition || window.webkitSpeechRecognition;
+let konusmaAktif = null;
+const konusmaHataYazi = h => h === "not-allowed" || h === "service-not-allowed" ? "Mikrofon izni verilmedi." : h === "no-speech" || h === "bos" ? "Ses duyamadım, bir daha dene." : h === "network" ? "İnternet gerekli." : "Olmadı, bir daha dene.";
+function konusmaDinle(hedef, bitti) {
+  if (!KonusmaTanima) return bitti({ hata: "yok" });
+  try { konusmaAktif && konusmaAktif.abort(); } catch (e) {}
+  const r = new KonusmaTanima(); konusmaAktif = r;
+  r.lang = "en-US"; r.maxAlternatives = 5; r.interimResults = false; r.continuous = false;
+  let duyulan = null, hata = null, bitirildi = false;
+  const temiz = t => t.toLowerCase().replace(/[^a-z' ]/g, " ").replace(/\s+/g, " ").trim();
+  r.onresult = e => { duyulan = [...e.results[0]].map(x => temiz(x.transcript)); };
+  r.onerror = e => { hata = e.error; };
+  r.onend = () => {
+    if (bitirildi) return; bitirildi = true; konusmaAktif = null;
+    if (!duyulan || !duyulan.length) return bitti({ hata: hata || "bos" });
+    const h = temiz(hedef), ok = duyulan.some(t => t === h || (" " + t + " ").includes(" " + h + " "));
+    bitti({ ok, duyulan: duyulan[0] });
+  };
+  try { r.start(); } catch (e) { bitirildi = true; bitti({ hata: "baslamadi" }); }
+}
+const konusmaAcik = () => KonusmaTanima && !((d.konusmaKapali || 0) > Date.now());
 function seviyeCiz() {
   document.getElementById("seviye-sec").innerHTML = SEVIYELER.map(([s, ad]) => {
     const top = KELIMELER.filter(k => k[5] === s).length, bilinen = KELIMELER.filter(k => k[5] === s && d.kartlar[k[0]]).length;
     return `<button class="${d.seviye === s ? "aktif" : ""}" data-seviye="${s}">${s}<small>${ad} · ${bilinen}/${top}</small></button>`;
   }).join("");
-  document.querySelectorAll("[data-seviye]").forEach(b => b.onclick = () => { d.seviye = b.dataset.seviye; kaydet(); bildir(`Seviye: ${d.seviye} 📚 Yeni kelimeler bu seviyeden gelecek`); herSeyiCiz(); });
+  document.querySelectorAll("[data-seviye]").forEach(b => b.onclick = () => { if (d.seviye !== b.dataset.seviye) d.konu = ""; d.seviye = b.dataset.seviye; kaydet(); bildir(`Seviye: ${d.seviye} 📚 Aşağıdan konu da seçebilirsin`); herSeyiCiz(); });
+  konuCiz();
 }
 function anaCiz() {
   seviyeCiz();
@@ -3305,16 +3421,29 @@ function tanisCiz(k) {
       <div class="tur">${k[7]}</div>
       <div class="anlam">${k[1]}</div>
       <div class="ornek">${k[3]} <button class="kucuk-ses" id="t-ses2">🔊</button><i>${k[4]}</i></div>
+      ${KonusmaTanima ? `<button class="soyle-dugme" id="t-soyle">🎤 Sen de söyle</button><div class="soyle-sonuc" id="t-soyle-sonuc"></div>` : ""}
     </div>
     <div class="k-alt"><button class="buyuk-dugme" id="t-devam">Tanıştık ›</button></div>`;
   seslendir(k[0], true);
   document.getElementById("t-ses").onclick = () => seslendir(k[0]);
   document.getElementById("t-ses2").onclick = () => seslendir(k[3]);
   document.getElementById("t-devam").onclick = ilerle;
+  const ts = document.getElementById("t-soyle");
+  if (ts) ts.onclick = () => {
+    const sonuc = document.getElementById("t-soyle-sonuc");
+    ts.disabled = true; ts.textContent = "🎤 Dinliyorum..."; sonuc.textContent = "";
+    konusmaDinle(k[0], o => {
+      ts.disabled = false; ts.textContent = "🎤 Tekrar söyle";
+      if (o.hata) { sonuc.textContent = konusmaHataYazi(o.hata); return; }
+      sonuc.textContent = o.ok ? "✓ Harika, anlaşıldı!" : `Duyduğum: "${o.duyulan}". Bir daha dene 🙂`;
+      sonuc.style.color = o.ok ? "#2E8C6E" : "#C9503E"; o.ok ? Ses.dogru() : Ses.yanlis();
+    });
+  };
 }
 function soruTipi(a) {
   const c = d.kartlar[a.k[0]];
-  let tipler = a.yeni ? ["resim", "anlam"] : (!c || c.kutu <= 2) ? ["resim", "anlam", "ters", "dinle"] : ["ters", "dinle", "harf"];
+  let tipler = a.yeni ? ["resim", "anlam"] : (!c || c.kutu <= 2) ? ["resim", "anlam", "ters", "dinle", "soyle"] : ["ters", "dinle", "harf", "soyle"];
+  if (!konusmaAcik() || a.sesYok) tipler = tipler.filter(t => t !== "soyle");
   if (a.k[0].length > 7 || a.k[0].includes(" ")) tipler = tipler.filter(t => t !== "harf");
   if (!a.k[6]) tipler = tipler.filter(t => t !== "resim"); // soyut kelimenin resmi cevabı ele vermez, tahmin ettirir
   return tipler[Math.floor(Math.random() * tipler.length)] || "ters";
@@ -3328,10 +3457,10 @@ function soruCiz(a) {
   if (tip === "ters") { ust = `<div class="s-yon">İngilizcesi ne?</div><div class="s-ana">${k[1]}</div>`; siklar = [k[0], ...digerleri.map(x => x[0])]; }
   if (tip === "dinle") { ust = `<div class="s-yon">Dinle ve doğru kelimeyi seç</div><button class="dinle-dugme" id="s-ses">🔊</button>`; siklar = [k[0], ...digerleri.map(x => x[0])]; }
   if (tip === "harf") ust = `<div class="s-yon">Harfleri dizerek yaz</div><div class="s-resim" style="font-size:56px">${k[2]}</div><div class="s-ana" style="font-size:26px">${k[1]}</div>`;
+  if (tip === "soyle") ust = `<div class="s-yon">Bu kelimeyi sesli söyle</div><div class="s-ana">${k[0]}<button class="kucuk-ses" id="s-ses">🔊</button></div><div class="soluk" style="font-size:15px;">${k[1]}</div>`;
   let h = `<div class="soru-kart">${ust}</div>`;
   if (siklar) h += `<div class="k-siklar">${karistir(siklar).map(s => `<button class="k-sik">${s}</button>`).join("")}</div>`;
-  else h += `<div class="harf-yuva" id="yuva">${[...k[0]].map(() => "<span></span>").join("")}</div>
-    <div class="harf-havuz" id="harfler">${karistir([...k[0]]).map(c => `<button class="blok">${c}</button>`).join("")}</div>`;
+  if (tip === "soyle") h += `<button class="mikrofon" id="mik">🎤</button><div class="konus-durum" id="konus-durum">Mikrofona dokun ve söyle</div><button class="konus-gec" id="konus-gec">Şu an konuşamıyorum</button>`;
   document.getElementById("k-alan").innerHTML = h;
   const ses = document.getElementById("s-ses"); if (ses) ses.onclick = () => seslendir(k[0]);
   if (tip === "dinle") setTimeout(() => seslendir(k[0]), 250);
@@ -3343,14 +3472,23 @@ function soruCiz(a) {
     if (!dogru) document.querySelectorAll(".k-sik").forEach(x => { if (x.textContent === dogruCevap) x.classList.add("dogru"); });
     cevapla(a, dogru, b);
   });
-  else {
-    let yazilan = "";
-    document.querySelectorAll("#harfler .blok").forEach(b => b.onclick = () => {
-      if (kO.kilit || b.classList.contains("bos")) return;
-      b.classList.add("bos"); yazilan += b.textContent;
-      document.querySelectorAll("#yuva span")[yazilan.length - 1].textContent = b.textContent;
-      if (yazilan.length === k[0].length) cevapla(a, yazilan === k[0], document.getElementById("yuva"));
-    });
+  else if (tip === "harf") harfDizme(document.getElementById("k-alan"), k[0], (dogru, el) => cevapla(a, dogru, el));
+  else if (tip === "soyle") {
+    let deneme = 0;
+    const mik = document.getElementById("mik"), durum = document.getElementById("konus-durum");
+    mik.onclick = () => {
+      if (kO.kilit || mik.classList.contains("dinliyor")) return;
+      mik.classList.add("dinliyor"); durum.textContent = "Dinliyorum...";
+      konusmaDinle(k[0], o => {
+        mik.classList.remove("dinliyor");
+        if (o.hata) { durum.textContent = konusmaHataYazi(o.hata); if (o.hata === "not-allowed" || o.hata === "service-not-allowed") { d.konusmaKapali = Date.now() + 15 * 60000; kaydet(); a.sesYok = true; setTimeout(() => soruCiz(a), 900); } return; }
+        if (o.ok) return cevapla(a, true, mik);
+        deneme++; Ses.yanlis();
+        if (deneme >= 3) return cevapla(a, false, mik);
+        durum.textContent = `Duyduğum: "${o.duyulan}" · ${3 - deneme} hakkın kaldı`;
+      });
+    };
+    document.getElementById("konus-gec").onclick = () => { d.konusmaKapali = Date.now() + 15 * 60000; kaydet(); a.sesYok = true; bildir("🎤 15 dakika sesli soru gelmeyecek"); soruCiz(a); };
   }
 }
 function cevapla(a, dogru, el) {
@@ -3534,6 +3672,49 @@ function eslesBitir() {
     pencere("🐾", rekor ? "Yeni rekor!" : "Hepsini eşleştirdin!", `${cift} çift, ${sure.toFixed(1)} saniye${ceza ? ` (${ceza} sn ceza dahil)` : ""}. Rekorun: ${d.eslesRekor} sn.${odul ? " +1 🪙" : d.eslesGunu === bugunNo() ? "" : " 45 saniyenin altında bitirirsen 1 🪙."}`, "Tamam");
   }, 500);
 }
+
+// ================= KELİME KUR =================
+// Öğrendiğin kelimeler öğrenme sırasıyla gelir (kaldığın yerden devam). Kutuyu değiştirmez;
+// yanlışlar "Zorlandıkların"a sayılır, doğrular günlük hedefe.
+let kur = null;
+function kurKelimeleri() {
+  const sirali = Object.keys(d.kartlar).map(w => KELIMELER.find(k => k[0] === w)).filter(k => k && k[0].length >= 3 && k[0].length <= 10 && /^[a-z]+$/.test(k[0]));
+  if (!sirali.length) return [];
+  const bas = (d.kurSira || 0) % sirali.length;
+  return sirali.slice(bas).concat(sirali.slice(0, bas)).slice(0, 8);
+}
+function kurAc() {
+  const liste = kurKelimeleri();
+  if (liste.length < 3) { pencere("🔤", "Önce birkaç kelime öğren", "Kelime Kur, tanıştığın kelimelerle çalışır. Kartlarda en az 3 kelimeyle tanış, sonra gel!", "Tamam"); return; }
+  kur = { liste, i: 0, dogru: 0 };
+  tamAc("kur"); kurAdim();
+}
+function kurAdim() {
+  const k = kur.liste[kur.i];
+  document.getElementById("kur-sayac").textContent = `${kur.i}/${kur.liste.length}`;
+  document.getElementById("kur-cubuk").style.width = (kur.i / kur.liste.length * 100) + "%";
+  const alan = document.getElementById("kur-alan");
+  alan.innerHTML = `<div class="soru-kart"><div class="s-yon">Harfleri sırayla dizip kelimeyi kur</div><div class="s-resim" style="font-size:56px">${k[2]}</div><div class="soluk" style="font-size:14px;font-weight:800;">${k[0].length} harf · ${k[7]}</div></div>`;
+  harfDizme(alan, k[0], (dogru, yuva) => {
+    const c = d.kartlar[k[0]] || { kutu: 1, sira: bugunNo() };
+    c.hata = Math.max(0, (c.hata || 0) + (dogru ? -1 : 1)); d.kartlar[k[0]] = c;
+    if (dogru) { kur.dogru++; konfeti(yuva, 6); }
+    d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
+    sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
+    const gb = document.getElementById("kur-gb");
+    gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
+    document.getElementById("kur-gb-baslik").textContent = dogru ? ["Harika! 🎉", "Aynen öyle! 😸", "Süpersin! ✨"][Math.floor(Math.random() * 3)] : "Neredeyse! 💪";
+    document.getElementById("kur-gb-yazi").textContent = `${k[2]} ${k[0]} = ${k[1]}${dogru ? "" : " · Doğrusu: " + k[0]}`;
+  });
+}
+document.getElementById("kur-gb-devam").onclick = () => {
+  document.getElementById("kur-gb").className = "geri-bildirim";
+  kur.i++;
+  if (kur.i < kur.liste.length) return kurAdim();
+  const sonuc = kur; kur = null; tamKapat();
+  if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi();
+  pencere("🔤", "Kelime Kur bitti!", `${sonuc.dogru}/${sonuc.liste.length} kelimeyi doğru kurdun. Bir sonraki turda kaldığın yerden devam edersin.`, "Tamam");
+};
 
 // ================= YEDEK =================
 // İlerleme kodu: verinin JSON'u, Base64'e çevrilmiş hali. Türkçe karakterler için önce UTF-8'e çevrilir.
@@ -4045,10 +4226,10 @@ function sekme(ad) {
   herSeyiCiz();
 }
 function tamAc(ad) { document.getElementById("tam-" + ad).classList.add("aktif"); }
-function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; herSeyiCiz(); }
+function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
 document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
-const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc() };
+const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc(), kur: () => kurAc() };
 document.querySelectorAll("[data-ac]").forEach(b => b.onclick = () => ALISTIRMA[b.dataset.ac]());
 document.getElementById("basla-dugme").onclick = () => {
   if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();

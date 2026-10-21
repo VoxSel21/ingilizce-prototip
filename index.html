@@ -141,6 +141,17 @@
   .tanis .ornek { margin-top: 16px; background: var(--krem); border-radius: 18px; padding: 12px 14px; font-size: 16px; font-weight: 700; }
   .tanis .ornek i { display: block; color: var(--soluk); font-style: normal; margin-top: 4px; }
   .k-alt { margin-top: 14px; }
+  /* Kısa ekranda kart kendi içinde kayar, "Tanıştık" düğmesi hep görünür kalır (UX değerlendirmesi, 2026-10-21). */
+  .tanis { min-height: 0; overflow-y: auto; justify-content: safe center; }
+  .tam { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+  @media (max-height: 640px) {
+    .tanis { padding: 16px; border-radius: 26px; }
+    .tanis .resim { font-size: 60px; margin-bottom: 4px; }
+    .tanis .kelime { font-size: 34px; }
+    .tanis .anlam { font-size: 24px; }
+    .tanis .ornek { margin-top: 10px; padding: 9px 12px; font-size: 14px; }
+    .k-alt { margin-top: 10px; }
+  }
   .soru-kart { background: #fff; border-radius: 28px; padding: 18px; text-align: center; box-shadow: var(--golge); animation: belir .25s; }
   .soru-kart .s-yon { font-size: 15px; font-weight: 800; color: var(--soluk); }
   .soru-kart .s-resim { font-size: 84px; line-height: 1.1; }
@@ -3185,6 +3196,10 @@ const ANAHTAR = "ing-prototip-v2";
 const GUN_MS = 86400000;
 const bugunNo = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
 const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
+// Ortak öğrenme durumu: her ekran, sayaç ve rozet bunu kullanır (1. kutu tanışıldı, 2-3 çalışılıyor, 4 öğrenildi).
+const DURUM = { tanisildi: "Tanışıldı", calisiliyor: "Çalışılıyor", ogrenildi: "Öğrenildi ⭐" };
+const durumu = c => !c ? null : c.kutu >= 4 ? "ogrenildi" : c.kutu >= 2 ? "calisiliyor" : "tanisildi";
+const durumdaSay = (deste, dr) => deste.filter(k => durumu(d.kartlar[k[0]]) === dr).length;
 let d;
 
 function yeniDurum() {
@@ -3501,7 +3516,10 @@ function cevapla(a, dogru, el) {
     // hata: kaç kez yanlış bilindi (doğru bildikçe azalır); "Zorlandıkların" bununla seçilir
     const hata = Math.max(0, ((c && c.hata) || 0) - (a.tekrar ? 0 : 1));
     if (a.tekrar || !c) d.kartlar[k[0]] = { kutu: 1, sira: bugun + 1, hata };   // yeni ya da bu turda bir kez kaçırılmış: yarın tekrar
-    else { const kutu = Math.min(4, c.kutu + 1); d.kartlar[k[0]] = { kutu, sira: bugun + ARALIK[kutu], hata }; }
+    // Kutu yalnız tekrar günü gelmişse yükselir. Günü gelmemiş kelimeyi çalışmak (spor, kutu açma,
+    // zorlandıkların) serbest pratiktir: puan ve kedi etkisi var, kutu ve tekrar günü değişmez.
+    else if (c.sira <= bugun) { const kutu = Math.min(4, c.kutu + 1); d.kartlar[k[0]] = { kutu, sira: bugun + ARALIK[kutu], hata }; }
+    else d.kartlar[k[0]] = { ...c, hata };
   } else {
     kO.yanlis++;
     d.kartlar[k[0]] = { kutu: 1, sira: bugun, hata: ((c && c.hata) || 0) + 1 };
@@ -3831,12 +3849,12 @@ function bildir(m) { const b = document.getElementById("bildirim"); b.textConten
 // ================= BAŞARIMLAR =================
 const ROZETLER = [
   ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 1],
-  ["on", "📚", "10 kelime", "10 kelimeyi 2. kutuya taşı", () => KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length >= 10, 3],
+  ["on", "📚", "10 kelime", "10 kelimeyi çalışılıyor aşamasına (2. kutu) taşı", () => durumdaSay(KELIMELER, "calisiliyor") + durumdaSay(KELIMELER, "ogrenildi") >= 10, 3],
   ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= 10, 2],
   ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 2],
   ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 10],
   ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 2],
-  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren", () => KELIMELER.some(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 4), 3],
+  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren (4. kutu)", () => durumdaSay(KELIMELER, "ogrenildi") > 0, 3],
   ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 1],
   ["cete", "🐾", "Çete ruhu", "Bir haftanın tüm ortak görevlerini bitir", () => ceteHaftaTamam(), 5],
   ["ikili", "🤝", "Takım oyuncusu", "Bir arkadaşınla birlikte görev bitir", () => (d.ikiliBiten || 0) >= 1, 2],
@@ -3885,7 +3903,7 @@ function takvimCiz() {
   document.getElementById("ay-cubuk").style.width = Math.round(calisilan / gunSayi * 100) + "%";
   document.getElementById("i-seri").textContent = seri();
   document.getElementById("i-enuzun").textContent = Math.max(d.enUzun, seri());
-  document.getElementById("i-ogrenilen").textContent = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu >= 2).length;
+  document.getElementById("i-ogrenilen").textContent = durumdaSay(KELIMELER, "ogrenildi");
   document.getElementById("i-gun").textContent = Object.keys(d.gunler).length;
 }
 
@@ -3894,9 +3912,8 @@ function takvimCiz() {
 // Noktalar kelimenin kutusunu gösterir; 4 nokta = öğrenildi.
 function hazneCiz() {
   const tanisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
-  const ogrenilen = tanisilan.filter(k => d.kartlar[k[0]].kutu >= 2).length;
   document.getElementById("hazne-ozet").textContent = tanisilan.length
-    ? `${tanisilan.length} kelimeyle tanıştın · ${ogrenilen} tanesi öğrenildi`
+    ? `${tanisilan.length} kelimeyle tanıştın · ${durumdaSay(tanisilan, "calisiliyor")} çalışılıyor · ${durumdaSay(tanisilan, "ogrenildi")} öğrenildi`
     : "";
   if (!tanisilan.length && !PHRASAL.some(k => d.kartlar[k[0]])) {
     document.getElementById("hazne-liste").innerHTML = `<p class="hazne-bos">🐾 Haznen boş.<br>Kelime kartlarında tanıştığın kelimeler burada birikecek.</p>`;
@@ -3912,7 +3929,7 @@ function hazneCiz() {
     h += liste.map(k => {
       const kutu = Math.min(d.kartlar[k[0]].kutu, 4);
       return `<div class="hazne-satir"><span class="h-emoji">${k[2]}</span><div class="h-yazi"><b>${k[0]}</b><i>${k[7]}</i><small>${k[1]}</small></div>
-        <span class="h-kutu" title="${kutu >= 4 ? "Öğrenildi" : kutu + ". kutu"}">${"●".repeat(kutu)}${"○".repeat(4 - kutu)}</span>
+        <span class="h-kutu" title="${DURUM[durumu(d.kartlar[k[0]])]} · ${kutu}. kutu">${"●".repeat(kutu)}${"○".repeat(4 - kutu)}</span>
         <button class="h-ses" data-oku="${k[0]}" aria-label="${k[0]} sesli oku">🔊</button></div>`;
     }).join("");
   }
@@ -4226,7 +4243,9 @@ function sekme(ad) {
   herSeyiCiz();
 }
 function tamAc(ad) { document.getElementById("tam-" + ad).classList.add("aktif"); }
-function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif")); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
+function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif"));
+  // Yarıda kapatılan turun cevap paneli bir sonraki tura taşınmasın (eski "Devam" yeni turu ilerletiyordu).
+  document.querySelectorAll(".geri-bildirim").forEach(g => g.className = "geri-bildirim"); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
 document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
 const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc(), kur: () => kurAc() };

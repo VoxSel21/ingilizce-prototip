@@ -20,5 +20,6 @@ self.addEventListener("fetch", e => {
   e.respondWith(ag.then(yanit => {
     if (yanit.ok) { const kopya = yanit.clone(); caches.open(ONBELLEK).then(c => c.put(istek, kopya)); }
     return yanit;
-  }).catch(() => caches.match(istek, { ignoreSearch: true }).then(m => m || caches.match("index.html"))));
+  // Ana sayfa yedeği yalnız sayfa açılışları için; önbellekte olmayan resme sayfa HTML'i dönmesin, hata dönsün.
+  }).catch(() => caches.match(istek, { ignoreSearch: true }).then(m => m || (istek.mode === "navigate" ? caches.match("index.html") : Response.error()))));
 });

@@ -3209,13 +3209,39 @@ function yeniDurum() {
     bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {},
     kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
 }
+// Kayıt ve yedek doğrulama: temel alanların türü doğruysa eksik alanlar yeni durumdan tamamlanır;
+// temel alanlar bozuksa kayıt reddedilir (yedek yüklemede eski ilerleme hiç değişmez).
+const ONCEKI = ANAHTAR + "-onceki";
+function durumGecerliMi(v) {
+  const nesne = x => x && typeof x === "object" && !Array.isArray(x);
+  if (!nesne(v) || !nesne(v.kartlar) || typeof v.yildiz !== "number" || !isFinite(v.yildiz)) return false;
+  if (v.gunler != null && !nesne(v.gunler)) return false;
+  if (v.bugun != null && !(nesne(v.bugun) && typeof v.bugun.no === "number")) return false;
+  return Object.values(v.kartlar).every(c => nesne(c) && typeof c.kutu === "number" && typeof c.sira === "number");
+}
+function tamamla(v) {
+  const t = yeniDurum();
+  for (const a in t) if (v[a] == null || typeof v[a] !== typeof t[a]) v[a] = t[a];
+  if (!Array.isArray(v.temalar)) v.temalar = t.temalar;
+  if (!Array.isArray(v.kurklar)) v.kurklar = t.kurklar;
+  if (!Array.isArray(v.esyalar)) v.esyalar = t.esyalar;
+  return v;
+}
+function okunanDurum(anahtar) {
+  try { const v = JSON.parse(localStorage.getItem(anahtar)); return durumGecerliMi(v) ? tamamla(v) : null; } catch (e) { return null; }
+}
+// Gün değişimi: uygulama gece açık kalsa da ilk eylemde ve sayfaya dönüldüğünde yeni gün başlar.
+function gunuYenile() {
+  if (d.bugun.no === bugunNo()) return false;
+  koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; kaydet();
+  return true;
+}
 function yukle() {
-  try { d = JSON.parse(localStorage.getItem(ANAHTAR)); } catch (e) { d = null; }
-  if (!d) d = yeniDurum();
+  d = okunanDurum(ANAHTAR) || okunanDurum(ONCEKI) || yeniDurum();
   if (d.kilo == null) d.kilo = 4.0;
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
-  if (d.bugun.no !== bugunNo()) { koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; }
+  gunuYenile();
   // Deneme kolaylığı: linkin sonuna ?altin=500 eklenirse o kadar altın verilir, sonra adres temizlenir
   // (yenileyince tekrar vermesin). Gerçek uygulamada olmayacak.
   const linkte = new URLSearchParams(location.search);
@@ -3231,7 +3257,15 @@ function yukle() {
     setTimeout(() => bildir("🎁 Tüm eşyalar açıldı"), 400);
   }
 }
-function kaydet() { try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); } catch (e) {} }
+let kayitUyarildi = false;
+function kaydet() {
+  try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); kayitUyarildi = false; return true; }
+  catch (e) {
+    // Sessizce geçme: ilerleme ekranda artıp telefona yazılmıyorsa kullanıcı bilmeli.
+    if (!kayitUyarildi) { kayitUyarildi = true; setTimeout(() => pencere("⚠️", "İlerleme kaydedilemedi", "Telefonun bu sayfaya kayıt izni vermiyor ya da yer dolu. Ödüller > İlerleme yedeği'nden yedek kodunu al, sonra tekrar dene.", "Tamam"), 50); }
+    return false;
+  }
+}
 
 function koruyucuKontrol() {
   // Dün çalışılmadıysa ve koruyucu varsa dünü korunmuş say.
@@ -3247,7 +3281,9 @@ function seri() {
 const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {
   const b = bugunNo();
-  const eski = deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b);
+  // Biriken tekrarlar tek dev tura dönmesin: bir turda en çok 20 tekrar, en çok gecikenler önce; kalanı sonraki turda.
+  const eski = deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b)
+    .sort((x, y) => d.kartlar[x[0]].sira - d.kartlar[y[0]].sira).slice(0, 20);
   let yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye && (deste !== KELIMELER || !d.konu || konuOf(k[0]) === d.konu));
   // Phrasal verb'ler az: seçili seviyede yeni kalmadıysa diğer seviyelerden gelsin
   if (deste === PHRASAL && !yeni.length) yeni = deste.filter(k => !d.kartlar[k[0]]);
@@ -3509,6 +3545,8 @@ function soruCiz(a) {
 function cevapla(a, dogru, el) {
   kO.kilit = true;
   const k = a.k, c = d.kartlar[k[0]], bugun = bugunNo();
+  // İlk tanışma günü sayılır: haftalık "yeni kelime" görevi geçmiş haftaların kelimelerini saymasın.
+  if (!c) { d.tanisGun = d.tanisGun || {}; d.tanisGun[bugun] = (d.tanisGun[bugun] || 0) + 1; }
   if (dogru) {
     kO.dogru++; konfeti(el, 6);
     // Yeni kelime = Pati beslenir; eski kelime tekrarı = spor. Spor salonunda daha çok yakar.
@@ -3525,7 +3563,7 @@ function cevapla(a, dogru, el) {
     d.kartlar[k[0]] = { kutu: 1, sira: bugun, hata: ((c && c.hata) || 0) + 1 };
     kO.sira.push({ tip: "soru", k, tekrar: true }); // turun sonunda bir daha sor
   }
-  d.bugun.sayi++; d.gunler[bugun] = 1; d.enUzun = Math.max(d.enUzun, seri());
+  gunuYenile(); d.bugun.sayi++; d.gunler[bugun] = 1; d.enUzun = Math.max(d.enUzun, seri());
   kaydet(); rozetKontrol();
   sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
   const gb = document.getElementById("k-gb");
@@ -3717,7 +3755,7 @@ function kurAdim() {
     const c = d.kartlar[k[0]] || { kutu: 1, sira: bugunNo() };
     c.hata = Math.max(0, (c.hata || 0) + (dogru ? -1 : 1)); d.kartlar[k[0]] = c;
     if (dogru) { kur.dogru++; konfeti(yuva, 6); }
-    d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
+    gunuYenile(); d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
     sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
     const gb = document.getElementById("kur-gb");
     gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis");
@@ -3747,9 +3785,13 @@ document.getElementById("yedek-yukle").onclick = () => {
   if (!kod) return;
   try {
     const veri = JSON.parse(decodeURIComponent(escape(atob(kod.replace(/^PATI1:/, "")))));
-    if (!veri || typeof veri.kartlar !== "object" || typeof veri.yildiz !== "number") throw new Error("biçim");
+    if (!durumGecerliMi(veri)) throw new Error("biçim");
     if (!confirm("Bu tarayıcıdaki ilerlemenin yerine yedek yüklensin mi?")) return;
-    d = veri; kaydet(); location.reload();
+    // Mevcut ilerleme silinmeden önce bir kopya saklanır; yeni kayıt açılmazsa ona dönülür.
+    try { localStorage.setItem(ONCEKI, JSON.stringify(d)); } catch (e) {}
+    d = tamamla(veri);
+    if (!kaydet()) return;
+    location.reload();
   } catch (e) { pencere("😿", "Kod okunamadı", "Kodun tamamını kopyaladığından emin ol (PATI1: ile başlamalı).", "Tamam"); }
 };
 
@@ -3778,7 +3820,7 @@ function cumleGoster() {
   const cumleKel = c[1].toLowerCase().split(" ");
   const celdirici = c[2].length ? c[2] : KELIMELER.filter(k => k[5] === c[3] && !cumleKel.includes(k[0])).sort(() => Math.random() - .5).slice(0, 2).map(k => k[0]);
   const bloklar = c[1].split(" ").concat(celdirici).sort(() => Math.random() - .5);
-  dizilen = [];
+  dizilen = []; cDegerlendi = false;
   document.getElementById("havuz").innerHTML = bloklar.map((b, i) => `<button class="blok" data-i="${i}">${b}</button>`).join("");
   document.getElementById("dizi").innerHTML = "";
   document.getElementById("kontrol").disabled = true;
@@ -3791,8 +3833,12 @@ function cumleGoster() {
     document.getElementById("dizi").appendChild(yeni); dizilen.push(yeni); kontrolDurum();
   });
 }
-const kontrolDurum = () => document.getElementById("kontrol").disabled = !dizilen.length;
+// Her cümle sorusu bir kez değerlendirilir; ikinci "Kontrol et" (çift dokunuş, Enter) yok sayılır.
+let cDegerlendi = false;
+const kontrolDurum = () => document.getElementById("kontrol").disabled = cDegerlendi || !dizilen.length;
 document.getElementById("kontrol").onclick = () => {
+  if (cDegerlendi) return;
+  cDegerlendi = true; document.getElementById("kontrol").disabled = true;
   const c = cDeste[cIndex];
   const cevap = [...document.querySelectorAll("#dizi .blok")].map(b => b.textContent).join(" ");
   const dogru = cevap.toLowerCase() === c[1].toLowerCase();
@@ -3828,6 +3874,10 @@ function hediyePenceresi() {
   p.innerHTML = `<div class="p-ikon hediye" id="hediye">🎁</div><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
   document.getElementById("perde").classList.add("aktif");
   document.getElementById("hediye").onclick = e => {
+    // Hızlı ikinci dokunuş ödülü ikinci kez vermesin: önce kilitle, sonra öde.
+    e.currentTarget.onclick = null;
+    gunuYenile();
+    if (d.bugun.hediye) return;
     const kazanc = 2 + (Math.random() < .3 ? 1 : 0);
     d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16); Ses.altin();
     setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
@@ -3953,7 +4003,7 @@ const haftaBasi = () => { const b = bugunNo(); return b - ((new Date().getDay() 
 const haftaSay = obj => Object.keys(obj || {}).filter(g => +g >= haftaBasi() && +g <= bugunNo()).length;
 const CETE_GOREVLER = [
   { id: "tanis", ikon: "🃏", ad: "Çetece 60 yeni kelimeyle tanışın", hedef: 60, odul: 2,
-    uyeler: [["Ahmet", 18], ["Elif", 19], ["Mert", 4], ["Zeynep", 11]], sen: () => Object.keys(d.kartlar).length },
+    uyeler: [["Ahmet", 18], ["Elif", 19], ["Mert", 4], ["Zeynep", 11]], sen: () => Object.entries(d.tanisGun || {}).filter(([g]) => +g >= haftaBasi() && +g <= bugunNo()).reduce((t, [, n]) => t + n, 0) },
   { id: "gun", ikon: "📅", ad: "Herkes bu hafta en az 3 gün çalışsın", hedef: 3, herkes: true, odul: 3,
     uyeler: [["Ahmet", 4], ["Elif", 3], ["Mert", 2], ["Zeynep", 3]], sen: () => haftaSay(d.gunler) },
   { id: "av", ikon: "🎣", ad: "Çetece 6 balık avına çıkın", hedef: 6, odul: 2,
@@ -4292,7 +4342,8 @@ function kediHTML() {
 }
 const resimOnbellek = {};
 function resimYukle(src) {
-  return resimOnbellek[src] ||= new Promise((ok, hata) => { const r = new Image(); r.onload = () => ok(r); r.onerror = hata; r.src = src; });
+  // Yüklenemeyen resim önbellekte "başarısız" olarak takılı kalmasın; bağlantı gelince yeniden denensin.
+  return resimOnbellek[src] ||= new Promise((ok, hata) => { const r = new Image(); r.onload = () => ok(r); r.onerror = e => { delete resimOnbellek[src]; hata(e); }; r.src = src; });
 }
 async function kediTuvaleCiz() {
   const tuval = document.getElementById("kedi-tuval"); if (!tuval) return;
@@ -4501,6 +4552,8 @@ function avSoruCiz() {
 }
 function avCevap(b, dogru, k) {
   if (av.kilit || av.bitti) return; av.kilit = true;
+  // Gecikmeli işlemler yalnız kendi av oturumunu etkiler; kapatılıp yeni av başlarsa eskisi yeniye karışmaz.
+  const oturum = av, buOturum = () => av === oturum && !oturum.bitti;
   const kedi = document.getElementById("av-kedi");
   if (dogru) {
     b.classList.add("dogru"); av.dogru++; av.ust = 0; av.atilma += AV.ATILMA; avEfekt("💨"); Ses.dogru();
@@ -4515,14 +4568,14 @@ function avCevap(b, dogru, k) {
       av.ust = 0; av.atilma = 0; av.konum = Math.max(0, av.konum - AV.ATILMA);
       setTimeout(() => Ses.geri(), 150); avEfekt("🙀");
       document.getElementById("av-uyari").textContent = "Balıkçı gördü! Pati geri kaçtı 🙀";
-      setTimeout(() => { if (av && !av.bitti) document.getElementById("av-uyari").textContent = "Balıkçı fark etmeden balığa ulaş!"; }, 1400);
+      setTimeout(() => { if (buOturum()) document.getElementById("av-uyari").textContent = "Balıkçı fark etmeden balığa ulaş!"; }, 1400);
     }
     document.querySelectorAll(".av-sik").forEach(x => { if (x.textContent === k[1]) x.classList.add("dogru"); });
-    kedi.textContent = "😿"; setTimeout(() => { if (av && !av.bitti) kedi.textContent = "🐱"; }, 900);
+    kedi.textContent = "😿"; setTimeout(() => { if (buOturum()) kedi.textContent = "🐱"; }, 900);
   }
   // Bilinen kelime kart sistemine de işlenir: yanlış bilinen yarın tekrar gelir
   if (d.kartlar[k[0]] && !dogru) d.kartlar[k[0]] = { kutu: 1, sira: bugunNo() + 1, hata: (d.kartlar[k[0]].hata || 0) + 1 };
-  setTimeout(() => { if (!av || av.bitti) return; av.i++; av.kilit = false; avSoruCiz(); }, dogru ? 250 : 600);
+  setTimeout(() => { if (!buOturum()) return; av.i++; av.kilit = false; avSoruCiz(); }, dogru ? 250 : 600);
 }
 function avEfekt(e) {
   const kedi = document.getElementById("av-kedi"), s = document.createElement("span");
@@ -4554,6 +4607,8 @@ document.getElementById("av-kapat").onclick = () => { if (av && !av.bitti) { av.
 function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz(); avDugmeCiz(); kediCiz(); sesDugmeleriCiz(); }
 
 yukle(); kaydet(); herSeyiCiz();
+// Gece açık kalan uygulamaya dönülünce yeni günü başlat ve ekranı tazele.
+document.addEventListener("visibilitychange", () => { if (!document.hidden && gunuYenile()) herSeyiCiz(); });
 setInterval(sahneCiz, 10 * 60000);
 // Ana ekrana ekleme ve çevrimdışı açılış (sw.js: internet varken hep en yeni sürüm)
 if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});

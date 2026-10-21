@@ -53,9 +53,9 @@
   h1 { font-size: 26px; font-weight: 900; line-height: 1.15; }
   h2 { font-size: 20px; font-weight: 900; margin: 22px 4px 10px; }
   .soluk { color: var(--soluk); font-weight: 700; }
-  .buyuk-dugme { width: 100%; border-radius: 22px; padding: 16px; font-weight: 900; font-size: 19px; color: #fff; background: var(--nane); box-shadow: 0 5px 0 #3FA585; transition: transform .1s; }
+  .buyuk-dugme { width: 100%; border-radius: 22px; padding: 16px; font-weight: 900; font-size: 19px; color: #fff; background: #24806A; box-shadow: 0 5px 0 #165C4B; /* beyaz yazıyla 4,8:1 okunaklılık */ transition: transform .1s; }
   .buyuk-dugme:active { transform: translateY(3px); box-shadow: 0 2px 0 #3FA585; }
-  .buyuk-dugme.mor { background: var(--lavanta); box-shadow: 0 5px 0 #7C67CC; }
+  .buyuk-dugme.mor { background: #6B55C9; box-shadow: 0 5px 0 #4F3DA3; }
   .buyuk-dugme.mor:active { box-shadow: 0 2px 0 #7C67CC; }
   .buyuk-dugme:disabled { background: #D6D0C6; box-shadow: 0 5px 0 #BDB6AA; }
 
@@ -144,6 +144,18 @@
   /* Kısa ekranda kart kendi içinde kayar, "Tanıştık" düğmesi hep görünür kalır (UX değerlendirmesi, 2026-10-21). */
   .tanis { min-height: 0; overflow-y: auto; justify-content: safe center; }
   .tam { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+  /* Alıştırma alanı sığmazsa kendi içinde kayar (yatay telefonda Kelime Kur'un Onayla düğmesi kesiliyordu). */
+  .k-alan { overflow-y: auto; }
+  @media (max-height: 460px) {
+    .tam { padding: 10px 14px; }
+    .ilerleme { margin-bottom: 8px; }
+    .soru-kart { padding: 10px; border-radius: 22px; }
+    .soru-kart .s-resim { font-size: 46px !important; }
+    .soru-kart .s-ana { font-size: 24px !important; }
+    .harf-yuva { margin: 8px 0; }
+    .harf-yuva span { width: 32px; height: 38px; font-size: 21px; }
+    .harf-havuz .blok { min-width: 38px; font-size: 18px; }
+  }
   @media (max-height: 640px) {
     .tanis { padding: 16px; border-radius: 26px; }
     .tanis .resim { font-size: 60px; margin-bottom: 4px; }
@@ -3236,11 +3248,14 @@ function gunuYenile() {
   koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; kaydet();
   return true;
 }
+// Kedi adı sayfaya HTML olarak da yazılıyor; < > & " ' işaretleri ad içinde kod gibi çalışmasın diye atılır.
+const temizAd = ad => String(ad || "").replace(/[<>&"'`]/g, "").trim().slice(0, 14);
 function yukle() {
   d = okunanDurum(ANAHTAR) || okunanDurum(ONCEKI) || yeniDurum();
   if (d.kilo == null) d.kilo = 4.0;
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
+  d.kediAd = temizAd(d.kediAd) || "Pati";
   gunuYenile();
   // Deneme kolaylığı: linkin sonuna ?altin=500 eklenirse o kadar altın verilir, sonra adres temizlenir
   // (yenileyince tekrar vermesin). Gerçek uygulamada olmayacak.
@@ -3257,9 +3272,19 @@ function yukle() {
     setTimeout(() => bildir("🎁 Tüm eşyalar açıldı"), 400);
   }
 }
+// İki sekme: her kayıt bir sıra numarası (rev) taşır. Başka sekme daha yeni bir kayıt yazdıysa
+// bu sekme eski halini üstüne yazmaz; güncel hali yükler. "storage" olayı diğer sekmeleri anında günceller.
+const kayitliRev = () => { try { return (JSON.parse(localStorage.getItem(ANAHTAR)) || {}).rev || 0; } catch (e) { return 0; } };
 let kayitUyarildi = false;
 function kaydet() {
-  try { localStorage.setItem(ANAHTAR, JSON.stringify(d)); kayitUyarildi = false; return true; }
+  try {
+    if (kayitliRev() > (d.rev || 0)) {
+      const guncel = okunanDurum(ANAHTAR);
+      if (guncel) { d = guncel; setTimeout(() => { herSeyiCiz(); bildir("🔄 Başka sekmedeki değişiklik yüklendi"); }, 0); return false; }
+    }
+    d.rev = (d.rev || 0) + 1;
+    localStorage.setItem(ANAHTAR, JSON.stringify(d)); kayitUyarildi = false; return true;
+  }
   catch (e) {
     // Sessizce geçme: ilerleme ekranda artıp telefona yazılmıyorsa kullanıcı bilmeli.
     if (!kayitUyarildi) { kayitUyarildi = true; setTimeout(() => pencere("⚠️", "İlerleme kaydedilemedi", "Telefonun bu sayfaya kayıt izni vermiyor ya da yer dolu. Ödüller > İlerleme yedeği'nden yedek kodunu al, sonra tekrar dene.", "Tamam"), 50); }
@@ -3429,7 +3454,10 @@ function anaCiz() {
   const deger = [yeniSayi, sayac[1] + sayac[0], sayac[2], sayac[3], sayac[4]];
   const tanisSayi = KELIMELER.filter(k => d.kartlar[k[0]]).length;
   document.getElementById("hazne-dugme-yazi").textContent = tanisSayi ? `${tanisSayi} kelime · seviyeye ve alfabeye göre` : "Tanıştığın kelimeler burada birikir";
-  document.getElementById("kutular").innerHTML = deger.map((v, i) => `<div class="kutu ${i && v ? "tikla" : ""}" ${i && v ? `data-kutu="${i}"` : ""} style="background:${renk[i]}"><b>${v}</b><small>${ad[i]}</small></div>`).join("");
+  // Dolu kutular gerçek düğme: klavyeyle de seçilip Enter/Boşluk ile açılır.
+  document.getElementById("kutular").innerHTML = deger.map((v, i) => i && v
+    ? `<button class="kutu tikla" data-kutu="${i}" style="background:${renk[i]}" aria-label="${ad[i].replace(" ⭐", "")}: ${v} kelime, aç"><b>${v}</b><small>${ad[i]}</small></button>`
+    : `<div class="kutu" style="background:${renk[i]}"><b>${v}</b><small>${ad[i]}</small></div>`).join("");
   document.querySelectorAll("[data-kutu]").forEach(b => b.onclick = () => kutuAc(+b.dataset.kutu));
   const zor = zorlandiklar();
   document.getElementById("zor-dugme").style.display = zor.length ? "" : "none";
@@ -3789,7 +3817,7 @@ document.getElementById("yedek-yukle").onclick = () => {
     if (!confirm("Bu tarayıcıdaki ilerlemenin yerine yedek yüklensin mi?")) return;
     // Mevcut ilerleme silinmeden önce bir kopya saklanır; yeni kayıt açılmazsa ona dönülür.
     try { localStorage.setItem(ONCEKI, JSON.stringify(d)); } catch (e) {}
-    d = tamamla(veri);
+    d = tamamla(veri); d.rev = Math.max(veri.rev || 0, kayitliRev()); // yedek eski numarayla gelse de yazılabilsin
     if (!kaydet()) return;
     location.reload();
   } catch (e) { pencere("😿", "Kod okunamadı", "Kodun tamamını kopyaladığından emin ol (PATI1: ile başlamalı).", "Tamam"); }
@@ -3871,8 +3899,9 @@ function bitisPenceresi() {
 function hediyePenceresi() {
   const p = document.getElementById("pencere");
   Ses.zafer();
-  p.innerHTML = `<div class="p-ikon hediye" id="hediye">🎁</div><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
+  p.innerHTML = `<button class="p-ikon hediye" id="hediye" aria-label="Günlük hediyeyi aç">🎁</button><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
   document.getElementById("perde").classList.add("aktif");
+  setTimeout(() => document.getElementById("hediye").focus(), 60);
   document.getElementById("hediye").onclick = e => {
     // Hızlı ikinci dokunuş ödülü ikinci kez vermesin: önce kilitle, sonra öde.
     e.currentTarget.onclick = null;
@@ -4140,7 +4169,11 @@ const SOHBET_ORNEK = [
   ["Zeynep", "Who wants to practice phrasal verbs? I can't figure out \"put up with\" 😅"],
 ];
 const SOHBET_CEVAP = ["Great sentence! 👏", "Nice! I didn't know that word.", "Good job! Keep going 💪", "Haha, me too 😄", "Can you use it in another sentence?", "Wow, your English is getting better!"];
-const YASAKLI = ["stupid", "idiot", "shut up", "hate you", "dumb", "aptal", "salak", "gerizekal", "mal "];
+// Kaba ifadeler kelime sınırıyla aranır: "normal day" içindeki "mal" gibi kelime parçaları engellenmez.
+// Türkçe kökler (aptallık, salaklar...) ekli halleriyle de yakalanır; "mal" yalnız tek başına.
+const HARF = "a-zçğıöşü";
+const YASAKLI = [["stupid", 1], ["idiot", 1], ["shut up"], ["hate you"], ["dumb"], ["aptal", 1], ["salak", 1], ["gerizekal", 1], ["mal"]]
+  .map(([s, kok]) => new RegExp(`(^|[^${HARF}])${s}${kok ? "" : `(?=$|[^${HARF}])`}`));
 const bildirilen = new Set();
 function sohbetMesajHTML(kim, metin, ben, n) {
   const renk = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
@@ -4176,7 +4209,7 @@ function sohbetGonder() {
   const g = document.getElementById("sohbet-girdi"), metin = g.value.trim();
   if (!metin) return;
   const kucuk = metin.toLocaleLowerCase("tr");
-  if (YASAKLI.some(y => kucuk.includes(y))) { Ses.yanlis(); pencere("🙀", "Bu mesaj gönderilemedi", "Çete'de nazik dil kuralı var. Başka türlü söylemeyi dene.", "Tamam"); return; }
+  if (YASAKLI.some(y => y.test(kucuk))) { Ses.yanlis(); pencere("🙀", "Bu mesaj gönderilemedi", "Çete'de nazik dil kuralı var. Başka türlü söylemeyi dene.", "Tamam"); return; }
   if (/[çğıöşüÇĞİÖŞÜ]/.test(metin)) { Ses.yanlis(); bildir("🇬🇧 Çete sohbeti İngilizce. Öneri çiplerindeki kelimelerle dene!"); return; }
   const o = ogrenilenleriIsaretle(metin);
   d.sohbet = d.sohbet || []; d.sohbet.push({ kim: "Sen", metin: metin.replace(/[<>]/g, "") });
@@ -4292,10 +4325,22 @@ function sekme(ad) {
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("aktif", b.dataset.sekme === ad));
   herSeyiCiz();
 }
-function tamAc(ad) { document.getElementById("tam-" + ad).classList.add("aktif"); }
+// Tam ekran alıştırma açılınca klavye odağı ona geçer, arkadaki ekranlar "inert" olur (Tab'la ulaşılmaz);
+// kapanınca odak açan düğmeye döner.
+let tamAcan = null;
+const arkaPlan = () => document.querySelectorAll("#uygulama > .sahne, #uygulama > .ekran, #uygulama > nav");
+function tamAc(ad) {
+  const t = document.getElementById("tam-" + ad);
+  if (!document.querySelector(".tam.aktif")) tamAcan = document.activeElement;
+  t.classList.add("aktif"); t.setAttribute("role", "dialog"); t.setAttribute("aria-modal", "true");
+  arkaPlan().forEach(e => e.inert = true);
+  setTimeout(() => { const ilk = t.querySelector("button:not(.kapat):not([disabled])") || t.querySelector("button"); if (ilk) ilk.focus(); }, 60);
+}
 function tamKapat() { document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif"));
   // Yarıda kapatılan turun cevap paneli bir sonraki tura taşınmasın (eski "Devam" yeni turu ilerletiyordu).
-  document.querySelectorAll(".geri-bildirim").forEach(g => g.className = "geri-bildirim"); speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
+  document.querySelectorAll(".geri-bildirim").forEach(g => g.className = "geri-bildirim");
+  arkaPlan().forEach(e => e.inert = false);
+  if (tamAcan && document.body.contains(tamAcan)) { try { tamAcan.focus(); } catch (e) {} } tamAcan = null; speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
 document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
 const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc(), kur: () => kurAc() };
@@ -4450,7 +4495,7 @@ document.getElementById("kedi-kutu").onclick = () => {
 };
 document.getElementById("kedi-ad").onclick = () => {
   const ad = prompt("Kedinin adı ne olsun?", d.kediAd);
-  if (ad && ad.trim()) { d.kediAd = ad.trim().slice(0, 14); kaydet(); kediCiz(); }
+  if (ad && ad.trim()) { d.kediAd = temizAd(ad); kaydet(); kediCiz(); }
 };
 document.getElementById("av-kart").onclick = () => avAc();
 
@@ -4609,6 +4654,11 @@ function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz
 yukle(); kaydet(); herSeyiCiz();
 // Gece açık kalan uygulamaya dönülünce yeni günü başlat ve ekranı tazele.
 document.addEventListener("visibilitychange", () => { if (!document.hidden && gunuYenile()) herSeyiCiz(); });
+window.addEventListener("storage", e => {
+  if (e.key !== ANAHTAR || !e.newValue) return;
+  const v = okunanDurum(ANAHTAR);
+  if (v && (v.rev || 0) > (d.rev || 0)) { d = v; herSeyiCiz(); }
+});
 setInterval(sahneCiz, 10 * 60000);
 // Ana ekrana ekleme ve çevrimdışı açılış (sw.js: internet varken hep en yeni sürüm)
 if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});

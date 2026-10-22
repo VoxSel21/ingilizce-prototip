@@ -6,74 +6,76 @@ const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
 // Ortak öğrenme durumu: her ekran, sayaç ve rozet bunu kullanır (1. kutu tanışıldı, 2-3 çalışılıyor, 4 öğrenildi).
 const DURUM = { tanisildi: "Tanışıldı", calisiliyor: "Çalışılıyor", ogrenildi: "Öğrenildi ⭐" };
 const durumu = c => !c ? null : c.kutu >= 4 ? "ogrenildi" : c.kutu >= 2 ? "calisiliyor" : "tanisildi";
-// İki kelimenin Türkçe anlamlarından biri ortaksa (child/kid = çocuk) biri diğerine yanlış şık olamaz.
-const anlamlar = k => k[1].toLocaleLowerCase("tr").split(/[;,]/).map(s => s.replace(/\(.*?\)/g, "").trim()).filter(Boolean);
-const anlamCakisir = (a, b) => { const x = anlamlar(b); return anlamlar(a).some(s => x.includes(s)); };
 const durumdaSay = (deste, dr) => deste.filter(k => durumu(d.kartlar[k[0]]) === dr).length;
 let d;
 
 function yeniDurum() {
   const b = bugunNo();
-  // Prototipte takvim boş görünmesin diye son 4 gün çalışılmış sayılır.
-  return { yildiz: 3, koruyucu: 1, kartlar: {}, gunler: { [b-1]:1, [b-2]:1, [b-3]:1, [b-4]:1 }, korunan: {},
-    bugun: { no: b, sayi: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 4, tema: "cayir", temalar: ["cayir"], rozet: {},
-    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null } };
+  // Yeni kullanıcı sıfır çalışılmış günle başlar (eski prototipteki 4 sahte gün kaldırıldı, 2026-10-22).
+  return { surum: SEMA_SURUM, yildiz: EKONOMI.baslangicAltin, koruyucu: 1, kartlar: {}, gunler: {}, korunan: {},
+    bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
+    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
+    odulDefteri: {} };
 }
-// Kayıt ve yedek doğrulama: temel alanların türü doğruysa eksik alanlar yeni durumdan tamamlanır;
-// temel alanlar bozuksa kayıt reddedilir (yedek yüklemede eski ilerleme hiç değişmez).
+// Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.
+// Bozuk kayıt reddedilir; yedek yüklemede mevcut ilerleme hiç değişmez.
 const ONCEKI = ANAHTAR + "-onceki";
-function durumGecerliMi(v) {
-  const nesne = x => x && typeof x === "object" && !Array.isArray(x);
-  if (!nesne(v) || !nesne(v.kartlar) || typeof v.yildiz !== "number" || !isFinite(v.yildiz)) return false;
-  if (v.gunler != null && !nesne(v.gunler)) return false;
-  if (v.bugun != null && !(nesne(v.bugun) && typeof v.bugun.no === "number")) return false;
-  return Object.values(v.kartlar).every(c => nesne(c) && typeof c.kutu === "number" && typeof c.sira === "number");
-}
-function tamamla(v) {
-  const t = yeniDurum();
-  for (const a in t) if (v[a] == null || typeof v[a] !== typeof t[a]) v[a] = t[a];
-  if (!Array.isArray(v.temalar)) v.temalar = t.temalar;
-  if (!Array.isArray(v.kurklar)) v.kurklar = t.kurklar;
-  if (!Array.isArray(v.esyalar)) v.esyalar = t.esyalar;
-  // Yan alanlar: liste olması gerekenler liste, içleri doğru türde; bozuk öğeler atılır (ekranlar hata vermesin).
-  const metinler = a => a.filter(x => typeof x === "string");
-  v.temalar = metinler(v.temalar); v.kurklar = metinler(v.kurklar); v.esyalar = metinler(v.esyalar);
-  if (v.sohbet != null) v.sohbet = Array.isArray(v.sohbet) ? v.sohbet.filter(m => m && typeof m.kim === "string" && typeof m.metin === "string") : [];
-  if (!v.giyili || typeof v.giyili !== "object" || Array.isArray(v.giyili)) v.giyili = t.giyili;
-  if (typeof v.bugun.sayi !== "number") v.bugun.sayi = 0;
-  return v;
-}
+// Tanınan kimlikler: bilinmeyen kelime/eşya/tema/kürk kimlikleri taşımada atılır.
+const izinliKimlikler = () => ({
+  kelimeler: new Set(KELIMELER.concat(PHRASAL).map(k => k[0])),
+  esyalar: new Set(ESYALAR.map(e => e.id)), temalar: new Set(Object.keys(TEMALAR)), kurklar: new Set(Object.keys(KURKLER)),
+});
+const durumGecerliMi = v => Kayit.dogrula(v).tamam;
+const tamamla = v => Kayit.tasi(v, yeniDurum(), izinliKimlikler());
 function okunanDurum(anahtar) {
   try { const v = JSON.parse(localStorage.getItem(anahtar)); return durumGecerliMi(v) ? tamamla(v) : null; } catch (e) { return null; }
+}
+// Sürüm taşımasından önce eski kayıt bir kez, sürüm numarasıyla ayrı saklanır (geri dönüş yolu).
+function surumYedegiAl() {
+  try {
+    const ham = localStorage.getItem(ANAHTAR); if (!ham) return;
+    const eski = (JSON.parse(ham) || {}).surum || 2;
+    const yedekAnahtar = `${ANAHTAR}-yedek-s${eski}`;
+    if (eski < SEMA_SURUM && !localStorage.getItem(yedekAnahtar)) localStorage.setItem(yedekAnahtar, ham);
+  } catch (e) {}
 }
 // Gün değişimi: uygulama gece açık kalsa da ilk eylemde ve sayfaya dönüldüğünde yeni gün başlar.
 function gunuYenile() {
   if (d.bugun.no === bugunNo()) return false;
-  koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, hediye: false }; kaydet();
+  koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, dogru: 0, hediye: false }; Ekonomi.defterTemizle(d, bugunNo()); kaydet();
   return true;
 }
+// Ortak çalışma kaydı: her öğrenme sorusu (kart, phrasal, harf, Kelime Kur, cümle) buradan sayılır.
+function soruCevaplandi(dogru) {
+  gunuYenile(); Ilerleme.soruSay(d.bugun, dogru); gunIsaretle();
+}
+// Nitelikli çalışma günü (js/ilerleme.js kuralı): takvim, seri ve en uzun seri buradan beslenir.
+function gunIsaretle() { d.gunler[bugunNo()] = 1; d.enUzun = Math.max(d.enUzun || 0, seri()); }
 // Kedi adı sayfaya HTML olarak da yazılıyor; < > & " ' işaretleri ad içinde kod gibi çalışmasın diye atılır.
 const temizAd = ad => String(ad || "").replace(/[<>&"'`]/g, "").trim().slice(0, 14);
+// Deneme kolaylıkları (?altin=, ?hepsi=1) yalnız geliştirme ortamında çalışır: bilgisayardaki yerel önizleme.
+// Yayındaki site ve telefon uygulaması bunları yok sayar.
+const GELISTIRME = !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
+  && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 function yukle() {
+  surumYedegiAl();
   d = okunanDurum(ANAHTAR) || okunanDurum(ONCEKI) || yeniDurum();
   if (d.kilo == null) d.kilo = 4.0;
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
   d.kediAd = temizAd(d.kediAd) || "Pati";
   gunuYenile();
-  // Deneme kolaylığı: linkin sonuna ?altin=500 eklenirse o kadar altın verilir, sonra adres temizlenir
-  // (yenileyince tekrar vermesin). Gerçek uygulamada olmayacak.
   const linkte = new URLSearchParams(location.search);
   if (location.search) history.replaceState(null, "", location.pathname);
+  if (!GELISTIRME) return;
   const hediyeAltin = parseInt(linkte.get("altin"), 10);
   if (hediyeAltin > 0) {
     d.yildiz += Math.min(hediyeAltin, 9999); kaydet();
-    setTimeout(() => bildir(`🪙 ${Math.min(hediyeAltin, 9999)} altın eklendi`), 400);
+    setTimeout(() => bildir(`🪙 ${Math.min(hediyeAltin, 9999)} altın eklendi (geliştirme modu)`), 400);
   }
-  // ?hepsi=1 → tüm eşyalar, kürkler ve arka planlar açılır (deneme kolaylığı)
-  if (linkte.get("hepsi")) {
-    d.esyalar = ESYALAR.map(e => e.id); d.kurklar = Object.keys(KURK_SUZGEC); d.temalar = Object.keys(TEMALAR); kaydet();
-    setTimeout(() => bildir("🎁 Tüm eşyalar açıldı"), 400);
+  if (linkte.get("hepsi") === "1") {
+    d.esyalar = ESYALAR.map(e => e.id); d.kurklar = Object.keys(KURKLER); d.temalar = Object.keys(TEMALAR); kaydet();
+    setTimeout(() => bildir("🎁 Tüm eşyalar açıldı (geliştirme modu)"), 400);
   }
 }
 // İki sekme: her kayıt bir sıra numarası (rev) taşır. Başka sekme daha yeni bir kayıt yazdıysa
@@ -97,16 +99,10 @@ function kaydet() {
 }
 
 function koruyucuKontrol() {
-  // Dün çalışılmadıysa ve koruyucu varsa dünü korunmuş say.
-  const dun = bugunNo() - 1;
-  if (!d.gunler[dun] && !d.korunan[dun] && d.gunler[dun - 1] && d.koruyucu > 0) { d.koruyucu--; d.korunan[dun] = 1; }
+  const r = Ilerleme.koruyucuUygula(d.gunler, d.korunan, d.koruyucu, bugunNo());
+  d.koruyucu = r.koruyucu; d.korunan = r.korunan;
 }
-function seri() {
-  let s = 0, g = bugunNo();
-  if (!d.gunler[g]) g--;
-  while (d.gunler[g] || d.korunan[g]) { if (d.gunler[g]) s++; g--; }
-  return s;
-}
+const seri = () => Ilerleme.seri(d.gunler, d.korunan, bugunNo());
 const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {
   const b = bugunNo();

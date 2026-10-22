@@ -22,8 +22,9 @@ function hediyePenceresi() {
     if (d.bugun.hediye) return;
     // Pencere açıkken gece yarısı geçtiyse yeni günün hedefi henüz dolmamıştır: hediye verilmez.
     if (d.bugun.sayi < 10) return pencere("🌙", "Yeni gün başladı", "Bugünkü 10 soruyu tamamlayınca hediyen seni bekliyor.", "Tamam");
-    const kazanc = 2 + (Math.random() < .3 ? 1 : 0);
-    d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16); Ses.altin();
+    // Ödeme anında gün + hedef + tekil ödeme (defter anahtarı "hediye:<gün>") birlikte kontrol edilir.
+    const h = EKONOMI.odul.gunlukHediye, kazanc = Ekonomi.kazan(d, "hediye:" + bugunNo(), h.taban + (Math.random() < h.bonusOlasilik ? h.bonus : 0), bugunNo());
+    d.bugun.hediye = true; if (!kazanc) return kaydet(); kaydet(); konfeti(e.target, 16); Ses.altin();
     setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
   };
 }
@@ -57,15 +58,15 @@ const ROZETLER = [
 ];
 function rozetKontrol() {
   ROZETLER.forEach(([id, ikon, ad, , kosul, odul]) => {
-    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; d.yildiz += odul; kaydet(); setTimeout(() => { bildir(`${ikon} Başarım: ${ad} (+${odul} 🪙)`); Ses.zafer(); }, 500); }
+    if (!d.rozet[id] && kosul()) { d.rozet[id] = 1; Ekonomi.kazan(d, "rozet:" + id, odul, bugunNo()); kaydet(); setTimeout(() => { bildir(`${ikon} Başarım: ${ad} (+${odul} 🪙)`); Ses.zafer(); }, 500); }
   });
 }
 function odulCiz() {
   document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
     `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🪙"}</small></div>`).join("");
-  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < 3 ? "disabled" : ""}>🪙 3</button></div>`;
+  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>🪙 3</button></div>`;
   document.getElementById("magaza").innerHTML = h;
-  document.querySelector('[data-al="koruyucu"]').onclick = () => { d.yildiz -= 3; d.koruyucu++; kaydet(); Ses.altin(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
+  document.querySelector('[data-al="koruyucu"]').onclick = () => { if (!Ekonomi.harca(d, EKONOMI.fiyat.koruyucu)) { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); } d.koruyucu++; kaydet(); Ses.altin(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
 }
 
 // ================= TAKVİM =================

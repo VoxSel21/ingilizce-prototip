@@ -457,3 +457,5 @@
   .av-sik.yanlis { background: var(--mercan-a); border-color: var(--mercan); }
   .geri-sayim { position: absolute; inset: 0; z-index: 5; display: none; place-items: center; background: rgba(255,248,238,.85); font-size: 96px; font-weight: 900; color: var(--lavanta); }
   .geri-sayim.aktif { display: grid; }
+  /* İçerik hata bildirimi (tanışma kartı, sol alt) */
+  .tanis .hata-bildir { position: absolute; left: 14px; bottom: 12px; font-size: 12px; font-weight: 800; color: var(--soluk); padding: 6px 8px; border-radius: 10px; }

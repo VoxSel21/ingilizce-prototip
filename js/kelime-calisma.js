@@ -93,7 +93,6 @@ function anaCiz() {
 // Yeni kelimeler 3'lü gruplar halinde önce "tanışma kartı"yla gösterilir (sınav yok),
 // sonra o 3 kelime karışık sorularla sorulur. Tekrar zamanı gelen eski kelimeler sadece soruyla gelir.
 // Cevabı uygulama değerlendirir; yanlış bilinen kelime turun sonunda bir daha sorulur.
-const karistir = a => [...a].sort(() => Math.random() - .5);
 let kO = null;
 function kartlariAc(deste = KELIMELER) {
   const liste = bekleyenler(deste);
@@ -118,6 +117,7 @@ function adimGoster() {
 function tanisCiz(k) {
   document.getElementById("k-alan").innerHTML = `
     <div class="tanis">
+      <button class="hata-bildir" id="t-hata" aria-label="Bu kartta hata bildir">⚑ Hata?</button>
       <span class="yeni-etiket">${k[7] === "phrasal verb" ? "YENİ PHRASAL VERB" : "YENİ KELİME"}</span>
       <button class="ses" id="t-ses">🔊</button>
       <div class="resim">${k[2]}</div>
@@ -132,6 +132,10 @@ function tanisCiz(k) {
   document.getElementById("t-ses").onclick = () => seslendir(k[0]);
   document.getElementById("t-ses2").onclick = () => seslendir(k[3]);
   document.getElementById("t-devam").onclick = ilerle;
+  document.getElementById("t-hata").onclick = e => {
+    d.icerikBildirim = (d.icerikBildirim || []).filter(x => x.kelime !== k[0]).concat({ kelime: k[0], gun: bugunNo() }).slice(-200);
+    kaydet(); e.currentTarget.disabled = true; e.currentTarget.textContent = "✓ Not edildi"; bildir("⚑ Teşekkürler! Bu kart kontrol listesine eklendi.");
+  };
   const ts = document.getElementById("t-soyle");
   if (ts) ts.onclick = () => {
     const sonuc = document.getElementById("t-soyle-sonuc");
@@ -185,7 +189,7 @@ function soruCiz(a) {
       mik.classList.add("dinliyor"); durum.textContent = "Dinliyorum...";
       konusmaDinle(k[0], o => {
         mik.classList.remove("dinliyor");
-        if (o.hata) { durum.textContent = konusmaHataYazi(o.hata); if (o.hata === "not-allowed" || o.hata === "service-not-allowed") { d.konusmaKapali = Date.now() + 15 * 60000; kaydet(); a.sesYok = true; setTimeout(() => soruCiz(a), 900); } return; }
+        if (o.hata) { durum.textContent = konusmaHataYazi(o.hata); if (o.hata === "not-allowed" || o.hata === "service-not-allowed") { d.konusmaKapali = Date.now() + 15 * 60000; kaydet(); a.sesYok = true; const tur = kO; setTimeout(() => { if (kO === tur && kO.sira[kO.i] === a) soruCiz(a); }, 900); } return; }
         if (o.ok) return cevapla(a, true, mik);
         deneme++; Ses.yanlis();
         if (deneme >= 3) return cevapla(a, false, mik);
@@ -216,7 +220,7 @@ function cevapla(a, dogru, el) {
     d.kartlar[k[0]] = { kutu: 1, sira: bugun, hata: ((c && c.hata) || 0) + 1 };
     kO.sira.push({ tip: "soru", k, tekrar: true }); // turun sonunda bir daha sor
   }
-  gunuYenile(); d.bugun.sayi++; d.gunler[bugun] = 1; d.enUzun = Math.max(d.enUzun, seri());
+  soruCevaplandi(dogru);
   kaydet(); rozetKontrol();
   sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
   const gb = document.getElementById("k-gb");

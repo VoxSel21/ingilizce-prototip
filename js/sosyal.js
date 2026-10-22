@@ -35,7 +35,7 @@ function ceteCiz() {
       <p class="soluk" style="font-size:14px;margin-top:4px;">"Çete ruhu" başarımı (+5 🪙). Gerçek uygulamada sadece çeteyle kazanılan özel eşyalar da olacak.</p></div>`;
   document.querySelectorAll("[data-cete]").forEach(b => b.onclick = () => {
     const g = CETE_GOREVLER[+b.dataset.cete]; if (d.ceteOdul[ceteAnahtar(g)]) return;
-    d.ceteOdul[ceteAnahtar(g)] = 1; d.yildiz += g.odul; kaydet(); Ses.altin(); konfeti(b, 8); bildir(`${g.ikon} Çete görevi bitti! +${g.odul} 🪙`); rozetKontrol(); herSeyiCiz();
+    d.ceteOdul[ceteAnahtar(g)] = 1; Ekonomi.kazan(d, "cete:" + ceteAnahtar(g), g.odul, bugunNo()); kaydet(); Ses.altin(); konfeti(b, 8); bildir(`${g.ikon} Çete görevi bitti! +${g.odul} 🪙`); rozetKontrol(); herSeyiCiz();
   });
 }
 function arkadasCiz() {
@@ -113,8 +113,9 @@ function ikiliCiz() {
       ${bitti ? `<button class="ikili-dugme" data-ikili-al="${i}">🎉 Ödülü al (+${sb.odul} 🪙)</button>` : ""}</div>`;
   }).join("");
   document.querySelectorAll("[data-ikili-al]").forEach(b => b.onclick = () => {
-    const g = d.ikili[+b.dataset.ikiliAl], sb = IKILI_SABLON.find(x => x.id === g.sablon);
-    d.yildiz += sb.odul; d.ikiliBiten = (d.ikiliBiten || 0) + 1; d.ikili.splice(+b.dataset.ikiliAl, 1);
+    b.onclick = null; // çift dokunma başka görevin ödülünü almasın
+    const g = d.ikili[+b.dataset.ikiliAl], sb = g && IKILI_SABLON.find(x => x.id === g.sablon); if (!sb) return;
+    Ekonomi.kazan(d, `ikili:${g.sablon}:${g.arkadas}:${g.bas}`, sb.odul, bugunNo()); d.ikiliBiten = (d.ikiliBiten || 0) + 1; d.ikili.splice(+b.dataset.ikiliAl, 1);
     kaydet(); Ses.zafer(); konfeti(b, 12); bildir(`🤝 ${g.arkadas} ile görev bitti! +${sb.odul} 🪙`); rozetKontrol(); herSeyiCiz();
   });
 }
@@ -153,30 +154,46 @@ const HARF = "a-zçğıöşü";
 const YASAKLI = [["stupid", 1], ["idiot", 1], ["shut up"], ["hate you"], ["dumb"], ["aptal", 1], ["salak", 1], ["gerizekal", 1], ["mal"]]
   .map(([s, kok]) => new RegExp(`(^|[^${HARF}])${s}${kok ? "" : `(?=$|[^${HARF}])`}`));
 const bildirilen = new Set();
-// Sohbet metni ekrana HTML olarak basılmadan önce & < > " kaçışlanır: yedekten gelen mesaj sayfaya kod sokamaz.
-const kacis = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-function sohbetMesajHTML(kim, metin, ben, n) {
-  const renk = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
-  return `<div class="mesaj ${ben ? "ben" : ""}">${ben ? "" : `<span class="kim" style="color:${renk}">${kacis(kim)}</span><button class="bildir" data-bildir="${n}" aria-label="Bildir">🚩</button>`}${metin}</div>`;
-}
+// Sohbet güvenliği (R02): mesajlar HTML metni olarak değil, öğe öğe (textContent) kurulur.
+// Yedekten ya da dışarıdan gelen metin ne içerirse içersin sayfada kod olarak çalışamaz.
 function ogrenilenleriIsaretle(metin) {
-  const kullanilan = [];
-  const html = kacis(metin).replace(/[A-Za-z']+/g, w => {
-    const k = KELIMELER.find(x => x[0] === w.toLowerCase());
-    if (k && d.kartlar[k[0]] && !kullanilan.includes(k[0])) { kullanilan.push(k[0]); return `<mark>${w}</mark>`; }
-    return w;
-  });
-  return { html, kullanilan };
+  const kullanilan = [], parcalar = [];
+  let son = 0;
+  for (const m of String(metin).matchAll(/[A-Za-z']+/g)) {
+    const k = KELIMELER.find(x => x[0] === m[0].toLowerCase());
+    if (k && d.kartlar[k[0]] && !kullanilan.includes(k[0])) {
+      kullanilan.push(k[0]);
+      parcalar.push({ metin: metin.slice(son, m.index) }, { metin: m[0], isaretli: true });
+      son = m.index + m[0].length;
+    }
+  }
+  parcalar.push({ metin: String(metin).slice(son) });
+  return { parcalar, kullanilan };
+}
+function sohbetMesajEl(kim, metin, ben, n) {
+  const el = document.createElement("div"); el.className = "mesaj" + (ben ? " ben" : "");
+  if (!ben) {
+    const k = document.createElement("span"); k.className = "kim"; k.textContent = kim;
+    k.style.color = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
+    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bildir"); b.textContent = "🚩";
+    el.append(k, b, document.createTextNode(metin));
+    return el;
+  }
+  const o = ogrenilenleriIsaretle(metin);
+  for (const p of o.parcalar) {
+    if (!p.isaretli) { el.append(document.createTextNode(p.metin)); continue; }
+    const m = document.createElement("mark"); m.textContent = p.metin; el.append(m);
+  }
+  if (o.kullanilan.length) { const s = document.createElement("span"); s.className = "ogrendi"; s.textContent = `✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın`; el.append(s); }
+  return el;
 }
 function sohbetCiz() {
   d.sohbet = d.sohbet || [];
   const liste = document.getElementById("sohbet-liste");
-  let h = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? "" : sohbetMesajHTML(kim, kacis(m), false, "o" + n)).join("");
+  const ogeler = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? null : sohbetMesajEl(kim, m, false, "o" + n));
   const bas = Math.max(0, d.sohbet.length - 30);
-  h += d.sohbet.slice(bas).map((m, n) => bildirilen.has("s" + (bas + n)) ? "" : m.kim === "Sen"
-    ? (() => { const o = ogrenilenleriIsaretle(m.metin); return sohbetMesajHTML("Sen", o.html + (o.kullanilan.length ? `<span class="ogrendi">✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın</span>` : ""), true); })()
-    : sohbetMesajHTML(m.kim, kacis(m.metin), false, "s" + (bas + n))).join("");
-  liste.innerHTML = h; liste.scrollTop = liste.scrollHeight;
+  d.sohbet.slice(bas).forEach((m, n) => { if (!bildirilen.has("s" + (bas + n))) ogeler.push(sohbetMesajEl(m.kim, m.metin, m.kim === "Sen", "s" + (bas + n))); });
+  liste.replaceChildren(...ogeler.filter(Boolean)); liste.scrollTop = liste.scrollHeight;
   liste.querySelectorAll("[data-bildir]").forEach(b => b.onclick = () => {
     bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Bildirildi. Moderatör inceleyecek, mesaj senden gizlendi."); sohbetCiz();
   });
@@ -194,8 +211,8 @@ function sohbetGonder() {
   const o = ogrenilenleriIsaretle(metin);
   d.sohbet = d.sohbet || []; d.sohbet.push({ kim: "Sen", metin: metin.replace(/[<>]/g, "") });
   let odul = 0;
-  if (o.kullanilan.length && d.sohbetOdulGunu !== bugunNo()) { odul = 1; d.yildiz += 1; d.sohbetOdulGunu = bugunNo(); }
-  d.gunler[bugunNo()] = 1; kaydet(); Ses.pop(); g.value = ""; sohbetCiz();
+  if (o.kullanilan.length) { odul = Ekonomi.kazan(d, "sohbet:" + bugunNo(), EKONOMI.odul.sohbet.miktar, bugunNo()); if (odul) d.sohbetOdulGunu = bugunNo(); }
+  kaydet(); // sohbete yazmak çalışma günü saymaz (js/ilerleme.js kuralı) Ses.pop(); g.value = ""; sohbetCiz();
   if (odul) { Ses.altin(); bildir(`✨ Öğrendiğin kelimeyi gerçek sohbette kullandın! +1 🪙 (günde bir kez)`); }
   // Örnek cevap: bir çete üyesi yazar
   setTimeout(() => {
@@ -241,7 +258,7 @@ function savasSonuc(mod, puan) {
   savasDurum();
   const m = SAVAS_MODLAR.find(x => x.id === mod), eski = d.savas.en[mod] || 0, rekor = puan > eski;
   if (rekor) d.savas.en[mod] = puan;
-  d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
+  gunIsaretle(); kaydet(); rozetKontrol();
   rekor ? Ses.zafer() : Ses.dogru();
   tamKapat();
   pencere(m.ikon, rekor ? "Yeni en iyi puan!" : `${m.ad} bitti`, `${puan} puan. ${rekor ? `Çetene ${puan - eski} puan eklendi ⚔️` : `En iyin ${eski}; çeteye en iyi puanın sayılır.`}`, "Tamam");
@@ -290,7 +307,7 @@ function savasSoru() {
     if (!ok) document.querySelectorAll("#sv-siklar .av-sik").forEach(x => { if (x.textContent === dogru) x.classList.add("dogru"); });
     if (ok) { sv.dogru++; sv.puan += sv.mod === "hiz" ? 10 : 15; Ses.dogru(); } else Ses.yanlis();
     document.getElementById("sv-puan").textContent = `⚔️ ${sv.puan} puan`;
-    setTimeout(() => { if (!sv || sv.bitti) return; sv.i++; savasSoru(); }, ok ? 250 : 700);
+    const oyun = sv; setTimeout(() => { if (sv !== oyun || oyun.bitti) return; sv.i++; savasSoru(); }, ok ? 250 : 700);
   });
 }
 function savasHizliBitir() {

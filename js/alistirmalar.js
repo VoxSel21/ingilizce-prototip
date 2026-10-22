@@ -80,15 +80,17 @@ function eslesSec(b) {
 }
 function eslesBitir() {
   es.bitti = true; const sure = eslesSure();
-  if (es.savas) { const puan = Math.max(20, Math.round(240 - sure * 4)); Ses.dogru(); setTimeout(() => savasSonuc("esles", puan), 500); return; }
+  const oyun = es; // sonuç penceresi yalnız bu oyun hâlâ açıksa (kapatıldıysa yeni bir oyunu kapatmasın)
+  if (es.savas) { const puan = Math.max(20, Math.round(240 - sure * 4)); Ses.dogru(); setTimeout(() => { if (es === oyun) savasSonuc("esles", puan); }, 500); return; }
   const rekor = !d.eslesRekor || sure < d.eslesRekor;
   if (rekor) d.eslesRekor = Math.round(sure * 10) / 10;
-  const odul = sure < 45 && d.eslesGunu !== bugunNo() ? 1 : 0;
-  if (odul) { d.yildiz += 1; d.eslesGunu = bugunNo(); }
-  d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
+  const odul = sure < EKONOMI.odul.eslesme.sureSiniri ? Ekonomi.kazan(d, "esles:" + bugunNo(), EKONOMI.odul.eslesme.miktar, bugunNo()) : 0;
+  if (odul) d.eslesGunu = bugunNo();
+  gunIsaretle(); kaydet(); rozetKontrol();
   rekor || odul ? Ses.zafer() : Ses.dogru();
   const cift = es.kelimeler.length, ceza = es.ceza;
   setTimeout(() => {
+    if (es !== oyun) return;
     tamKapat();
     pencere("🐾", rekor ? "Yeni rekor!" : "Hepsini eşleştirdin!", `${cift} çift, ${sure.toFixed(1)} saniye${ceza ? ` (${ceza} sn ceza dahil)` : ""}. Rekorun: ${d.eslesRekor} sn.${odul ? " +1 🪙" : d.eslesGunu === bugunNo() ? "" : " 45 saniyenin altında bitirirsen 1 🪙."}`, "Tamam");
   }, 500);
@@ -120,7 +122,7 @@ function kurAdim() {
     const c = d.kartlar[k[0]] || { kutu: 1, sira: bugunNo() };
     c.hata = Math.max(0, (c.hata || 0) + (dogru ? -1 : 1)); d.kartlar[k[0]] = c;
     if (dogru) { kur.dogru++; konfeti(yuva, 6); }
-    gunuYenile(); d.bugun.sayi++; d.gunler[bugunNo()] = 1; d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
+    soruCevaplandi(dogru); d.kurSira = (d.kurSira || 0) + 1; kaydet(); rozetKontrol();
     sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
     const gb = document.getElementById("kur-gb");
     gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("kur-gb-devam");
@@ -149,9 +151,14 @@ document.getElementById("yedek-al").onclick = async () => {
 document.getElementById("yedek-yukle").onclick = () => {
   const kod = (prompt("Yedek kodunu buraya yapıştır:") || "").trim();
   if (!kod) return;
+  if (kod.length > YEDEK_EN_FAZLA) return pencere("😿", "Kod çok uzun", "Bu bir Pati yedek kodu gibi görünmüyor. Mevcut ilerlemen değişmedi.", "Tamam");
+  let veri;
+  try { veri = JSON.parse(decodeURIComponent(escape(atob(kod.replace(/^PATI1:/, ""))))); }
+  catch (e) { return pencere("😿", "Kod okunamadı", "Kodun tamamını kopyaladığından emin ol (PATI1: ile başlamalı). Mevcut ilerlemen değişmedi.", "Tamam"); }
+  // Ayrıntılı doğrulama (js/kayit.js): bozuk yedek mevcut kaydın yerine geçmez, nedeni söylenir.
+  const sonuc = Kayit.dogrula(veri);
+  if (!sonuc.tamam) return pencere("😿", "Yedek yüklenmedi", sonuc.hata + " Mevcut ilerlemen değişmedi.", "Tamam");
   try {
-    const veri = JSON.parse(decodeURIComponent(escape(atob(kod.replace(/^PATI1:/, "")))));
-    if (!durumGecerliMi(veri)) throw new Error("biçim");
     if (!confirm("Bu tarayıcıdaki ilerlemenin yerine yedek yüklensin mi?")) return;
     // Mevcut ilerleme silinmeden önce bir kopya saklanır; yeni kayıt açılmazsa ona dönülür.
     try { localStorage.setItem(ONCEKI, JSON.stringify(d)); } catch (e) {}
@@ -184,8 +191,8 @@ function cumleGoster() {
   document.getElementById("c-sayac").textContent = `${cIndex}/${cDeste.length}`;
   document.getElementById("c-cubuk").style.width = (cIndex / cDeste.length * 100) + "%";
   const cumleKel = c[1].toLowerCase().split(" ");
-  const celdirici = c[2].length ? c[2] : KELIMELER.filter(k => k[5] === c[3] && !cumleKel.includes(k[0])).sort(() => Math.random() - .5).slice(0, 2).map(k => k[0]);
-  const bloklar = c[1].split(" ").concat(celdirici).sort(() => Math.random() - .5);
+  const celdirici = c[2].length ? c[2] : karistir(KELIMELER.filter(k => k[5] === c[3] && !cumleKel.includes(k[0]))).slice(0, 2).map(k => k[0]);
+  const bloklar = karistir(c[1].split(" ").concat(celdirici));
   dizilen = []; cDegerlendi = false;
   document.getElementById("havuz").innerHTML = bloklar.map((b, i) => `<button class="blok" data-i="${i}">${b}</button>`).join("");
   document.getElementById("dizi").innerHTML = "";
@@ -213,15 +220,15 @@ document.getElementById("kontrol").onclick = () => {
   document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
   document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
   if (dogru) { d.cumleDogru++; cTurDogru++; konfeti(document.getElementById("kontrol"), 10); }
-  gunuYenile(); d.bugun.sayi++; // cümle sorusu da günlük hedefe sayılır (Serhat kararı, 2026-10-22)
+  soruCevaplandi(dogru); // cümle sorusu da günlük hedefe sayılır (Serhat kararı, 2026-10-22)
   sonucSesi(dogru); setTimeout(() => seslendir(c[1], true), 450);
-  d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
+  kaydet(); rozetKontrol();
 };
 document.getElementById("gb-devam").onclick = () => {
   if (!panelAcik("geri-bildirim") || !cDegerlendi) return; // cevaplanmamış soru Devam'la atlanamaz
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
   if (cIndex >= cDeste.length && cSavas) { cSavas = false; savasSonuc("cumle", cTurDogru * 30); return; }
-  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
+  if (cIndex >= cDeste.length) { const c3 = EKONOMI.odul.cumleTuru, o = cTurDogru >= c3.enAzDogru ? Ekonomi.kazanSinirli(d, "cumle", bugunNo(), c3.gunlukSinir, c3.miktar) : 0; kaydet(); if (o) Ses.altin(); tamKapat(); if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? `+${o} 🪙 kazandın!` : cTurDogru >= c3.enAzDogru ? "Bugünkü cümle altınları tamam, pratik devam! 💪" : `${c3.enAzDogru} doğru yaparsan ${c3.miktar} 🪙 kazanırsın.`}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
 };
 

@@ -84,13 +84,19 @@ function kediCiz() {
   document.getElementById("dolap").innerHTML = h;
   document.querySelectorAll("[data-esya]").forEach(b => b.onclick = () => {
     const e = ESYALAR.find(x => x.id === b.dataset.esya);
-    if (!d.esyalar.includes(e.id) && !(e.rozet && d.rozet[e.rozet])) { d.yildiz -= e.fiyat; d.esyalar.push(e.id); bildir(`✨ ${e.ad} alındı!`); Ses.altin(); }
+    if (!d.esyalar.includes(e.id) && !(e.rozet && d.rozet[e.rozet])) {
+      if (Ekonomi.satinAl(d, "esyalar", e.id, e.fiyat) === "yetersiz") { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); }
+      bildir(`✨ ${e.ad} alındı!`); Ses.altin();
+    }
     d.giyili[e.yer] = d.giyili[e.yer] === e.id ? null : e.id;
     kaydet(); rozetKontrol(); herSeyiCiz(); kediSoyle(d.giyili[e.yer] ? "Yakıştı mı? 😸" : "Böyle de fena değilim 😼");
   });
   document.querySelectorAll("[data-kurk]").forEach(b => b.onclick = () => {
     const id = b.dataset.kurk;
-    if (!d.kurklar.includes(id)) { d.yildiz -= KURKLER[id].fiyat; d.kurklar.push(id); bildir("🎨 Yeni kürk rengi!"); Ses.altin(); }
+    if (!d.kurklar.includes(id)) {
+      if (Ekonomi.satinAl(d, "kurklar", id, KURKLER[id].fiyat) === "yetersiz") { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); }
+      bildir("🎨 Yeni kürk rengi!"); Ses.altin();
+    }
     d.kurk = id; kaydet(); herSeyiCiz();
   });
   // Arka planlar (eskiden yıldız dükkânındaydı)
@@ -103,7 +109,10 @@ function kediCiz() {
   document.getElementById("sahneler").innerHTML = s;
   document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
     const k = b.dataset.tema;
-    if (!d.temalar.includes(k)) { d.yildiz -= TEMALAR[k].fiyat; d.temalar.push(k); bildir(TEMALAR[k].ikon + " Yeni arka plan açıldı!"); Ses.altin(); }
+    if (!d.temalar.includes(k)) {
+      if (Ekonomi.satinAl(d, "temalar", k, TEMALAR[k].fiyat) === "yetersiz") { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); }
+      bildir(TEMALAR[k].ikon + " Yeni arka plan açıldı!"); Ses.altin();
+    }
     d.tema = k; kaydet(); herSeyiCiz();
   });
 }

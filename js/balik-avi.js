@@ -14,8 +14,8 @@ function avAc() {
     pencere("🐟", "Bugünkü avını yaptın", d.avSonuc || "Yarın yeni balık gelecek.", "Tamam", null);
     // Prototipte denemeyi kolaylaştırmak için tekrar oynama yolu
     const p = document.getElementById("pencere"); const t = document.createElement("button");
-    t.textContent = "Test için tekrar oyna"; t.style.cssText = "margin-top:12px;font-weight:800;color:var(--soluk);text-decoration:underline;font-size:13px;";
-    t.onclick = () => { document.getElementById("perde").classList.remove("aktif"); avBasla(); }; p.appendChild(t);
+    t.textContent = "Pratik için tekrar oyna (ödülsüz)"; t.style.cssText = "margin-top:12px;font-weight:800;color:var(--soluk);text-decoration:underline;font-size:13px;";
+    t.onclick = () => { document.getElementById("perde").classList.remove("aktif"); avBasla(true); }; p.appendChild(t);
     return;
   }
   pencere("🐟", "Günün balık avı", "10 kelime, 30 saniye. Her doğru cevapta kedi balığa doğru atılır. Yanlışta balıkçı fark eder ❗; üst üste iki yanlışta kedi bir adım geri kaçar. 10 kelimenin 7'sini bilirsen balığa ulaşırsın. Balıkçı fark etmeden yetiş! Balığa ulaşırsan 1 🪙 kazanırsın. Günde bir kez oynanır.", "Başla", avBasla);
@@ -23,10 +23,10 @@ function avAc() {
 function avKelimeleri() {
   // Önce çalışılmış kelimeler (tekrar işlevi görür), yetmezse yenileri
   const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]), diger = KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye);
-  return [...calisilan].sort(() => Math.random() - .5).concat([...diger].sort(() => Math.random() - .5)).slice(0, 10);
+  return karistir(calisilan).concat(karistir(diger)).slice(0, 10);
 }
-function avBasla() {
-  av = { kelimeler: avKelimeleri(), i: 0, konum: 0, kalan: AV.SURE, durma: 0, atilma: 0, dogru: 0, yanlis: 0, ust: 0, bitti: false, kilit: true };
+function avBasla(pratik = false) {
+  av = { pratik, kelimeler: avKelimeleri(), i: 0, konum: 0, kalan: AV.SURE, durma: 0, atilma: 0, dogru: 0, yanlis: 0, ust: 0, bitti: false, kilit: true };
   tamAc("av"); avKonumCiz(); avSoruCiz();
   document.getElementById("av-uyari").textContent = "Balıkçı fark etmeden balığa ulaş!";
   document.getElementById("av-balikci").classList.remove("dondu");
@@ -67,7 +67,7 @@ function avSoruCiz() {
     return; } // bitiş kontrolü oyun döngüsünde
   const k = av.kelimeler[av.i];
   document.getElementById("av-kelime").textContent = k[0];
-  const siklar = [k[1], ...KELIMELER.filter(x => x[0] !== k[0] && !anlamCakisir(x, k)).sort(() => Math.random() - .5).slice(0, 3).map(x => x[1])].sort(() => Math.random() - .5);
+  const siklar = karistir([k[1], ...karistir(KELIMELER.filter(x => x[0] !== k[0] && !anlamCakisir(x, k))).slice(0, 3).map(x => x[1])]);
   document.getElementById("av-siklar").innerHTML = siklar.map(s => `<button class="av-sik">${s}</button>`).join("");
   document.querySelectorAll(".av-sik").forEach(b => b.onclick = () => avCevap(b, b.textContent === k[1], k));
 }
@@ -109,14 +109,18 @@ function avBitir(ulasti) {
   const kedi = document.getElementById("av-kedi"); kedi.classList.remove("kosuyor");
   const yuzde = ulasti ? 100 : Math.min(99, Math.floor(av.konum / AV.YOL * 100));
   // Ödül kademeli: ulaşırsa büyük ödül, ulaşamazsa yaklaştığı kadar küçük teselli
-  const odul = ulasti ? 1 : 0; // Serhat: oyunu bitirmek 1 altın
-  if (ulasti) kiloDegis(0.5); // balığı yedi
-  d.yildiz += odul; d.avGunu = bugunNo(); (d.avlar = d.avlar || {})[bugunNo()] = 1;
+  // Serhat: oyunu bitirmek 1 altın, günde bir (defterden). Pratik turu ödülsüz: altın, kilo ve haftalık sayı değişmez.
+  const odul = ulasti && !av.pratik ? Ekonomi.kazan(d, "av:" + bugunNo(), EKONOMI.odul.balikAvi.miktar, bugunNo()) : 0;
+  if (ulasti && !av.pratik) kiloDegis(0.5); // balığı yedi
+  if (!av.pratik) { d.avGunu = bugunNo(); (d.avlar = d.avlar || {})[bugunNo()] = 1; }
+  gunIsaretle();
   d.avSonuc = `${av.dogru} doğru, ${av.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🪙`;
   kaydet(); avDugmeCiz();
   if (ulasti) { kedi.textContent = "😻"; document.getElementById("av-uyari").textContent = "Kaptı! 🐟"; Ses.zafer(); }
   else { kedi.textContent = "🙀"; document.getElementById("av-balikci").classList.add("dondu"); document.getElementById("av-uyari").textContent = "Balıkçı fark etti! ❗"; }
+  const oyun = av;
   setTimeout(() => {
+    if (av !== oyun || !document.getElementById("tam-av").classList.contains("aktif")) return;
     tamKapat();
     pencere(ulasti ? "😻" : "🙀", ulasti ? "Balığı kaptın!" : "Balıkçı fark etti!",
       `${av.dogru} doğru, ${av.yanlis} yanlış. ${ulasti ? `Kalan süre: ${Math.ceil(av.kalan)} sn.` : `Kedi yolun %${yuzde}'ine geldi.`} +${odul} 🪙`, "Tamam");

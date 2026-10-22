@@ -6,7 +6,7 @@ function pencere(ikon, baslik, yazi, dugme, sonra) {
   document.getElementById("p-dugme").onclick = () => { document.getElementById("perde").classList.remove("aktif"); sonra && sonra(); herSeyiCiz(); };
 }
 function bitisPenceresi() {
-  if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
+  if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
   else pencere("🃏", "Tur bitti!", `Bugün ${d.bugun.sayi} kart çalıştın.`, "Tamam");
 }
 function hediyePenceresi() {
@@ -21,7 +21,7 @@ function hediyePenceresi() {
     gunuYenile();
     if (d.bugun.hediye) return;
     // Pencere açıkken gece yarısı geçtiyse yeni günün hedefi henüz dolmamıştır: hediye verilmez.
-    if (d.bugun.sayi < 10) return pencere("🌙", "Yeni gün başladı", "Bugünkü 10 soruyu tamamlayınca hediyen seni bekliyor.", "Tamam");
+    if (d.bugun.sayi < gunlukHedef()) return pencere("🌙", "Yeni gün başladı", "Bugünkü hedefi tamamlayınca hediyen seni bekliyor.", "Tamam");
     // Ödeme anında gün + hedef + tekil ödeme (defter anahtarı "hediye:<gün>") birlikte kontrol edilir.
     const h = EKONOMI.odul.gunlukHediye, kazanc = Ekonomi.kazan(d, "hediye:" + bugunNo(), h.taban + (Math.random() < h.bonusOlasilik ? h.bonus : 0), bugunNo());
     d.bugun.hediye = true; if (!kazanc) return kaydet(); kaydet(); konfeti(e.target, 16); Ses.altin();
@@ -45,7 +45,7 @@ function bildir(m) { const b = document.getElementById("bildirim"); b.textConten
 const ROZETLER = [
   ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 1],
   ["on", "📚", "10 kelime", "10 kelimeyi çalışılıyor aşamasına (2. kutu) taşı", () => durumdaSay(KELIMELER, "calisiliyor") + durumdaSay(KELIMELER, "ogrenildi") >= 10, 3],
-  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= 10, 2],
+  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= gunlukHedef(), 2],
   ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 2],
   ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 10],
   ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 2],

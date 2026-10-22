@@ -4,6 +4,8 @@
 const SEMA_SURUM = 3;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22)
 const YEDEK_EN_FAZLA = 1500000;  // yedek kodunun en fazla karakteri (bozuk ya da şişirilmiş yedeğe karşı)
 const SINIR = { sohbet: 200, metin: 500, kim: 30, kediAd: 14, liste: 500 };
+// Ayarlar ekranının izinli değerleri; bilinmeyen değer varsayılana döner.
+const AYAR_SECENEK = { hedef: [5, 10, 15, 20], tema: ["sistem", "pastel", "koyu", "kontrast"], hareket: ["sistem", "azalt", "normal"] };
 
 const Kayit = {
   // Sonuç: { tamam: true } ya da { tamam: false, hata: "kullanıcıya gösterilecek kısa neden" }.
@@ -33,6 +35,7 @@ const Kayit = {
     if (v.icerikBildirim != null && (!Array.isArray(v.icerikBildirim) || v.icerikBildirim.length > SINIR.liste)) return hata("İçerik bildirimleri bozuk.");
     if (v.sohbet != null && (!Array.isArray(v.sohbet) || v.sohbet.length > SINIR.sohbet * 5)) return hata("Sohbet kaydı bozuk.");
     if (v.kediAd != null && typeof v.kediAd !== "string") return hata("Kedi adı bozuk.");
+    if (v.ayar != null && !nesne(v.ayar)) return hata("Ayarlar bozuk.");
     return { tamam: true };
   },
 
@@ -61,9 +64,13 @@ const Kayit = {
     if (typeof v.bugun.sayi !== "number" || v.bugun.sayi < 0) v.bugun.sayi = 0;
     if (typeof v.bugun.hediye !== "boolean") v.bugun.hediye = false;
     if (!v.odulDefteri || typeof v.odulDefteri !== "object") v.odulDefteri = {};
+    v.ayar = { ...t.ayar, ...(v.ayar && typeof v.ayar === "object" && !Array.isArray(v.ayar) ? v.ayar : {}) };
+    for (const [a, l] of Object.entries(AYAR_SECENEK)) if (!l.includes(v.ayar[a])) v.ayar[a] = t.ayar[a];
+    for (const a of ["titresim", "seslendirme"]) if (typeof v.ayar[a] !== "boolean") v.ayar[a] = t.ayar[a];
+    for (const a of Object.keys(v.ayar)) if (!(a in t.ayar)) delete v.ayar[a];
     v.surum = SEMA_SURUM;
     return v;
   },
 };
 
-if (typeof module === "object" && module.exports) module.exports = { Kayit, SEMA_SURUM, YEDEK_EN_FAZLA, SINIR };
+if (typeof module === "object" && module.exports) module.exports = { Kayit, SEMA_SURUM, YEDEK_EN_FAZLA, SINIR, AYAR_SECENEK };

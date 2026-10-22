@@ -15,7 +15,7 @@ function yeniDurum() {
   return { surum: SEMA_SURUM, yildiz: EKONOMI.baslangicAltin, koruyucu: 1, kartlar: {}, gunler: {}, korunan: {},
     bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
     kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
-    odulDefteri: {} };
+    odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true } };
 }
 // Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.
 // Bozuk kayıt reddedilir; yedek yüklemede mevcut ilerleme hiç değişmez.
@@ -102,6 +102,7 @@ function koruyucuKontrol() {
   const r = Ilerleme.koruyucuUygula(d.gunler, d.korunan, d.koruyucu, bugunNo());
   d.koruyucu = r.koruyucu; d.korunan = r.korunan;
 }
+const gunlukHedef = () => (d && d.ayar && d.ayar.hedef) || 10;
 const seri = () => Ilerleme.seri(d.gunler, d.korunan, bugunNo());
 const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {

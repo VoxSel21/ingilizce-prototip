@@ -41,7 +41,7 @@ const Ses = (() => {
 })();
 function sonucSesi(dogru) { dogru ? Ses.dogru() : Ses.yanlis(); }
 function seslendir(metin, otomatik = false) {
-  if (otomatik && d.sesKapali) return;
+  if (otomatik && (d.sesKapali || (d.ayar && d.ayar.seslendirme === false))) return; // 🔊 düğmesi her zaman okur
   try { const u = new SpeechSynthesisUtterance(metin); u.lang = "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
 }
 function sesDugmeleriCiz() { document.querySelectorAll(".ses-dugme").forEach(b => b.textContent = d.sesKapali ? "🔇" : "🔊"); }

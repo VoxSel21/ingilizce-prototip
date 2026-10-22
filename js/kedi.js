@@ -107,7 +107,7 @@ function kediCiz() {
       <button class="al ${secili ? "secili" : ""}" data-tema="${k}" ${!var_ && d.yildiz < t2.fiyat ? "disabled" : ""}>${secili ? "Seçili" : var_ ? "Kullan" : "🪙 " + t2.fiyat}</button></div>`;
   }
   document.getElementById("sahneler").innerHTML = s;
-  document.querySelectorAll("[data-tema]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#sahneler [data-tema]").forEach(b => b.onclick = () => {
     const k = b.dataset.tema;
     if (!d.temalar.includes(k)) {
       if (Ekonomi.satinAl(d, "temalar", k, TEMALAR[k].fiyat) === "yetersiz") { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); }

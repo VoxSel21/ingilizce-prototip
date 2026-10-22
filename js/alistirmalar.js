@@ -136,37 +136,11 @@ document.getElementById("kur-gb-devam").onclick = () => {
   kur.i++;
   if (kur.i < kur.liste.length) { kurAdim(); return alistirmaOdak(); }
   const sonuc = kur; kur = null; tamKapat();
-  if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi();
+  if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) return hediyePenceresi();
   pencere("🔤", "Kelime Kur bitti!", `${sonuc.dogru}/${sonuc.liste.length} kelimeyi doğru kurdun. Bir sonraki turda kaldığın yerden devam edersin.`, "Tamam");
 };
 
-// ================= YEDEK =================
-// İlerleme kodu: verinin JSON'u, Base64'e çevrilmiş hali. Türkçe karakterler için önce UTF-8'e çevrilir.
-const yedekKodu = () => "PATI1:" + btoa(unescape(encodeURIComponent(JSON.stringify(d))));
-document.getElementById("yedek-al").onclick = async () => {
-  const kod = yedekKodu();
-  try { await navigator.clipboard.writeText(kod); bildir("💾 Yedek kodu kopyalandı"); }
-  catch (e) { prompt("Bu kodu kopyala ve sakla:", kod); }
-};
-document.getElementById("yedek-yukle").onclick = () => {
-  const kod = (prompt("Yedek kodunu buraya yapıştır:") || "").trim();
-  if (!kod) return;
-  if (kod.length > YEDEK_EN_FAZLA) return pencere("😿", "Kod çok uzun", "Bu bir Pati yedek kodu gibi görünmüyor. Mevcut ilerlemen değişmedi.", "Tamam");
-  let veri;
-  try { veri = JSON.parse(decodeURIComponent(escape(atob(kod.replace(/^PATI1:/, ""))))); }
-  catch (e) { return pencere("😿", "Kod okunamadı", "Kodun tamamını kopyaladığından emin ol (PATI1: ile başlamalı). Mevcut ilerlemen değişmedi.", "Tamam"); }
-  // Ayrıntılı doğrulama (js/kayit.js): bozuk yedek mevcut kaydın yerine geçmez, nedeni söylenir.
-  const sonuc = Kayit.dogrula(veri);
-  if (!sonuc.tamam) return pencere("😿", "Yedek yüklenmedi", sonuc.hata + " Mevcut ilerlemen değişmedi.", "Tamam");
-  try {
-    if (!confirm("Bu tarayıcıdaki ilerlemenin yerine yedek yüklensin mi?")) return;
-    // Mevcut ilerleme silinmeden önce bir kopya saklanır; yeni kayıt açılmazsa ona dönülür.
-    try { localStorage.setItem(ONCEKI, JSON.stringify(d)); } catch (e) {}
-    d = tamamla(veri); d.rev = Math.max(veri.rev || 0, kayitliRev()); // yedek eski numarayla gelse de yazılabilsin
-    if (!kaydet()) return;
-    location.reload();
-  } catch (e) { pencere("😿", "Kod okunamadı", "Kodun tamamını kopyaladığından emin ol (PATI1: ile başlamalı).", "Tamam"); }
-};
+// Yedek alma ve yükleme Ayarlar ekranına taşındı: js/ayarlar.js.
 
 // ================= CÜMLE =================
 let cDeste = [], cIndex = 0, dizilen = [], cTurDogru = 0, cSavas = false;
@@ -229,6 +203,6 @@ document.getElementById("gb-devam").onclick = () => {
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
   if (cIndex >= cDeste.length && cSavas) { cSavas = false; savasSonuc("cumle", cTurDogru * 30); return; }
-  if (cIndex >= cDeste.length) { const c3 = EKONOMI.odul.cumleTuru, o = cTurDogru >= c3.enAzDogru ? Ekonomi.kazanSinirli(d, "cumle", bugunNo(), c3.gunlukSinir, c3.miktar) : 0; kaydet(); if (o) Ses.altin(); tamKapat(); if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? `+${o} 🪙 kazandın!` : cTurDogru >= c3.enAzDogru ? "Bugünkü cümle altınları tamam, pratik devam! 💪" : `${c3.enAzDogru} doğru yaparsan ${c3.miktar} 🪙 kazanırsın.`}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
+  if (cIndex >= cDeste.length) { const c3 = EKONOMI.odul.cumleTuru, o = cTurDogru >= c3.enAzDogru ? Ekonomi.kazanSinirli(d, "cumle", bugunNo(), c3.gunlukSinir, c3.miktar) : 0; kaydet(); if (o) Ses.altin(); tamKapat(); if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) return hediyePenceresi(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? `+${o} 🪙 kazandın!` : cTurDogru >= c3.enAzDogru ? "Bugünkü cümle altınları tamam, pratik devam! 💪" : `${c3.enAzDogru} doğru yaparsan ${c3.miktar} 🪙 kazanırsın.`}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
 };
 

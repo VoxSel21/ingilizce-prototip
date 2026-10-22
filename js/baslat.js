@@ -1,6 +1,7 @@
 function herSeyiCiz() { sahneCiz(); anaCiz(); takvimCiz(); odulCiz(); arkadasCiz(); avDugmeCiz(); kediCiz(); sesDugmeleriCiz(); }
 
-yukle(); kaydet(); herSeyiCiz();
+yukle(); kaydet(); gorunumUygula(); herSeyiCiz();
+Geri.kur(); // Android geri tuşu ve tarayıcı geri düğmesi (js/cihaz.js), bir kez
 // Gece açık kalan uygulamaya dönülünce yeni günü başlat ve ekranı tazele.
 document.addEventListener("visibilitychange", () => { if (!document.hidden && gunuYenile()) herSeyiCiz(); });
 window.addEventListener("storage", e => {

@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFBF4">
 <meta name="theme-color" content="#FFF8EE">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="resim/ikon-192.png">
@@ -10,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>İngilizce Prototip</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css">
+<link rel="stylesheet" href="css/stil.css?v=0.4.0">
 </head>
 <body>
 <div id="uygulama">
@@ -21,7 +22,7 @@
   <section class="ekran aktif" id="ekran-ana">
     <div class="ust">
       <span class="hap" id="seri-hap">🔥 0</span>
-      <div class="ust-sag"><button class="hap ses-dugme" aria-label="Sesi aç/kapat">🔊</button><span class="hap" id="yildiz-hap">🪙 0</span></div>
+      <div class="ust-sag"><button class="hap ses-dugme" aria-label="Sesi aç/kapat">🔊</button><span class="hap" id="yildiz-hap">🪙 0</span><button class="hap" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button></div>
     </div>
     <div class="selam" style="position:relative;">
       <h1 id="selam-baslik">Günaydın!</h1>
@@ -37,7 +38,9 @@
     </div>
 
     <div class="seviye-sec" id="seviye-sec"></div>
+    <div class="konu-ara"><input id="konu-ara" type="search" placeholder="Konu ara (ör. yemek, doğa)" aria-label="Konu ara" autocomplete="off"><button id="konu-ara-temizle" aria-label="Aramayı temizle" hidden>✕</button></div>
     <div class="konu-sec" id="konu-sec"></div>
+    <p class="soluk konu-yok" id="konu-yok" hidden>Bu aramayla konu bulunamadı.</p>
     <div style="margin-top:14px;"><button class="buyuk-dugme" id="basla-dugme">Kartlara başla</button></div>
 
     <h2>Alıştırmalar</h2>
@@ -94,15 +97,6 @@
     <div class="rozetler" id="rozetler"></div>
     <h2>Dükkân</h2>
     <div class="magaza" id="magaza"></div>
-    <div class="kart" style="margin-top:16px;">
-      <b style="font-weight:900;">💾 İlerleme yedeği</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">İlerlemen sadece bu tarayıcıda duruyor. Başka telefona ya da tarayıcıya geçerken kodu kopyala, orada "Yedeği yükle"ye yapıştır.</p>
-      <div class="yedek-dugmeler"><button class="al" id="yedek-al">💾 Kodu kopyala</button><button class="al" id="yedek-yukle">📥 Yedeği yükle</button></div>
-    </div>
-    <div class="kart" style="margin-top:16px;">
-      <b style="font-weight:900;">📚 Kaynaklar</b>
-      <p class="soluk" style="font-size:12.5px;margin-top:4px;">Kelime seviyeleri: The CEFR-J Wordlist Version 1.5, Yukio Tono, Tokyo University of Foreign Studies (cefr-j.org). Örnek cümleler: Tatoeba (tatoeba.org), CC BY 2.0 FR. Türkçe anlamlar prototip için yazıldı, kontrol edilecek.</p>
-    </div>
   </section>
 
   <!-- ========== KEDİ ========== -->
@@ -263,6 +257,36 @@
     <div class="geri-sayim" id="geri-sayim"></div>
   </section>
 
+  <!-- ========== AYARLAR (tam ekran) ========== -->
+  <section class="tam" id="tam-ayarlar" aria-label="Ayarlar">
+    <div class="ilerleme"><button class="kapat" data-kapat aria-label="Ayarları kapat">✕</button><b class="tam-baslik">⚙️ Ayarlar</b></div>
+    <div class="k-alan ayar-liste" id="ayar-liste"></div>
+    <div class="alt-panel" id="panel-yedek" role="dialog" aria-label="İlerleme yedeği" aria-hidden="true">
+      <div class="panel-ust"><b>💾 İlerleme yedeği</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ic">
+        <p class="soluk">Bu kod ilerlemenin tamamıdır (altın, kelimeler, eşyalar). Kimseyle paylaşma.</p>
+        <textarea id="yedek-cikis" readonly rows="3" aria-label="Yedek kodu"></textarea>
+        <div class="yedek-dugmeler"><button class="al" id="yedek-kopyala">Kopyala</button><button class="al" id="yedek-indir">Dosya olarak indir</button></div>
+        <hr>
+        <p class="soluk">Geri yüklemek için kodu yapıştır ya da yedek dosyasını seç. Yüklemeden önce içeriği gösterilir.</p>
+        <textarea id="yedek-giris" rows="3" placeholder="PATI1:..." aria-label="Yüklenecek yedek kodu"></textarea>
+        <div class="yedek-dugmeler"><label class="al dosya-sec">Dosya seç<input type="file" id="yedek-dosya" accept=".txt,text/plain" hidden></label><button class="al" id="yedek-kontrol">Kontrol et</button></div>
+        <div class="yedek-onizleme" id="yedek-onizleme" role="status" aria-live="polite"></div>
+        <button class="buyuk-dugme" id="yedek-yukle-onay" hidden>Bu yedeği yükle</button>
+      </div>
+    </div>
+    <div class="alt-panel" id="panel-kaynak" role="dialog" aria-label="Kaynaklar ve lisanslar" aria-hidden="true">
+      <div class="panel-ust"><b>📚 Kaynaklar ve lisanslar</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ic">
+        <p>Kelime seviyeleri: The CEFR-J Wordlist Version 1.5, Yukio Tono, Tokyo University of Foreign Studies (cefr-j.org).</p>
+        <p>Örnek cümleler: Tatoeba (tatoeba.org), CC BY 2.0 FR.</p>
+        <p>Türkçe anlamlar ve phrasal verb seviyeleri prototip için yazıldı; kontrol ediliyor. Hatalı kartı "⚑ Hata?" ile bildirebilirsin.</p>
+        <p>Yazı tipleri: Fredoka ve Nunito (SIL Open Font License). Telefon uygulaması kabuğu: Capacitor (MIT).</p>
+        <p>Kedi ve eşya çizimleri ekip için üretildi; sesler uygulama içinde sentezleniyor.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== PENCERE ========== -->
   <div class="perde" id="perde"><div class="pencere" id="pencere"></div></div>
   <div class="bildirim" id="bildirim"></div>
@@ -277,25 +301,28 @@
   </nav>
 </div>
 
-<!-- Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="veri/kelimeler.js"></script>
-<script src="veri/phrasal.js"></script>
-<script src="veri/cumleler.js"></script>
-<script src="js/yardimci.js"></script>
-<script src="js/kayit.js"></script>
-<script src="js/ekonomi.js"></script>
-<script src="js/ilerleme.js"></script>
-<script src="js/durum.js"></script>
-<script src="js/ana-sayfa.js"></script>
-<script src="js/kelime-calisma.js"></script>
-<script src="js/ses.js"></script>
-<script src="js/alistirmalar.js"></script>
-<script src="js/odul-takvim.js"></script>
-<script src="js/hazne.js"></script>
-<script src="js/sosyal.js"></script>
-<script src="js/gezinme.js"></script>
-<script src="js/kedi.js"></script>
-<script src="js/balik-avi.js"></script>
-<script src="js/baslat.js"></script>
+<!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
+<script src="vendor/capacitor.js?v=0.4.0"></script>
+<script src="veri/kelimeler.js?v=0.4.0"></script>
+<script src="veri/phrasal.js?v=0.4.0"></script>
+<script src="veri/cumleler.js?v=0.4.0"></script>
+<script src="js/yardimci.js?v=0.4.0"></script>
+<script src="js/kayit.js?v=0.4.0"></script>
+<script src="js/ekonomi.js?v=0.4.0"></script>
+<script src="js/ilerleme.js?v=0.4.0"></script>
+<script src="js/durum.js?v=0.4.0"></script>
+<script src="js/ana-sayfa.js?v=0.4.0"></script>
+<script src="js/kelime-calisma.js?v=0.4.0"></script>
+<script src="js/ses.js?v=0.4.0"></script>
+<script src="js/cihaz.js?v=0.4.0"></script>
+<script src="js/alistirmalar.js?v=0.4.0"></script>
+<script src="js/odul-takvim.js?v=0.4.0"></script>
+<script src="js/hazne.js?v=0.4.0"></script>
+<script src="js/sosyal.js?v=0.4.0"></script>
+<script src="js/gezinme.js?v=0.4.0"></script>
+<script src="js/kedi.js?v=0.4.0"></script>
+<script src="js/balik-avi.js?v=0.4.0"></script>
+<script src="js/ayarlar.js?v=0.4.0"></script>
+<script src="js/baslat.js?v=0.4.0"></script>
 </body>
 </html>

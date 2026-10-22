@@ -39,19 +39,26 @@ const KONU_GENEL = ["genel", "⭐ Temel kelimeler"];
 const KELIME_KONU = {};
 KONULAR.forEach(([kod, , ws]) => ws.forEach(w => { if (!KELIME_KONU[w]) KELIME_KONU[w] = kod; }));
 const konuOf = w => KELIME_KONU[w] || "genel";
+let konuArama = "";
 function konuCiz() {
   const seviyede = KELIMELER.filter(k => k[5] === d.seviye);
   const liste = KONULAR.map(([kod, ad]) => [kod, ad]).concat([KONU_GENEL])
     .map(([kod, ad]) => { const ks = seviyede.filter(k => konuOf(k[0]) === kod); return { kod, ad, top: ks.length, bilinen: ks.filter(k => d.kartlar[k[0]]).length }; })
     .filter(x => x.top >= 4);
   if (d.konu && !liste.some(x => x.kod === d.konu)) d.konu = "";
+  // Arama: Türkçe büyük/küçük harf ve aksansız yazım eşleşir (aramaNormal); seçili konu hep görünür kalır.
+  const ara = aramaNormal(konuArama), gorunen = ara ? liste.filter(x => x.kod === d.konu || aramaNormal(x.ad).includes(ara)) : liste;
+  document.getElementById("konu-yok").hidden = !ara || gorunen.some(x => x.kod !== d.konu);
+  document.getElementById("konu-ara-temizle").hidden = !konuArama;
   document.getElementById("konu-sec").innerHTML = `<button class="${!d.konu ? "aktif" : ""}" data-konu="">📚 Hepsi</button>` +
-    liste.map(x => `<button class="${d.konu === x.kod ? "aktif" : ""}" data-konu="${x.kod}">${x.ad}<small>${x.bilinen}/${x.top}</small></button>`).join("");
+    gorunen.map(x => `<button class="${d.konu === x.kod ? "aktif" : ""}" data-konu="${x.kod}">${x.ad}<small>${x.bilinen}/${x.top}</small></button>`).join("");
   document.querySelectorAll("[data-konu]").forEach(b => b.onclick = () => {
     d.konu = b.dataset.konu; kaydet(); Ses.pop();
     const ad = (liste.find(x => x.kod === d.konu) || {}).ad;
     bildir(d.konu ? `${ad}: yeni kelimeler bu konudan gelecek` : `Konu: hepsi (${d.seviye})`); herSeyiCiz();
   });
-  const secili = document.querySelector("#konu-sec .aktif"); if (secili) secili.scrollIntoView({ block: "nearest", inline: "center" });
+  const secili = document.querySelector("#konu-sec .aktif"); if (secili && !ara) secili.scrollIntoView({ block: "nearest", inline: "center" });
 }
+document.getElementById("konu-ara").oninput = e => { konuArama = e.target.value; konuCiz(); };
+document.getElementById("konu-ara-temizle").onclick = () => { konuArama = ""; const g = document.getElementById("konu-ara"); g.value = ""; konuCiz(); g.focus(); };
 

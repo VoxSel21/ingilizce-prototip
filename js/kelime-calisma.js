@@ -62,15 +62,15 @@ function anaCiz() {
   document.getElementById("seri-hap").textContent = "🔥 " + sr;
   ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🪙 " + d.yildiz);
   document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
-  const yuzde = Math.min(100, say * 10);
+  const hedef = gunlukHedef(), yuzde = Math.min(100, Math.round(say / hedef * 100));
   document.getElementById("halka").style.setProperty("--yuzde", yuzde);
-  document.getElementById("halka-yazi").textContent = Math.min(say, 10) + "/10";
-  document.getElementById("hedef-yazi").textContent = say >= 10 ? (d.bugun.hediye ? "Bugünkü hedef tamam! Yarın görüşürüz 💜" : "Hedef tamam! Hediyeni aç 🎁") : `${10 - say} soru daha, hediyeni al 🎁`;
+  document.getElementById("halka-yazi").textContent = Math.min(say, hedef) + "/" + hedef;
+  document.getElementById("hedef-yazi").textContent = say >= hedef ? (d.bugun.hediye ? "Bugünkü hedef tamam! Yarın görüşürüz 💜" : "Hedef tamam! Hediyeni aç 🎁") : `${hedef - say} soru daha, hediyeni al 🎁`;
   document.getElementById("selam-alt").textContent = sr > 0 ? `${sr} günlük serin var, bozmayalım!` : "Bugün birkaç kelime öğrenelim mi?";
   const pvBek = bekleyenler(PHRASAL).length, pvTanis = PHRASAL.filter(k => d.kartlar[k[0]]).length;
   document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${PHRASAL.length} · ${pvBek} bekliyor` : "Bugünlük bitti 🎉";
   const bd = document.getElementById("basla-dugme");
-  bd.textContent = say >= 10 && !d.bugun.hediye ? "🎁 Hediyeni aç" : bek ? "Kartlara başla" : "Cümle alıştırması yap";
+  bd.textContent = say >= hedef && !d.bugun.hediye ? "🎁 Hediyeni aç" : bek ? "Kartlara başla" : "Cümle alıştırması yap";
   const sayac = [0, 0, 0, 0, 0];
   KELIMELER.forEach(k => { const c = d.kartlar[k[0]]; if (c) sayac[Math.min(c.kutu, 4)]++; });
   const yeniSayi = KELIMELER.filter(k => !d.kartlar[k[0]]).length;
@@ -233,7 +233,7 @@ function ilerle() {
   kO.i++;
   if (kO.i >= kO.sira.length) {
     tamKapat();
-    if (d.bugun.sayi >= 10 && !d.bugun.hediye) hediyePenceresi();
+    if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
     else { const fark = d.kilo - kO.kiloBas; pencere(kO.zor ? "🔥" : kO.spor ? "🏋️" : "🃏", kO.zor ? "Zorlu tekrar bitti!" : kO.spor ? "Antrenman bitti!" : "Tur bitti!", `${kO.dogru} doğru, ${kO.yanlis} yanlış. ${d.kediAd}: ${fark >= 0 ? "+" : ""}${fark.toFixed(1)} kg (${d.kilo.toFixed(1)} kg, ${kiloDurumu().ad}).`, "Tamam"); }
   } else adimGoster();
 }

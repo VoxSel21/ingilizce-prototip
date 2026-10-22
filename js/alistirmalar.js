@@ -71,7 +71,7 @@ function eslesSec(b) {
     document.getElementById("e-cubuk").style.width = (es.bulunan / es.kelimeler.length * 100) + "%";
     if (es.bulunan % 4 === 0 || es.bulunan === es.kelimeler.length) {
       if (es.bulunan >= es.kelimeler.length) return eslesBitir();
-      es.tur++; setTimeout(eslesTurCiz, 350);
+      es.tur++; const oyun = es; setTimeout(() => { if (es === oyun && !oyun.bitti) eslesTurCiz(); }, 350); // kapatıldıysa çizme
     }
   } else {
     es.ceza += 2; Ses.yanlis();
@@ -213,6 +213,7 @@ document.getElementById("kontrol").onclick = () => {
   document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
   document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
   if (dogru) { d.cumleDogru++; cTurDogru++; konfeti(document.getElementById("kontrol"), 10); }
+  gunuYenile(); d.bugun.sayi++; // cümle sorusu da günlük hedefe sayılır (Serhat kararı, 2026-10-22)
   sonucSesi(dogru); setTimeout(() => seslendir(c[1], true), 450);
   d.gunler[bugunNo()] = 1; kaydet(); rozetKontrol();
 };
@@ -221,6 +222,6 @@ document.getElementById("gb-devam").onclick = () => {
   document.getElementById("geri-bildirim").className = "geri-bildirim";
   cIndex++;
   if (cIndex >= cDeste.length && cSavas) { cSavas = false; savasSonuc("cumle", cTurDogru * 30); return; }
-  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
+  if (cIndex >= cDeste.length) { const o = cTurDogru >= 3 ? 1 : 0; d.yildiz += o; kaydet(); if (o) Ses.altin(); tamKapat(); if (d.bugun.sayi >= 10 && !d.bugun.hediye) return hediyePenceresi(); pencere("🧩", "Cümleler bitti!", `${cTurDogru}/${cDeste.length} doğru. ${o ? "+1 🪙 kazandın!" : "3 doğru yaparsan 1 🪙 kazanırsın."}`, "Tamam"); } else { cumleGoster(); alistirmaOdak(); }
 };
 

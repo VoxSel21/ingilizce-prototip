@@ -153,13 +153,15 @@ const HARF = "a-zçğıöşü";
 const YASAKLI = [["stupid", 1], ["idiot", 1], ["shut up"], ["hate you"], ["dumb"], ["aptal", 1], ["salak", 1], ["gerizekal", 1], ["mal"]]
   .map(([s, kok]) => new RegExp(`(^|[^${HARF}])${s}${kok ? "" : `(?=$|[^${HARF}])`}`));
 const bildirilen = new Set();
+// Sohbet metni ekrana HTML olarak basılmadan önce & < > " kaçışlanır: yedekten gelen mesaj sayfaya kod sokamaz.
+const kacis = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 function sohbetMesajHTML(kim, metin, ben, n) {
   const renk = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
-  return `<div class="mesaj ${ben ? "ben" : ""}">${ben ? "" : `<span class="kim" style="color:${renk}">${kim}</span><button class="bildir" data-bildir="${n}" aria-label="Bildir">🚩</button>`}${metin}</div>`;
+  return `<div class="mesaj ${ben ? "ben" : ""}">${ben ? "" : `<span class="kim" style="color:${renk}">${kacis(kim)}</span><button class="bildir" data-bildir="${n}" aria-label="Bildir">🚩</button>`}${metin}</div>`;
 }
 function ogrenilenleriIsaretle(metin) {
   const kullanilan = [];
-  const html = metin.replace(/[A-Za-z']+/g, w => {
+  const html = kacis(metin).replace(/[A-Za-z']+/g, w => {
     const k = KELIMELER.find(x => x[0] === w.toLowerCase());
     if (k && d.kartlar[k[0]] && !kullanilan.includes(k[0])) { kullanilan.push(k[0]); return `<mark>${w}</mark>`; }
     return w;
@@ -169,11 +171,11 @@ function ogrenilenleriIsaretle(metin) {
 function sohbetCiz() {
   d.sohbet = d.sohbet || [];
   const liste = document.getElementById("sohbet-liste");
-  let h = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? "" : sohbetMesajHTML(kim, m, false, "o" + n)).join("");
+  let h = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? "" : sohbetMesajHTML(kim, kacis(m), false, "o" + n)).join("");
   const bas = Math.max(0, d.sohbet.length - 30);
   h += d.sohbet.slice(bas).map((m, n) => bildirilen.has("s" + (bas + n)) ? "" : m.kim === "Sen"
     ? (() => { const o = ogrenilenleriIsaretle(m.metin); return sohbetMesajHTML("Sen", o.html + (o.kullanilan.length ? `<span class="ogrendi">✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın</span>` : ""), true); })()
-    : sohbetMesajHTML(m.kim, m.metin, false, "s" + (bas + n))).join("");
+    : sohbetMesajHTML(m.kim, kacis(m.metin), false, "s" + (bas + n))).join("");
   liste.innerHTML = h; liste.scrollTop = liste.scrollHeight;
   liste.querySelectorAll("[data-bildir]").forEach(b => b.onclick = () => {
     bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Bildirildi. Moderatör inceleyecek, mesaj senden gizlendi."); sohbetCiz();

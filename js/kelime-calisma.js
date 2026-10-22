@@ -154,7 +154,7 @@ function soruTipi(a) {
 }
 function soruCiz(a) {
   const k = a.k, tip = soruTipi(a);
-  const digerleri = karistir((kO.deste || (k[7] === "phrasal verb" ? PHRASAL : KELIMELER)).filter(x => x[0] !== k[0])).slice(0, 3);
+  const digerleri = karistir((kO.deste || (k[7] === "phrasal verb" ? PHRASAL : KELIMELER)).filter(x => x[0] !== k[0] && !anlamCakisir(x, k))).slice(0, 3);
   let ust = "", siklar = null, dogruCevap = k[0];
   if (tip === "resim") { ust = `<div class="s-yon">Bu hangisi?</div><div class="s-resim">${k[2]}</div>`; siklar = [k[0], ...digerleri.map(x => x[0])]; }
   if (tip === "anlam") { ust = `<div class="s-yon">Türkçesi ne?</div><div class="s-ana">${k[0]}<button class="kucuk-ses" id="s-ses">🔊</button></div>`; siklar = [k[1], ...digerleri.map(x => x[1])]; dogruCevap = k[1]; }

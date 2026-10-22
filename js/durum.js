@@ -6,6 +6,9 @@ const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
 // Ortak öğrenme durumu: her ekran, sayaç ve rozet bunu kullanır (1. kutu tanışıldı, 2-3 çalışılıyor, 4 öğrenildi).
 const DURUM = { tanisildi: "Tanışıldı", calisiliyor: "Çalışılıyor", ogrenildi: "Öğrenildi ⭐" };
 const durumu = c => !c ? null : c.kutu >= 4 ? "ogrenildi" : c.kutu >= 2 ? "calisiliyor" : "tanisildi";
+// İki kelimenin Türkçe anlamlarından biri ortaksa (child/kid = çocuk) biri diğerine yanlış şık olamaz.
+const anlamlar = k => k[1].toLocaleLowerCase("tr").split(/[;,]/).map(s => s.replace(/\(.*?\)/g, "").trim()).filter(Boolean);
+const anlamCakisir = (a, b) => { const x = anlamlar(b); return anlamlar(a).some(s => x.includes(s)); };
 const durumdaSay = (deste, dr) => deste.filter(k => durumu(d.kartlar[k[0]]) === dr).length;
 let d;
 
@@ -32,6 +35,12 @@ function tamamla(v) {
   if (!Array.isArray(v.temalar)) v.temalar = t.temalar;
   if (!Array.isArray(v.kurklar)) v.kurklar = t.kurklar;
   if (!Array.isArray(v.esyalar)) v.esyalar = t.esyalar;
+  // Yan alanlar: liste olması gerekenler liste, içleri doğru türde; bozuk öğeler atılır (ekranlar hata vermesin).
+  const metinler = a => a.filter(x => typeof x === "string");
+  v.temalar = metinler(v.temalar); v.kurklar = metinler(v.kurklar); v.esyalar = metinler(v.esyalar);
+  if (v.sohbet != null) v.sohbet = Array.isArray(v.sohbet) ? v.sohbet.filter(m => m && typeof m.kim === "string" && typeof m.metin === "string") : [];
+  if (!v.giyili || typeof v.giyili !== "object" || Array.isArray(v.giyili)) v.giyili = t.giyili;
+  if (typeof v.bugun.sayi !== "number") v.bugun.sayi = 0;
   return v;
 }
 function okunanDurum(anahtar) {

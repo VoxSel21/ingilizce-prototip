@@ -20,6 +20,8 @@ function hediyePenceresi() {
     e.currentTarget.onclick = null;
     gunuYenile();
     if (d.bugun.hediye) return;
+    // Pencere açıkken gece yarısı geçtiyse yeni günün hedefi henüz dolmamıştır: hediye verilmez.
+    if (d.bugun.sayi < 10) return pencere("🌙", "Yeni gün başladı", "Bugünkü 10 soruyu tamamlayınca hediyen seni bekliyor.", "Tamam");
     const kazanc = 2 + (Math.random() < .3 ? 1 : 0);
     d.yildiz += kazanc; d.bugun.hediye = true; kaydet(); konfeti(e.target, 16); Ses.altin();
     setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);

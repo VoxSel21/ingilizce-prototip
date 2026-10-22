@@ -67,7 +67,7 @@ function avSoruCiz() {
     return; } // bitiş kontrolü oyun döngüsünde
   const k = av.kelimeler[av.i];
   document.getElementById("av-kelime").textContent = k[0];
-  const siklar = [k[1], ...KELIMELER.filter(x => x[0] !== k[0]).sort(() => Math.random() - .5).slice(0, 3).map(x => x[1])].sort(() => Math.random() - .5);
+  const siklar = [k[1], ...KELIMELER.filter(x => x[0] !== k[0] && !anlamCakisir(x, k)).sort(() => Math.random() - .5).slice(0, 3).map(x => x[1])].sort(() => Math.random() - .5);
   document.getElementById("av-siklar").innerHTML = siklar.map(s => `<button class="av-sik">${s}</button>`).join("");
   document.querySelectorAll(".av-sik").forEach(b => b.onclick = () => avCevap(b, b.textContent === k[1], k));
 }

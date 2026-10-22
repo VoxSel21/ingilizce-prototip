@@ -510,7 +510,7 @@ const KELIMELER = [
   ["enough", "yeterli, yeterince", "✅", "He had more than enough money.", "Onun yeterinden fazla parası oldu.", "A2", 0, "adverb"],
   ["decide", "karar vermek", "⚖️", "I must decide what to do.", "Ne yapacağıma karar vermeliyim.", "A2", 0, "verb"],
   ["trust", "güvenmek", "🤝", "I don't trust him any longer.", "Ona artık güvenmiyorum.", "A2", 0, "verb"],
-  ["lie", "yalan söylemek; uzanmak", "🤥", "Never tell me a lie again.", "Bana asla tekrar yalan söyleme.", "A2", 0, "verb · noun"],
+  ["lie", "yalan; yalan söylemek; uzanmak", "🤥", "Never tell me a lie again.", "Bana asla tekrar yalan söyleme.", "A2", 0, "verb · noun"],
   ["expect", "beklemek, ummak", "⏳", "We expect a lot from him.", "Biz ondan çok şey bekliyoruz.", "A2", 0, "verb"],
   ["married", "evli", "💍", "She is married to a foreigner.", "O bir yabancı ile evli.", "A2", 0, "adjective"],
   ["truth", "gerçek, doğru", "🔍", "You must always tell the truth.", "Her zaman gerçeği söylemelisin.", "A2", 0, "noun"],

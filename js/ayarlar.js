@@ -1,6 +1,6 @@
 // ================= AYARLAR =================
 // Ayarlar d.ayar içinde kalıcı (kayit.js izinli değerleri denetler). Yedek ve kaynaklar Ödüller'den buraya taşındı.
-const UYGULAMA_SURUM = "0.7.0";
+const UYGULAMA_SURUM = "0.7.1";
 const AYAR_SATIRLARI = [
   { baslik: "Günlük hedef", aciklama: "Günde kaç soru cevaplayınca hediye açılsın (yanlış cevaplar da çalışma sayılır).", tur: "secim", alan: "hedef",
     secenek: [[5, "5"], [10, "10"], [15, "15"], [20, "20"]] },
@@ -68,6 +68,10 @@ function hesapBolumu(metin, dugme) {
   const girdi = (tur, yer, oto) => { const i = document.createElement("input"); i.type = tur; i.placeholder = yer; i.autocomplete = oto; i.className = "hesap-girdi"; i.setAttribute("aria-label", yer); return i; };
   const eposta = girdi("email", "E-posta", "email"), sifre = girdi("password", "Şifre (en az 6 karakter)", "current-password");
   const gonder = yeni => async () => {
+    // Boş formla sunucuya istek gitmesin; eksik olanı yerinde söyle.
+    if (!eposta.value.trim() || !sifre.value) {
+      hesapMesaj = !eposta.value.trim() ? "E-posta adresini yaz." : "Şifreyi yaz."; ayarlarCiz(); return;
+    }
     hesapMesaj = "Bekle…"; ayarlarCiz();
     const r = await Bulut.giris(eposta.value.trim(), sifre.value, yeni);
     hesapMesaj = r.tamam ? "" : r.hata; ayarlarCiz();

@@ -9,17 +9,18 @@ const KURKLER = {
   beyaz:   { ad: "Beyaz", ana: "#FFFFFF", koyu: "#D9D9E0", fiyat: 4 },
 };
 const ESYALAR = [
-  { id: "kasket", yer: "sapka", ad: "Kasket", fiyat: 2 },
-  { id: "hasir", yer: "sapka", ad: "Hasır şapka", fiyat: 3 },
-  { id: "silindir", yer: "sapka", ad: "Silindir", fiyat: 5 },
+  { id: "kasket", yer: "sapka", ad: "Kasket", fiyat: 5 },
+  { id: "hasir", yer: "sapka", ad: "Hasır şapka", fiyat: 6 },
+  { id: "silindir", yer: "sapka", ad: "Silindir", fiyat: 8 },
   { id: "kep", yer: "sapka", ad: "Mezuniyet kepi", fiyat: 0, rozet: "ogrendi" },
-  { id: "tac", yer: "sapka", ad: "Taç", fiyat: 10 },
-  { id: "fiyonk", yer: "boyun", ad: "Papyon", fiyat: 2 },
-  { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: 3 },
-  { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: 3 },
-  { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: 5 },
+  { id: "tac", yer: "sapka", ad: "Taç", fiyat: 42 },
+  { id: "fiyonk", yer: "boyun", ad: "Papyon", fiyat: 5 },
+  { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: 6 },
+  { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: 6 },
+  { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: 8 },
   // 3. aşama (2026-10-23, Gemini; cizim/gemini-komutlari.md 6). Fiyat basamakları U01 hedefine göre, normal kullanıcı
-  // günde ~4 altın: küçük 5–8 (1–2 gün), orta 17–29 (4–7 gün), özel 42–59 (10–14 gün). Eski fiyatlar değişmedi.
+  // günde ~4 altın: küçük 5–8 (1–2 gün), orta 17–29 (4–7 gün), özel 42–59 (10–14 gün). Eskiler 4. aşamada aynı basamaklara
+  // taşındı (önceden 2–10); daha önce alınmış eşya sahiplikte kalır, kimseden altın alınmaz.
   { id: "bere", yer: "sapka", ad: "Bere", fiyat: 6 },
   { id: "kravat", yer: "boyun", ad: "Kravat", fiyat: 6 },
   { id: "asci", yer: "sapka", ad: "Aşçı şapkası", fiyat: 18 },
@@ -37,7 +38,7 @@ const ESYALAR = [
 // Şapkanın altında kalan kulak uçları silme maskesiyle (sil_*.png) kediden silinir, sonra katman konur.
 // Kedinin çizimi, kürk rengi ve hareketleri tek yerde: js/kedi-cizim.js (KediCizici, kediHareket).
 const SILME_VAR = ["kasket", "hasir", "silindir", "korsan"];
-function kediHali() { return d.kilo < 4.5 ? "fit" : d.kilo < 6 ? "pofuduk" : d.kilo < 7.5 ? "tombis" : "mega"; }
+function kediHali() { return Kilo.hali(d.kilo); }
 const resimOnbellek = {};
 function resimYukle(src) {
   // Yüklenemeyen resim önbellekte "başarısız" olarak takılı kalmasın; bağlantı gelince yeniden denensin.
@@ -76,7 +77,7 @@ function kediCiz() {
   // Günün avı kartı
   const oynandi = avOynandiMi();
   document.getElementById("av-kart").classList.toggle("oynandi", oynandi);
-  document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Yarın yeni balık!" : "30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙";
+  document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Pratik serbest, yarın yeni ödüllü av!" : `${AV_KURAL.sure} saniye, ${AV_KURAL.soru} kelime · ${kiloDurumu().ad.replace(/ \S+$/u, "")}: ${Av.gereken(d.kilo)} doğru yeter · 1 🪙`;
   dolapCiz(); sahnelerCiz();
 }
 function dolapCiz() {
@@ -261,40 +262,58 @@ document.getElementById("kedi-ad").onclick = () => {
 document.getElementById("av-kart").onclick = () => { altPanelKapat(document.getElementById("panel-durum")); avAc(); };
 
 // ================= KİLO VE SPOR SALONU =================
-// Arkadaşın uygulamasındaki gibi: Fit 3,5 · Tombiş 6 · Mega Chonk 8,5 kg. Kilo 3–9,5 arasında kalır.
-function kiloDurumu() {
-  const k = d.kilo;
-  return k < 4.5 ? { ad: "Fit 💪", lafi: "Bugün çok çevikim, balığa koşmaya hazırım!" }
-    : k < 6 ? { ad: "Pofuduk 🐾", lafi: "Ne fit ne tombiş, tam kıvamındayım 😸" }
-    : k < 7.5 ? { ad: "Tombiş 🍙", lafi: "Biraz tombişledim galiba... spor salonuna mı gitsek?" }
-    : { ad: "Mega Chonk 🙀", lafi: "Kalkamıyorum! Eski kelimelerle biraz spor lazım." };
-}
+// Kilo kuralları tek yerde: js/oyun.js (KILO, Kilo, Antrenman). Kilo 3–9,5 kg; hal sınırları 4,5 / 6 / 7,5.
+const KILO_HAL = {
+  fit: { ad: "Fit 💪", lafi: "Bugün çok çevikim, balığa koşmaya hazırım!" },
+  pofuduk: { ad: "Pofuduk 🐾", lafi: "Ne fit ne tombiş, tam kıvamındayım 😸" },
+  tombis: { ad: "Tombiş 🍙", lafi: "Biraz tombişledim galiba... spor salonuna mı gitsek?" },
+  mega: { ad: "Mega Chonk 🙀", lafi: "Kalkamıyorum! Eski kelimelerle biraz spor lazım." },
+};
+const kiloDurumu = (k = d.kilo) => KILO_HAL[Kilo.hali(k)];
 function kiloDegis(fark) {
   if (!fark) return;
-  d.kilo = Math.round(Math.min(9.5, Math.max(3, d.kilo + fark)) * 100) / 100;
+  d.kilo = Kilo.degis(d.kilo, fark);
   kaydet();
 }
+const kgYazi = x => Math.abs(x) < 0.005 ? "0 kg" : (x < 0 ? "−" : "+") + Math.abs(x).toFixed(2).replace(".", ",") + " kg";
 function sporAc() {
-  // Spor = öğrenilmiş kelimelerden 10 soru; her doğru cevap 0,15 kg verdirir
-  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
+  // Spor = tanışılmış kelimelerden 10 soru; her doğru cevap 0,15 kg verdirir. Yarıda kalan antrenman aynı gün kaldığı yerden sürer.
+  const acik = acikTur("spor"); if (acik) return turBaslat(acik, true);
+  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]).map(k => k[0]);
   if (calisilan.length < 3) { pencere("🏋️", "Önce birkaç kelime öğren", "Spor salonunda eski kelimeler tekrar edilir. En az 3 kelimeyle tanışınca gel!", "Tamam"); return; }
-  kO = { sira: karistir(calisilan).slice(0, 10).map(k => ({ tip: "soru", k })), i: 0, dogru: 0, yanlis: 0, kilit: false, kiloBas: d.kilo, spor: true };
-  tamAc("kartlar"); adimGoster();
+  const sira = Ogrenme.pratikSec(calisilan, d.sonSunulan, 10).map(id => ({ tip: "soru", id }));
+  turBaslat({ deste: "spor", gun: bugunNo(), sira, i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null, spor: true }, false);
 }
-// Antrenman sahnesi: spor turunda kartların üstünde kedi bantta çalışır; her doğru cevapta sevinip devam eder.
-// (Ayrıntılı ilerleme ve sonuç ekranı 4. aşamada, U18.)
+// Antrenman sahnesi (U18): spor turunda kartların üstünde kedi bantta çalışır. Her doğru cevapta sevinir, bant hızlanır,
+// "−0,15 kg" yazısı çıkar ve ilerleme çubuğu dolar. Başlangıç ve şimdiki kilo yan yana yazar.
 function antrenmanCiz() {
   const alan = document.getElementById("antrenman");
   alan.hidden = !(kO && kO.spor);
   if (alan.hidden) return;
   const govde = kediGuncelle(document.getElementById("antrenman-kedi"));
   if (govde && govde.dataset.hareket === "bekle") govde.dataset.hareket = "antrenman";
-  const fark = d.kilo - kO.kiloBas;
-  document.getElementById("antrenman-yazi").textContent = `🏋️ ${kO.dogru} tekrar · ${fark <= 0 ? "−" : "+"}${Math.abs(fark).toFixed(2).replace(".", ",")} kg`;
+  const toplam = kO.sira.length;
+  document.getElementById("antrenman-yazi").textContent = `🏋️ ${kO.dogru} tekrar · ${kgYazi(d.kilo - kO.kiloBas)}`;
+  document.getElementById("antrenman-cubuk").style.width = Math.min(100, kO.dogru / toplam * 100) + "%";
+  document.getElementById("antrenman-kilo").textContent = `Başta ${kO.kiloBas.toFixed(2).replace(".", ",")} kg → şimdi ${d.kilo.toFixed(2).replace(".", ",")} kg (${kiloDurumu().ad})`;
 }
 function antrenmanSevin() {
-  const govde = document.querySelector("#antrenman-kedi .kedi-govde");
+  const alan = document.getElementById("antrenman"), govde = document.querySelector("#antrenman-kedi .kedi-govde");
   kediHareket(govde, "kutla", 700, "antrenman");
+  alan.classList.remove("hizli"); void alan.offsetWidth; alan.classList.add("hizli");
+  clearTimeout(alan._hizZaman); alan._hizZaman = setTimeout(() => alan.classList.remove("hizli"), 900);
+  if (kO.sonKg) {
+    const e = document.createElement("span"); e.className = "antrenman-efekt"; e.textContent = kgYazi(kO.sonKg);
+    alan.appendChild(e); setTimeout(() => e.remove(), 1000);
+  }
   antrenmanCiz();
+}
+// Antrenman sonucu: bitince ya da yarıda çıkınca. Yarıda kalan tur kayıtta açık durur; kazanım zaten kaydedildi.
+function antrenmanSonuc(o, bitti) {
+  const oz = Antrenman.ozet(o.kiloBas, d.kilo, o.dogru, o.sira.length), gun = d.antrenman && d.antrenman.gun === bugunNo() ? d.antrenman : null;
+  const hal = oz.halBas !== oz.halSon ? ` ${KILO_HAL[oz.halBas].ad} → ${KILO_HAL[oz.halSon].ad}!` : "";
+  pencere("🏋️", bitti ? "Antrenman bitti!" : "Antrenman yarıda kaldı",
+    `${oz.dogru} doğru tekrar. ${d.kediAd}: ${o.kiloBas.toFixed(2).replace(".", ",")} → ${d.kilo.toFixed(2).replace(".", ",")} kg (${kgYazi(oz.fark)}).${hal}` +
+    `${gun ? ` Bugün toplam ${gun.tekrar} tekrar, ${kgYazi(gun.kg)}.` : ""}${bitti ? "" : " Kaldığın yerden devam edebilirsin; yapılanlar ikinci kez sayılmaz."}`, "Tamam");
 }
 document.getElementById("spor-kart").onclick = () => { altPanelKapat(document.getElementById("panel-durum")); sporAc(); };

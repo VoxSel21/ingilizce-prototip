@@ -32,7 +32,8 @@ function tamKapat() { document.querySelectorAll(".alt-panel.acik").forEach(altPa
   arkaPlan().forEach(e => e.inert = false);
   if (tamAcan && document.body.contains(tamAcan)) { try { tamAcan.focus(); } catch (e) {} } tamAcan = null; speechSynthesis && speechSynthesis.cancel(); if (es) { es.bitti = true; es = null; } if (sv) { sv.bitti = true; sv = null; } cSavas = false; kur = null; try { konusmaAktif && konusmaAktif.abort(); } catch (e) {} herSeyiCiz(); }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => sekme(b.dataset.sekme));
-document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = tamKapat);
+// Kart turu yarıda kapanınca tur kayıtta açık kalır (U16); spor turunda o ana kadarki kazanım gösterilir (U18).
+document.querySelectorAll("[data-kapat]").forEach(b => b.onclick = () => { const kartta = !!b.closest("#tam-kartlar"); tamKapat(); if (kartta) turYaridaKaldi(); });
 const ALISTIRMA = { pv: () => kartlariAc(PHRASAL), cumle: () => cumleAc(), esles: () => eslesAc(), kur: () => kurAc() };
 document.querySelectorAll("[data-ac]").forEach(b => b.onclick = () => ALISTIRMA[b.dataset.ac]());
 document.getElementById("basla-dugme").onclick = () => {

@@ -23,10 +23,10 @@ function zorlandiklar() {
     .sort((a, b) => d.kartlar[b[0]].hata - d.kartlar[a[0]].hata);
 }
 document.getElementById("zor-dugme").onclick = () => {
+  const acik = acikTur("zor"); if (acik) return turBaslat(acik, true);
   const zor = zorlandiklar().slice(0, 8);
   if (!zor.length) return;
-  kO = { sira: karistir(zor).map(k => ({ tip: "soru", k })), i: 0, dogru: 0, yanlis: 0, kilit: false, kiloBas: d.kilo, zor: true };
-  tamAc("kartlar"); adimGoster();
+  turBaslat({ deste: "zor", gun: bugunNo(), sira: karistir(zor).map(k => ({ tip: "soru", id: k[0] })), i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null, zor: true }, false);
 };
 
 // ================= PATİ ÇABUKLUĞU =================
@@ -116,6 +116,7 @@ function kurAdim() {
   const k = kur.liste[kur.i];
   document.getElementById("kur-sayac").textContent = `${kur.i}/${kur.liste.length}`;
   document.getElementById("kur-cubuk").style.width = (kur.i / kur.liste.length * 100) + "%";
+  hedefSeritCiz();
   const alan = document.getElementById("kur-alan");
   alan.innerHTML = `<div class="soru-kart"><div class="s-yon">Harfleri sırayla dizip kelimeyi kur</div><div class="s-resim" style="font-size:56px">${k[2]}</div><div class="soluk" style="font-size:14px;font-weight:800;">${k[0].length} harf · ${k[7]}</div></div>`;
   harfDizme(alan, k[0], (dogru, yuva) => {
@@ -158,6 +159,7 @@ function cumleAc() {
 function cumleGoster() {
   const c = cDeste[cIndex];
   document.getElementById("c-tr").textContent = c[0];
+  hedefSeritCiz();
   const ipucu = document.getElementById("c-ipucu");
   const kaynak = c[4] && (KELIMELER.find(k => k[0] === c[4]) || PHRASAL.find(k => k[0] === c[4]));
   ipucu.innerHTML = kaynak ? `🔑 Öğrendiğin: <b>${kaynak[0]}</b> = ${kaynak[1]}` : "";

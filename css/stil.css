@@ -631,3 +631,25 @@
     #ekran-kedi.panelli .kedi-sahne { margin-right: 56%; padding-right: 10px; justify-content: center; }
     #ekran-kedi.panelli .kedi-kutu { --kedi-boy: clamp(72px, calc((100dvh - 200px) / 1.3), 200px); }
   }
+
+  /* ===== 4. aşama: günlük hedef şeridi (U04), av bilgisi (U17), antrenman ilerlemesi (U18) ===== */
+  .hedef-serit { flex: none; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; margin: -10px 2px 10px; font-size: 12.5px; font-weight: 800; color: var(--soluk); }
+  .hedef-serit:empty { display: none; }
+  .hedef-serit b { color: var(--murekkep); }
+  .hedef-serit small { font-size: 12px; font-weight: 900; color: var(--murekkep); white-space: nowrap; }
+  .hedef-serit .hs-cubuk { grid-column: 1 / -1; position: relative; height: 6px; border-radius: 999px; background: var(--cizgi); }
+  .hedef-serit .hs-cubuk i { display: block; height: 100%; border-radius: 999px; background: var(--gunes); transition: width .4s; }
+  .hedef-serit .hs-cubuk em { position: absolute; top: -3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--krem); border: 2px solid var(--cizgi); }
+  .hedef-serit .hs-cubuk em.gecti { background: var(--gunes); border-color: var(--gunes); }
+  .pist .av-adim { position: absolute; left: 10px; bottom: 8px; font-size: 13px; font-weight: 900; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .pist .av-pratik { position: absolute; right: 10px; bottom: 8px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.85); color: #3B3355; font-size: 12px; font-weight: 900; }
+  .pist .av-pratik[hidden] { display: none; }
+  #pencere .ikinci-dugme { display: block; margin: 12px auto 0; min-height: 44px; font-weight: 800; color: var(--soluk); text-decoration: underline; font-size: 14px; }
+  .antrenman { height: auto; min-height: 92px; }
+  .antrenman-bilgi { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .antrenman-bilgi small { font-size: 12px; font-weight: 800; color: var(--soluk); }
+  .antrenman-cubuk { height: 8px; border-radius: 999px; background: rgba(255,255,255,.7); overflow: hidden; }
+  .antrenman-cubuk i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--mercan); transition: width .4s; }
+  .antrenman.hizli .antrenman-bant { animation-duration: .2s; }
+  .antrenman-efekt { position: absolute; left: 60px; top: 8px; z-index: 2; font-size: 14px; font-weight: 900; color: var(--nane); pointer-events: none; animation: efekt 1s ease-out forwards; }
+  .antrenman b { color: var(--murekkep); }

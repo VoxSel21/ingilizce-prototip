@@ -65,7 +65,8 @@ function anaCiz() {
   const hedef = gunlukHedef(), yuzde = Math.min(100, Math.round(say / hedef * 100));
   document.getElementById("halka").style.setProperty("--yuzde", yuzde);
   document.getElementById("halka-yazi").textContent = Math.min(say, hedef) + "/" + hedef;
-  document.getElementById("hedef-yazi").textContent = say >= hedef ? (d.bugun.hediye ? "Bugünkü hedef tamam! Yarın görüşürüz 💜" : "Hedef tamam! Hediyeni aç 🎁") : `${hedef - say} soru daha, hediyeni al 🎁`;
+  // Hedef cevap sayısıyla dolar (doğru ya da yanlış); doğrular ayrıca yazılır (U04).
+  document.getElementById("hedef-yazi").textContent = say >= hedef ? (d.bugun.hediye ? "Bugünkü hedef tamam! Yarın görüşürüz 💜" : "Hedef tamam! Hediyeni aç 🎁") : `${hedef - say} cevap daha, hediyeni al 🎁 · bugün ${d.bugun.dogru || 0} doğru`;
   document.getElementById("selam-alt").textContent = sr > 0 ? `${sr} günlük serin var, bozmayalım!` : "Bugün birkaç kelime öğrenelim mi?";
   const pvBek = bekleyenler(PHRASAL).length, pvTanis = PHRASAL.filter(k => d.kartlar[k[0]]).length;
   document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${PHRASAL.length} · ${pvBek} bekliyor` : "Bugünlük bitti 🎉";
@@ -93,27 +94,35 @@ function anaCiz() {
 // Yeni kelimeler 3'lü gruplar halinde önce "tanışma kartı"yla gösterilir (sınav yok),
 // sonra o 3 kelime karışık sorularla sorulur. Tekrar zamanı gelen eski kelimeler sadece soruyla gelir.
 // Cevabı uygulama değerlendirir; yanlış bilinen kelime turun sonunda bir daha sorulur.
+// Tur sırası bir kez kurulur (js/ogrenme.js) ve kayda yazılır (d.oturum = kO): kapatıp açınca, sayfayı yenileyince
+// aynı tur kaldığı yerden sürer (U16). Tur türleri: kelime, phrasal, spor (antrenman), zor (zorlandıkların). Bir anda tek açık tur.
 let kO = null;
-function kartlariAc(deste = KELIMELER) {
-  const liste = bekleyenler(deste);
-  if (!liste.length) { bildir(deste === PHRASAL ? "Bugünlük phrasal verb kalmadı 🎉" : "Bugünlük kelime kalmadı 🎉 Cümle kurmaya ne dersin?"); return; }
-  const yeni = liste.filter(k => !d.kartlar[k[0]]), eski = liste.filter(k => d.kartlar[k[0]]);
-  const sira = [];
-  for (let i = 0; i < yeni.length; i += 3) {
-    const grup = yeni.slice(i, i + 3);
-    grup.forEach(k => sira.push({ tip: "tanis", k }));
-    karistir(grup).forEach(k => sira.push({ tip: "soru", k, yeni: true }));
-  }
-  karistir(eski).forEach(k => sira.push({ tip: "soru", k }));
-  kO = { sira, i: 0, dogru: 0, yanlis: 0, kilit: false, kiloBas: d.kilo, deste };
+const KELIME_HARITA = new Map(KELIMELER.concat(PHRASAL).map(k => [k[0], k]));
+const kelimeAl = a => KELIME_HARITA.get(typeof a === "string" ? a : a.id);
+// Kayıttaki açık tur bu türdense onu döndürür (aynı gün, kelimeleri tanınıyor, bitmemiş); değilse null.
+function acikTur(tur) { return Ogrenme.geriYukle(d.oturum, { gun: bugunNo(), deste: tur, bilinen: KELIME_HARITA }); }
+function turBaslat(o, devam) {
+  kO = o; d.oturum = kO; kaydet();
   tamAc("kartlar"); adimGoster();
+  if (devam && kO.i > 0) bildir("↩️ Kaldığın yerden devam");
+}
+function kartlariAc(deste = KELIMELER) {
+  const tur = deste === PHRASAL ? "phrasal" : "kelime", acik = acikTur(tur);
+  if (acik) return turBaslat(acik, true);
+  if (!bekleyenler(deste).length) { bildir(deste === PHRASAL ? "Bugünlük phrasal verb kalmadı 🎉" : "Bugünlük kelime kalmadı 🎉 Cümle kurmaya ne dersin?"); return; }
+  const b = bugunNo(), tohum = Math.floor(Math.random() * 4294967296);
+  const sira = Ogrenme.turOlustur({
+    bekleyen: deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b).map(k => ({ id: k[0], sira: d.kartlar[k[0]].sira })),
+    yeniler: yeniHavuz(deste).map(k => k[0]), son: d.sonSunulan, turBoyu: turBoyu(deste), rastgele: tohumlu(tohum) });
+  turBaslat({ deste: tur, gun: b, tohum, sira, i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null }, false);
 }
 function adimGoster() {
   const a = kO.sira[kO.i];
   document.getElementById("k-sayac").textContent = `${kO.i}/${kO.sira.length}`;
   document.getElementById("k-cubuk").style.width = (kO.i / kO.sira.length * 100) + "%";
-  antrenmanCiz();
-  if (a.tip === "tanis") tanisCiz(a.k); else soruCiz(a);
+  d.sonSunulan = Ogrenme.sunuldu(d.sonSunulan, a.id);
+  antrenmanCiz(); hedefSeritCiz();
+  if (a.tip === "tanis") tanisCiz(kelimeAl(a)); else soruCiz(a);
 }
 function tanisCiz(k) {
   document.getElementById("k-alan").innerHTML = `
@@ -150,16 +159,16 @@ function tanisCiz(k) {
   };
 }
 function soruTipi(a) {
-  const c = d.kartlar[a.k[0]];
+  const k = kelimeAl(a), c = d.kartlar[k[0]];
   let tipler = a.yeni ? ["resim", "anlam"] : (!c || c.kutu <= 2) ? ["resim", "anlam", "ters", "dinle", "soyle"] : ["ters", "dinle", "harf", "soyle"];
   if (!konusmaAcik() || a.sesYok) tipler = tipler.filter(t => t !== "soyle");
-  if (a.k[0].length > 7 || a.k[0].includes(" ")) tipler = tipler.filter(t => t !== "harf");
-  if (!a.k[6]) tipler = tipler.filter(t => t !== "resim"); // soyut kelimenin resmi cevabı ele vermez, tahmin ettirir
+  if (k[0].length > 7 || k[0].includes(" ")) tipler = tipler.filter(t => t !== "harf");
+  if (!k[6]) tipler = tipler.filter(t => t !== "resim"); // soyut kelimenin resmi cevabı ele vermez, tahmin ettirir
   return tipler[Math.floor(Math.random() * tipler.length)] || "ters";
 }
 function soruCiz(a) {
-  const k = a.k, tip = soruTipi(a);
-  const digerleri = karistir((kO.deste || (k[7] === "phrasal verb" ? PHRASAL : KELIMELER)).filter(x => x[0] !== k[0] && !anlamCakisir(x, k))).slice(0, 3);
+  const k = kelimeAl(a), tip = soruTipi(a);
+  const digerleri = karistir((k[7] === "phrasal verb" ? PHRASAL : KELIMELER).filter(x => x[0] !== k[0] && !anlamCakisir(x, k))).slice(0, 3);
   let ust = "", siklar = null, dogruCevap = k[0];
   if (tip === "resim") { ust = `<div class="s-yon">Bu hangisi?</div><div class="s-resim">${k[2]}</div>`; siklar = [k[0], ...digerleri.map(x => x[0])]; }
   if (tip === "anlam") { ust = `<div class="s-yon">Türkçesi ne?</div><div class="s-ana">${k[0]}<button class="kucuk-ses" id="s-ses">🔊</button></div>`; siklar = [k[1], ...digerleri.map(x => x[1])]; dogruCevap = k[1]; }
@@ -201,14 +210,16 @@ function soruCiz(a) {
   }
 }
 function cevapla(a, dogru, el) {
-  kO.kilit = true;
-  const k = a.k, c = d.kartlar[k[0]], bugun = bugunNo();
+  if (kO.cevaplanan === kO.i) return; // aynı soru ikinci kez değerlendirilmez
+  kO.kilit = true; kO.cevaplanan = kO.i;
+  const k = kelimeAl(a), c = d.kartlar[k[0]], bugun = bugunNo();
   // İlk tanışma günü sayılır: haftalık "yeni kelime" görevi geçmiş haftaların kelimelerini saymasın.
   if (!c) { d.tanisGun = d.tanisGun || {}; d.tanisGun[bugun] = (d.tanisGun[bugun] || 0) + 1; }
   if (dogru) {
     kO.dogru++; konfeti(el, 6);
-    // Yeni kelime = Pati beslenir; eski kelime tekrarı = spor. Spor salonunda daha çok yakar.
-    kiloDegis(kO.spor ? -0.15 : !c ? 0.1 : a.tekrar ? 0 : -0.1);
+    // Yeni kelime = Pati beslenir; eski kelime tekrarı = spor. Spor salonunda daha çok yakar (js/oyun.js Kilo).
+    const kg = Kilo.adimUygula(d, kO, kO.i, Kilo.cevapFarki({ dogru, spor: kO.spor, yeni: !c, tekrar: a.tekrar }));
+    if (kO.spor && kg !== null) { Antrenman.say(d, bugun, kg); kO.sonKg = kg; }
     // hata: kaç kez yanlış bilindi (doğru bildikçe azalır); "Zorlandıkların" bununla seçilir
     const hata = Math.max(0, ((c && c.hata) || 0) - (a.tekrar ? 0 : 1));
     if (a.tekrar || !c) d.kartlar[k[0]] = { kutu: 1, sira: bugun + 1, hata };   // yeni ya da bu turda bir kez kaçırılmış: yarın tekrar
@@ -219,7 +230,7 @@ function cevapla(a, dogru, el) {
   } else {
     kO.yanlis++;
     d.kartlar[k[0]] = { kutu: 1, sira: bugun, hata: ((c && c.hata) || 0) + 1 };
-    kO.sira.push({ tip: "soru", k, tekrar: true }); // turun sonunda bir daha sor
+    kO.sira.push({ tip: "soru", id: k[0], tekrar: true }); // turun sonunda bir daha sor
   }
   soruCevaplandi(dogru);
   kaydet(); rozetKontrol();
@@ -233,9 +244,41 @@ function cevapla(a, dogru, el) {
 document.getElementById("k-gb-devam").onclick = () => { if (!panelAcik("k-gb")) return; document.getElementById("k-gb").className = "geri-bildirim"; ilerle(); alistirmaOdak(); };
 function ilerle() {
   kO.i++;
-  if (kO.i >= kO.sira.length) {
-    tamKapat();
-    if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
-    else { const fark = d.kilo - kO.kiloBas; pencere(kO.zor ? "🔥" : kO.spor ? "🏋️" : "🃏", kO.zor ? "Zorlu tekrar bitti!" : kO.spor ? "Antrenman bitti!" : "Tur bitti!", `${kO.dogru} doğru, ${kO.yanlis} yanlış. ${d.kediAd}: ${fark >= 0 ? "+" : ""}${fark.toFixed(1)} kg (${d.kilo.toFixed(1)} kg, ${kiloDurumu().ad}).`, "Tamam"); }
-  } else adimGoster();
+  if (kO.i < kO.sira.length) { kaydet(); return adimGoster(); }
+  // Tur bitti: açık tur kayıttan silinir, sonuç gösterilir.
+  const bitti = kO; d.oturum = null; kO = null; kaydet();
+  tamKapat();
+  // İlk dersin sonu bir kez kutlanır (U04): ne yapıldı ve sıradaki ödüle ne kadar kaldı.
+  if (!d.ilkDers && (bitti.deste === "kelime" || bitti.deste === "phrasal")) {
+    d.ilkDers = 1; kaydet(); Ses.zafer();
+    const hediyeHazir = d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye; // kutlamadan sonra hediye kutusu açılır
+    pencere("🎉", "İlk dersin bitti!", `${bitti.sira.filter(a => a.tip === "tanis").length} yeni kelimeyle tanıştın, ${bitti.dogru} doğru cevap verdin. ${sonrakiOdulYazi()}`, hediyeHazir ? "Hediyeni aç 🎁" : "Süper", hediyeHazir ? hediyePenceresi : null);
+    return setTimeout(() => konfeti(document.getElementById("pencere"), 18), 50);
+  }
+  if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) return hediyePenceresi();
+  if (bitti.spor) return antrenmanSonuc(bitti, true);
+  const fark = d.kilo - bitti.kiloBas;
+  pencere(bitti.zor ? "🔥" : "🃏", bitti.zor ? "Zorlu tekrar bitti!" : "Tur bitti!", `${bitti.dogru} doğru, ${bitti.yanlis} yanlış. ${d.kediAd}: ${fark >= 0 ? "+" : ""}${fark.toFixed(1)} kg (${d.kilo.toFixed(1)} kg, ${kiloDurumu().ad}). ${sonrakiOdulYazi()}`, "Tamam");
+}
+// Yarıda kapatılan tur kayıtta açık kalır; spor turunda o ana kadarki kazanım gösterilir.
+function turYaridaKaldi() {
+  if (!kO) return;
+  const o = kO; kO = null;
+  if (o.spor && o.dogru) antrenmanSonuc(o, false);
+  else if (o.i > 0) bildir("💾 Tur kaydedildi, kaldığın yerden devam edersin");
+}
+// Sonraki ödüle açık mesafe (U04): günlük hediye mi, yoksa yarın mı.
+function sonrakiOdulYazi() {
+  const h = Ilerleme.hedefDurumu(d.bugun.sayi, d.bugun.dogru || 0, gunlukHedef(), EKONOMI.hedefIsaret);
+  if (!h.tamam) return `🎁 Günlük hediyeye ${h.kalan} cevap kaldı.`;
+  return d.bugun.hediye ? "Bugünkü hediye alındı; yarın yenisi 🔥" : "🎁 Hediyen hazır!";
+}
+// Günlük hedef şeridi: kart, Kelime Kur ve cümle ekranlarında aynı kural (her cevap sayılır, doğrular ayrıca yazılır).
+function hedefSeritCiz() {
+  const h = Ilerleme.hedefDurumu(d.bugun.sayi, d.bugun.dogru || 0, gunlukHedef(), EKONOMI.hedefIsaret);
+  const durum = h.tamam ? (d.bugun.hediye ? "Hedef tamam ✓" : "🎁 Hediye hazır") : `🎁 ${h.kalan} cevap kaldı`;
+  document.querySelectorAll(".hedef-serit").forEach(el => {
+    el.innerHTML = `<span>🎯 Günlük hedef <b>${Math.min(h.sayi, h.hedef)}/${h.hedef}</b> cevap · ${h.dogru} doğru</span><small>${durum}</small>
+      <span class="hs-cubuk"><i style="width:${h.yuzde}%"></i>${h.isaretler.map(n => `<em style="left:${n / h.hedef * 100}%" class="${h.sayi >= n ? "gecti" : ""}"></em>`).join("")}</span>`;
+  });
 }

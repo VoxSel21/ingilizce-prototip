@@ -64,7 +64,7 @@ function rozetKontrol() {
 function odulCiz() {
   document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
     `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🪙"}</small></div>`).join("");
-  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Kaçırdığın bir günü kurtarır. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>🪙 3</button></div>`;
+  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Tek bir kaçırılan günü kurtarır: seri kopmaz, o gün çalışılmış sayılmaz. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>🪙 ${EKONOMI.fiyat.koruyucu}</button></div>`;
   document.getElementById("magaza").innerHTML = h;
   document.querySelector('[data-al="koruyucu"]').onclick = () => { if (!Ekonomi.harca(d, EKONOMI.fiyat.koruyucu)) { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); } d.koruyucu++; kaydet(); Ses.altin(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
 }
@@ -96,9 +96,11 @@ function takvimCiz() {
   const gecen = simdi.getDate();
   document.getElementById("ay-ozet").textContent = calisilan ? `Bu ay ${calisilan} gün çalıştın ${calisilan >= gecen * .7 ? "🌟" : "💪"}` : "Bu ayın ilk gününü işaretle!";
   document.getElementById("ay-cubuk").style.width = Math.round(calisilan / gunSayi * 100) + "%";
-  document.getElementById("i-seri").textContent = seri();
-  document.getElementById("i-enuzun").textContent = Math.max(d.enUzun, seri());
+  // Seri, en uzun seri ve gün sayısı tek özetten (js/ilerleme.js): korunan gün seriyi kesmez, çalışılmış gün sayılmaz.
+  const oz = seriOzet();
+  document.getElementById("i-seri").textContent = oz.seri;
+  document.getElementById("i-enuzun").textContent = oz.enUzun;
   document.getElementById("i-ogrenilen").textContent = durumdaSay(KELIMELER, "ogrenildi");
-  document.getElementById("i-gun").textContent = Object.keys(d.gunler).length;
+  document.getElementById("i-gun").textContent = oz.calisilanGun;
 }
 

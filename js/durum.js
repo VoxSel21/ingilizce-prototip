@@ -1,7 +1,9 @@
 // ================= DURUM (telefonda saklanır) =================
 const ANAHTAR = "ing-prototip-v2";
 const GUN_MS = 86400000;
-const bugunNo = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
+// Yerel takvim günü. Saat dilimi değişip gün bir geri giderse kayıttaki gün sürer (js/ilerleme.js etkinGun).
+const gercekGun = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
+const bugunNo = () => Ilerleme.etkinGun(gercekGun(), d && d.bugun && d.bugun.no);
 const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
 // Ortak öğrenme durumu: her ekran, sayaç ve rozet bunu kullanır (1. kutu tanışıldı, 2-3 çalışılıyor, 4 öğrenildi).
 const DURUM = { tanisildi: "Tanışıldı", calisiliyor: "Çalışılıyor", ogrenildi: "Öğrenildi ⭐" };
@@ -15,7 +17,8 @@ function yeniDurum() {
   return { surum: SEMA_SURUM, yildiz: EKONOMI.baslangicAltin, koruyucu: 1, kartlar: {}, gunler: {}, korunan: {},
     bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
     kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], kurkRenk: "#FDBE86", sonRenkler: [], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
-    odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true } };
+    odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true },
+    oturum: null, sonSunulan: [], antrenman: null, ilkDers: 0 };
 }
 // Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.
 // Bozuk kayıt reddedilir; yedek yüklemede mevcut ilerleme hiç değişmez.
@@ -46,11 +49,18 @@ function gunuYenile() {
   return true;
 }
 // Ortak çalışma kaydı: her öğrenme sorusu (kart, phrasal, harf, Kelime Kur, cümle) buradan sayılır.
+// Ödül hissi (U04): hedefin ara işaretlerinde ve hedefte kısa bildirim, öğrenmeyi bölen pencere yok. Altın yalnız hediyede.
 function soruCevaplandi(dogru) {
-  gunuYenile(); Ilerleme.soruSay(d.bugun, dogru); gunIsaretle();
+  gunuYenile();
+  const once = d.bugun.sayi, hedef = gunlukHedef();
+  Ilerleme.soruSay(d.bugun, dogru); gunIsaretle();
+  const isaret = Ilerleme.isaretGecildi(once, d.bugun.sayi, hedef, EKONOMI.hedefIsaret);
+  if (isaret === "hedef") { bildir("🎯 Günlük hedef tamam! Tur bitince hediyeni aç 🎁"); Ses.altin(); }
+  else if (isaret === "isaret") { bildir(`🐾 Güzel gidiyorsun! ${d.bugun.sayi}/${hedef} · hediyeye ${hedef - d.bugun.sayi} cevap`); Ses.pop(); }
+  hedefSeritCiz();
 }
 // Nitelikli çalışma günü (js/ilerleme.js kuralı): takvim, seri ve en uzun seri buradan beslenir.
-function gunIsaretle() { d.gunler[bugunNo()] = 1; d.enUzun = Math.max(d.enUzun || 0, seri()); }
+function gunIsaretle() { d.gunler[bugunNo()] = 1; d.enUzun = seriOzet().enUzun; }
 // Kedi adı sayfaya HTML olarak da yazılıyor; < > & " ' işaretleri ad içinde kod gibi çalışmasın diye atılır.
 const temizAd = ad => String(ad || "").replace(/[<>&"'`]/g, "").trim().slice(0, 14);
 // Deneme kolaylıkları (?altin=, ?hepsi=1) yalnız geliştirme ortamında çalışır: bilgisayardaki yerel önizleme.
@@ -60,7 +70,7 @@ const GELISTIRME = !(window.Capacitor && window.Capacitor.isNativePlatform && wi
 function yukle() {
   surumYedegiAl();
   d = okunanDurum(ANAHTAR) || okunanDurum(ONCEKI) || yeniDurum();
-  if (d.kilo == null) d.kilo = 4.0;
+  d.kilo = Kilo.sinirla(d.kilo);
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
   d.kediAd = temizAd(d.kediAd) || "Pati";
@@ -104,16 +114,21 @@ function koruyucuKontrol() {
 }
 const gunlukHedef = () => (d && d.ayar && d.ayar.hedef) || 10;
 const seri = () => Ilerleme.seri(d.gunler, d.korunan, bugunNo());
+const seriOzet = () => Ilerleme.ozet(d.gunler, d.korunan, bugunNo(), d.enUzun);
 const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {
   const b = bugunNo();
   // Biriken tekrarlar tek dev tura dönmesin: bir turda en çok 20 tekrar, en çok gecikenler önce; kalanı sonraki turda.
   const eski = deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b)
     .sort((x, y) => d.kartlar[x[0]].sira - d.kartlar[y[0]].sira).slice(0, 20);
-  let yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye && (deste !== KELIMELER || !d.konu || konuOf(k[0]) === d.konu));
+  const yeni = yeniHavuz(deste);
+  return eski.concat(yeni.slice(0, Math.max(0, turBoyu(deste) - eski.length)));
+}
+const turBoyu = deste => deste === PHRASAL ? 6 : 10;
+// Yeni kelime havuzu: seçili seviye ve konu (sıra js/ogrenme.js'de karışır).
+function yeniHavuz(deste = KELIMELER) {
+  const yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye && (deste !== KELIMELER || !d.konu || konuOf(k[0]) === d.konu));
   // Phrasal verb'ler az: seçili seviyede yeni kalmadıysa diğer seviyelerden gelsin
-  if (deste === PHRASAL && !yeni.length) yeni = deste.filter(k => !d.kartlar[k[0]]);
-  const tur = deste === PHRASAL ? 6 : 10;
-  return eski.concat(yeni.slice(0, Math.max(0, tur - eski.length)));
+  return deste === PHRASAL && !yeni.length ? deste.filter(k => !d.kartlar[k[0]]) : yeni;
 }
 

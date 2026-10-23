@@ -1,8 +1,9 @@
 // ================= EKONOMİ: altının bütün girişleri ve çıkışları =================
 // Saf mantık (Node testleri de yükler). Ödül miktarları burada, eşya/kürk/arka plan fiyatları kendi
 // tablolarında (ESYALAR, KURKLER, TEMALAR). Arayüz altını doğrudan değiştirmez: Ekonomi.kazan / harca / satinAl.
-// Miktarlar 1. aşamada eskisiyle aynı bırakıldı (yalnız cümle turu ödülüne günlük sınır kondu);
-// denge ayarı 4. aşamada simülasyon tablosuyla yapılacak: araclar/ekonomi-simulasyon.cjs.
+// Denge (4. aşama, 2026-10-23): kazanç miktarları değişmedi (normal kullanıcı günde ~4 altın); dükkân fiyatları üç basamağa
+// oturtuldu: küçük 5–8 (1–2 gün), orta 17–29 (4–7 gün), özel 42–59 (10–14 gün). Kimsenin bakiyesi ya da aldığı eşya değişmez.
+// Tablo: node araclar/ekonomi-simulasyon.cjs → degerlendirmeler/ekonomi-simulasyon.md
 const EKONOMI = {
   baslangicAltin: 3,
   odul: {
@@ -12,7 +13,10 @@ const EKONOMI = {
     balikAvi: { miktar: 1 },                                   // balığa ulaşınca, günde bir; sonrakiler ödülsüz pratik
     sohbet: { miktar: 1 },                                     // öğrenilen kelimeyi sohbette kullanmak, günde bir
   },
-  fiyat: { koruyucu: 3 },
+  fiyat: { koruyucu: 5 },
+  basamak: { kucuk: [5, 8], orta: [17, 29], ozel: [42, 59] },   // fiyat basamakları (testler her ürünün birine girdiğini denetler)
+  // Erken ödül hissi (U04): günlük hedefin %30 ve %60'ında küçük işaret (altın yok), hedefte hediye.
+  hedefIsaret: [0.3, 0.6],
   // Günlük ödül anahtarlarının ön ekleri: defterde 90 günden eskileri silinir; rozet/çete/ikili kalıcıdır.
   gunlukOnEk: ["hediye", "cumle", "esles", "av", "sohbet"],
 };

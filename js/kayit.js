@@ -1,7 +1,8 @@
 // ================= KAYIT ŞEMASI, DOĞRULAMA VE SÜRÜM TAŞIMA =================
 // Saf mantık: tarayıcıya bağlı değil, Node testleri de aynı dosyayı yükler (tests/).
 // Kayıt ve yedek kodu önce burada doğrulanır; bozuk ya da tehlikeli veri mevcut ilerlemenin yerine geçmez.
-const SEMA_SURUM = 4;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22) · 4: serbest kürk rengi (2026-10-23)
+const SEMA_SURUM = 5;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22) · 4: serbest kürk rengi (2026-10-23)
+                                 // 5: açık kelime turu (oturum), yakında sunulanlar, günün antrenmanı (2026-10-23)
 const YEDEK_EN_FAZLA = 1500000;  // yedek kodunun en fazla karakteri (bozuk ya da şişirilmiş yedeğe karşı)
 const SINIR = { sohbet: 200, metin: 500, kim: 30, kediAd: 14, liste: 500 };
 // Ayarlar ekranının izinli değerleri; bilinmeyen değer varsayılana döner.
@@ -41,6 +42,9 @@ const Kayit = {
     if (v.kurkRenk != null && !(typeof v.kurkRenk === "string" && RENK_DESENI.test(v.kurkRenk))) return hata("Kürk rengi bozuk.");
     if (v.sonRenkler != null && (!Array.isArray(v.sonRenkler) || v.sonRenkler.length > 50)) return hata("Son renkler listesi bozuk.");
     if (v.ayar != null && !nesne(v.ayar)) return hata("Ayarlar bozuk.");
+    if (v.oturum != null && !(nesne(v.oturum) && Array.isArray(v.oturum.sira) && v.oturum.sira.length <= 200)) return hata("Açık kelime turu bozuk.");
+    if (v.sonSunulan != null && (!Array.isArray(v.sonSunulan) || v.sonSunulan.length > 200)) return hata("Son kelimeler listesi bozuk.");
+    if (v.antrenman != null && !(nesne(v.antrenman) && ["gun", "tekrar", "kg"].every(a => sayi(v.antrenman[a])))) return hata("Antrenman bilgisi bozuk.");
     return { tamam: true };
   },
 
@@ -72,6 +76,14 @@ const Kayit = {
     if (typeof v.bugun.sayi !== "number" || v.bugun.sayi < 0) v.bugun.sayi = 0;
     if (typeof v.bugun.hediye !== "boolean") v.bugun.hediye = false;
     if (!v.odulDefteri || typeof v.odulDefteri !== "object") v.odulDefteri = {};
+    // 5. sürüm: açık tur yalnız biçimi sağlamsa kalır (içeriği açılırken Ogrenme.geriYukle ayrıca denetler); bozuksa tur yeniden kurulur.
+    const adim = a => a && typeof a === "object" && typeof a.id === "string" && (a.tip === "tanis" || a.tip === "soru") && (!izin || !izin.kelimeler || izin.kelimeler.has(a.id));
+    if (!(v.oturum && typeof v.oturum === "object" && !Array.isArray(v.oturum) && Array.isArray(v.oturum.sira) && v.oturum.sira.every(adim))) v.oturum = null;
+    v.sonSunulan = [...new Set((Array.isArray(v.sonSunulan) ? v.sonSunulan : []).filter(x => typeof x === "string" && (!izin || !izin.kelimeler || izin.kelimeler.has(x))))].slice(0, 40);
+    // İlk ders kutlaması yalnız yeni kullanıcıya: daha önce kelime çalışmış eski kayıt kutlamayı görmüş sayılır.
+    if (typeof v.ilkDers !== "number") v.ilkDers = 0;
+    if (eskiSurum < 5 && Object.keys(v.kartlar).length) v.ilkDers = 1;
+    if (!(v.antrenman && typeof v.antrenman === "object" && ["gun", "tekrar", "kg"].every(a => typeof v.antrenman[a] === "number" && isFinite(v.antrenman[a])))) v.antrenman = null;
     v.ayar = { ...t.ayar, ...(v.ayar && typeof v.ayar === "object" && !Array.isArray(v.ayar) ? v.ayar : {}) };
     for (const [a, l] of Object.entries(AYAR_SECENEK)) if (!l.includes(v.ayar[a])) v.ayar[a] = t.ayar[a];
     for (const a of ["titresim", "seslendirme"]) if (typeof v.ayar[a] !== "boolean") v.ayar[a] = t.ayar[a];

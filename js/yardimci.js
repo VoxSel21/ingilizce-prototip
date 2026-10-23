@@ -8,6 +8,11 @@ function karistir(a, rastgele = Math.random) {
   for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rastgele() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
   return b;
 }
+// Tohumlu sayı üreteci (mulberry32): aynı tohum aynı diziyi verir. Oturum sırası testlerde tekrar üretilebilsin diye.
+function tohumlu(tohum) {
+  let a = tohum >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
 // İki kelimenin Türkçe anlamlarından biri ortaksa (child/kid = çocuk) biri diğerine yanlış şık olamaz.
 const anlamlar = k => k[1].toLocaleLowerCase("tr").split(/[;,]/).map(s => s.replace(/\(.*?\)/g, "").trim()).filter(Boolean);
 const anlamCakisir = (a, b) => { const x = anlamlar(b); return anlamlar(a).some(s => x.includes(s)); };
@@ -31,4 +36,4 @@ function kontrast(a, b) {
   return (x + .05) / (y + .05);
 }
 
-if (typeof module === "object" && module.exports) module.exports = { karistir, anlamlar, anlamCakisir, aramaNormal, sinirleyici, kontrast };
+if (typeof module === "object" && module.exports) module.exports = { karistir, tohumlu, anlamlar, anlamCakisir, aramaNormal, sinirleyici, kontrast };

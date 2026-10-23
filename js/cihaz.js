@@ -72,7 +72,8 @@ const Geri = {
     const t = document.querySelector(".tam.aktif");
     if (t) {
       const ad = t.id.replace("tam-", ""), oyunda = OYUN_EKRANLARI[ad] && OYUN_EKRANLARI[ad]();
-      if (oyunda) onayPenceresi("Oyundan çıkılsın mı?", "Bu turdaki ilerleme sayılmaz.", "Çık", "Devam et", () => tamEkraniKapat(t));
+      const avHakki = ad === "av" && av && !av.s.pratik && av.hak;
+      if (oyunda) onayPenceresi("Oyundan çıkılsın mı?", avHakki ? "Bugünkü ödüllü av hakkın kullanılmış sayılır; sonra yalnız pratik oynayabilirsin." : "Bu turdaki ilerleme sayılmaz.", "Çık", "Devam et", () => tamEkraniKapat(t));
       else tamEkraniKapat(t);
       return true;
     }

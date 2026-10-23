@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>İngilizce Prototip</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css?v=0.5.2">
+<link rel="stylesheet" href="css/stil.css?v=0.6.0">
 </head>
 <body>
 <div id="uygulama">
@@ -206,7 +206,9 @@
   <!-- ========== KELİME ÇALIŞMA: önce tanış, sonra sorularla tekrar (Serhat, 2026-10-18) ========== -->
   <section class="tam" id="tam-kartlar">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="k-cubuk"></i></div><b id="k-sayac">0/10</b></div>
-    <div class="antrenman" id="antrenman" hidden><div class="antrenman-kedi" id="antrenman-kedi"></div><div class="antrenman-bant"></div><b id="antrenman-yazi"></b></div>
+    <div class="antrenman" id="antrenman" hidden><div class="antrenman-kedi" id="antrenman-kedi"></div><div class="antrenman-bant"></div>
+      <div class="antrenman-bilgi"><b id="antrenman-yazi"></b><div class="antrenman-cubuk"><i id="antrenman-cubuk"></i></div><small id="antrenman-kilo"></small></div></div>
+    <div class="hedef-serit" aria-live="polite"></div>
     <div class="k-alan" id="k-alan"></div>
     <div class="geri-bildirim" id="k-gb">
       <h3 id="k-gb-baslik"></h3>
@@ -257,6 +259,7 @@
   <!-- ========== KELİME KUR: öğrenilen kelimeleri harflerden kurma (arkadaşın önerisi, 2026-10-21) ========== -->
   <section class="tam" id="tam-kur">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="kur-cubuk" style="background:var(--mercan)"></i></div><b id="kur-sayac">0/8</b></div>
+    <div class="hedef-serit" aria-live="polite"></div>
     <div class="k-alan" id="kur-alan"></div>
     <div class="geri-bildirim" id="kur-gb"><h3 id="kur-gb-baslik"></h3><p id="kur-gb-yazi"></p><button class="buyuk-dugme" id="kur-gb-devam">Devam</button></div>
   </section>
@@ -264,6 +267,7 @@
   <!-- ========== CÜMLE (tam ekran) ========== -->
   <section class="tam" id="tam-cumle">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="c-cubuk" style="background:var(--lavanta)"></i></div><b id="c-sayac">0/5</b></div>
+    <div class="hedef-serit" aria-live="polite"></div>
     <p class="soru">Bu cümleyi İngilizceye çevir:</p>
     <p class="tr-cumle" id="c-tr"></p>
     <p class="c-ipucu" id="c-ipucu"></p>
@@ -287,10 +291,11 @@
       <div class="balikci" id="av-balikci">🧔</div>
       <div class="unlem" id="av-unlem">❗</div>
       <div class="kedi" id="av-kedi"></div>
+      <b class="av-adim" id="av-adim"></b><b class="av-pratik" id="av-pratik" hidden>Pratik · ödülsüz</b>
     </div>
     <div class="kart av-soru"><div class="soluk" style="font-size:14px;">Türkçesi ne?</div><div class="s-kelime" id="av-kelime"></div></div>
     <div class="av-siklar" id="av-siklar"></div>
-    <p class="soluk" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Doğru = kedi atılır 💨 · Yanlış = balıkçı fark eder ❗ · Üst üste 2 yanlış = kedi geri kaçar</p>
+    <p class="soluk" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Doğru = kedi atılır 💨 · Yanlış = balıkçı fark eder ❗ · Üst üste 2 yanlış = kedi geri kaçar · Kilolu kedi daha kısa atılır</p>
     <div class="geri-sayim" id="geri-sayim"></div>
   </section>
 
@@ -339,28 +344,30 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.5.2"></script>
-<script src="veri/kelimeler.js?v=0.5.2"></script>
-<script src="veri/phrasal.js?v=0.5.2"></script>
-<script src="veri/cumleler.js?v=0.5.2"></script>
-<script src="js/yardimci.js?v=0.5.2"></script>
-<script src="js/kayit.js?v=0.5.2"></script>
-<script src="js/ekonomi.js?v=0.5.2"></script>
-<script src="js/ilerleme.js?v=0.5.2"></script>
-<script src="js/durum.js?v=0.5.2"></script>
-<script src="js/ana-sayfa.js?v=0.5.2"></script>
-<script src="js/kelime-calisma.js?v=0.5.2"></script>
-<script src="js/ses.js?v=0.5.2"></script>
-<script src="js/cihaz.js?v=0.5.2"></script>
-<script src="js/alistirmalar.js?v=0.5.2"></script>
-<script src="js/odul-takvim.js?v=0.5.2"></script>
-<script src="js/hazne.js?v=0.5.2"></script>
-<script src="js/sosyal.js?v=0.5.2"></script>
-<script src="js/gezinme.js?v=0.5.2"></script>
-<script src="js/kedi.js?v=0.5.2"></script>
-<script src="js/kedi-cizim.js?v=0.5.2"></script>
-<script src="js/balik-avi.js?v=0.5.2"></script>
-<script src="js/ayarlar.js?v=0.5.2"></script>
-<script src="js/baslat.js?v=0.5.2"></script>
+<script src="vendor/capacitor.js?v=0.6.0"></script>
+<script src="veri/kelimeler.js?v=0.6.0"></script>
+<script src="veri/phrasal.js?v=0.6.0"></script>
+<script src="veri/cumleler.js?v=0.6.0"></script>
+<script src="js/yardimci.js?v=0.6.0"></script>
+<script src="js/kayit.js?v=0.6.0"></script>
+<script src="js/ekonomi.js?v=0.6.0"></script>
+<script src="js/ilerleme.js?v=0.6.0"></script>
+<script src="js/ogrenme.js?v=0.6.0"></script>
+<script src="js/oyun.js?v=0.6.0"></script>
+<script src="js/durum.js?v=0.6.0"></script>
+<script src="js/ana-sayfa.js?v=0.6.0"></script>
+<script src="js/kelime-calisma.js?v=0.6.0"></script>
+<script src="js/ses.js?v=0.6.0"></script>
+<script src="js/cihaz.js?v=0.6.0"></script>
+<script src="js/alistirmalar.js?v=0.6.0"></script>
+<script src="js/odul-takvim.js?v=0.6.0"></script>
+<script src="js/hazne.js?v=0.6.0"></script>
+<script src="js/sosyal.js?v=0.6.0"></script>
+<script src="js/gezinme.js?v=0.6.0"></script>
+<script src="js/kedi.js?v=0.6.0"></script>
+<script src="js/kedi-cizim.js?v=0.6.0"></script>
+<script src="js/balik-avi.js?v=0.6.0"></script>
+<script src="js/ayarlar.js?v=0.6.0"></script>
+<script src="js/baslat.js?v=0.6.0"></script>
 </body>
 </html>

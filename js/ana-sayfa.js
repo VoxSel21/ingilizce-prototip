@@ -1,9 +1,9 @@
 // ================= ARKA PLAN SAHNESİ =================
 const TEMALAR = {
   cayir: { ad: "Çayır", ikon: "🌼", fiyat: 0, tepe: ["#9ED9A0", "#7CC98A"] },
-  sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 4, tepe: ["#F6DFA5", "#8CCFE8"] },
-  kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 5, tepe: ["#FFFFFF", "#DCE8F5"] },
-  sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 6, tepe: ["#F7C6D3", "#E9A5BC"] },
+  sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 17, tepe: ["#F6DFA5", "#8CCFE8"] },
+  kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 18, tepe: ["#FFFFFF", "#DCE8F5"] },
+  sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 20, tepe: ["#F7C6D3", "#E9A5BC"] },
   ev:    { ad: "Ev içi", ikon: "🛋️", fiyat: 18, tepe: ["#F3DCC2", "#E2C3A0"] },  // 3. aşama (orta basamak)
   gece:  { ad: "Yıldızlı gece", ikon: "🌙", fiyat: 25, koyu: true, tepe: ["#4C6B5A", "#2F4A3E"] },
 };

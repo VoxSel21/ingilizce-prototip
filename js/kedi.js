@@ -18,6 +18,17 @@ const ESYALAR = [
   { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: 3 },
   { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: 3 },
   { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: 5 },
+  // 3. aşama (2026-10-23, Gemini; cizim/gemini-komutlari.md 6). Fiyat basamakları U01 hedefine göre, normal kullanıcı
+  // günde ~4 altın: küçük 5–8 (1–2 gün), orta 17–29 (4–7 gün), özel 42–59 (10–14 gün). Eski fiyatlar değişmedi.
+  { id: "bere", yer: "sapka", ad: "Bere", fiyat: 6 },
+  { id: "kravat", yer: "boyun", ad: "Kravat", fiyat: 6 },
+  { id: "asci", yer: "sapka", ad: "Aşçı şapkası", fiyat: 18 },
+  { id: "inci", yer: "boyun", ad: "İnci kolye", fiyat: 18 },
+  { id: "korsan", yer: "sapka", ad: "Korsan şapkası", fiyat: 20 },
+  { id: "yildiz", yer: "goz", ad: "Yıldızlı gözlük", fiyat: 20 },
+  { id: "cicek", yer: "sapka", ad: "Çiçek tacı", fiyat: 22 },
+  { id: "monokl", yer: "goz", ad: "Monokl", fiyat: 45 },
+  { id: "bandana", yer: "boyun", ad: "Çete bandanası", fiyat: 0, rozet: "cete" }, // yalnız çeteyle kazanılır
 ];
 // Çizimler Gemini'den (cizim/gemini-komutlari.md), cizim/hazirla.py ile temizlendi.
 // Kedi dört kilo halinde de aynı pozda; eşyaların yeri tek ayarla hepsine oturur.
@@ -85,7 +96,7 @@ function dolapCiz() {
   if (!e) yazi.textContent = "Bir eşyaya dokun: önce üstünde dene, beğenirsen al.";
   else {
     const b = document.createElement("b"); b.textContent = `${e.ad} deneniyor`; yazi.appendChild(b);
-    if (e.rozet && !d.rozet[e.rozet]) yazi.append(" · “Usta” başarımıyla açılır.");
+    if (e.rozet && !d.rozet[e.rozet]) { const r = ROZETLER.find(x => x[0] === e.rozet); yazi.append(` · “${r ? r[2] : e.rozet}” başarımıyla açılır.`); }
     else {
       const al = document.createElement("button"); al.className = "al"; al.id = "dene-al";
       al.textContent = d.yildiz < e.fiyat ? `🪙 ${e.fiyat} · altın yetmiyor` : `🪙 ${e.fiyat} · Al ve giy`; al.disabled = d.yildiz < e.fiyat;
@@ -95,6 +106,8 @@ function dolapCiz() {
   document.querySelectorAll("#dolap [data-esya]").forEach(b => b.onclick = () => {
     const e = ESYALAR.find(x => x.id === b.dataset.esya);
     Ses.pop();
+    // Başarımla açılan eşya (kep, bandana) giyilince sahipliğe de yazılır; yoksa kayıt taşıma yeniden açılışta onu çıkarıyordu.
+    if (esyaVarMi(e) && !d.esyalar.includes(e.id)) d.esyalar.push(e.id);
     if (esyaVarMi(e)) { denenen = null; d.giyili[e.yer] = d.giyili[e.yer] === e.id ? null : e.id; kaydet(); kediSoyle(d.giyili[e.yer] ? "Yakıştı mı? 😸" : "Böyle de fena değilim 😼"); }
     else { denenen = denenen === e.id ? null : e.id; if (denenen) kediSoyle("Bir bakalım... 👀"); }
     kediCiz(); kediHareketSahne("dokun", 420);

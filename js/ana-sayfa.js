@@ -4,12 +4,16 @@ const TEMALAR = {
   sahil: { ad: "Sahil", ikon: "🏖️", fiyat: 4, tepe: ["#F6DFA5", "#8CCFE8"] },
   kar:   { ad: "Karlı dağ", ikon: "🏔️", fiyat: 5, tepe: ["#FFFFFF", "#DCE8F5"] },
   sakura:{ ad: "Sakura", ikon: "🌸", fiyat: 6, tepe: ["#F7C6D3", "#E9A5BC"] },
+  ev:    { ad: "Ev içi", ikon: "🛋️", fiyat: 18, tepe: ["#F3DCC2", "#E2C3A0"] },  // 3. aşama (orta basamak)
+  gece:  { ad: "Yıldızlı gece", ikon: "🌙", fiyat: 25, koyu: true, tepe: ["#4C6B5A", "#2F4A3E"] },
 };
 function sahneCiz() {
   const s = document.getElementById("sahne"), saat = new Date().getHours();
   const vakit = saat >= 6 && saat < 17 ? "gunduz" : saat >= 17 && saat < 20 ? "aksam" : "gece";
   s.style.backgroundImage = `url(resim/bg_${d.tema}.jpg)`;
   s.dataset.vakit = vakit; // akşam ve gece için yumuşak renk perdesi (CSS)
+  // Koyu resimli arka planda selam yazısı açık renge döner (css: data-koyu-sahne)
+  if (TEMALAR[d.tema] && TEMALAR[d.tema].koyu) document.documentElement.dataset.koyuSahne = "1"; else delete document.documentElement.dataset.koyuSahne;
   const baslik = { gunduz: "Günaydın! ☀️", aksam: "İyi akşamlar! 🌇", gece: "İyi geceler! 🌙" }[vakit];
   document.getElementById("selam-baslik").textContent = saat < 12 && saat >= 6 ? baslik : vakit === "gunduz" ? "Merhaba! ☀️" : baslik;
 }

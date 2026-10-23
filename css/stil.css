@@ -522,6 +522,9 @@
   /* Canlı kontrast taraması (2. aşama) sonrası: renkli düğmelerde yazı her temada koyu, seçili düğmeler beyaz yazıya yetecek kadar koyu. */
   :root { --yazi-koyu: #3B3355; --secili-mor: #6B55C9; --secili-yesil: #24806A; --hafta-sonu: #B8432F; --selam-yazi: #4A3F35; }
   :root[data-tema="koyu"] { --hafta-sonu: #FF9B8C; --selam-yazi: #F1EDF9; }
+  /* Koyu arka plan resmi (Yıldızlı gece): selam yazısı gökyüzünün üstünde, açık renk olmalı. Yüksek kontrastta beyaz perde var, gerekmez. */
+  :root[data-koyu-sahne]:not([data-tema="kontrast"]) { --selam-yazi: #F1EDF9; }
+  :root[data-koyu-sahne]:not([data-tema="kontrast"]) .selam h1, :root[data-koyu-sahne]:not([data-tema="kontrast"]) .selam p { text-shadow: 0 1px 3px rgba(0,0,0,.7); }
   :root[data-tema="koyu"] .selam h1, :root[data-tema="koyu"] .selam p { text-shadow: 0 1px 2px rgba(0,0,0,.6); }
   .al { color: var(--yazi-koyu); }
   .al.secili { background: var(--secili-yesil); box-shadow: 0 4px 0 #17594A; }

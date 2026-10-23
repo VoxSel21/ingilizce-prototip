@@ -32,7 +32,7 @@ function ceteCiz() {
       <button class="al" data-cete="${i}" ${!s.bitti || alindi ? "disabled" : ""}>${alindi ? "Alındı ✓" : "🪙 " + g.odul}</button></div>
       <div class="cete-cubuk"><i style="width:${s.deger / s.hedef * 100}%"></i></div><div class="cete-uyeler">${uyeler}</div></div>`;
   }).join("") + `<div class="kart" style="background:var(--gunes-a);margin-bottom:10px;"><b style="font-weight:900;">🎁 Haftanın hepsi biterse</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">"Çete ruhu" başarımı (+5 🪙). Gerçek uygulamada sadece çeteyle kazanılan özel eşyalar da olacak.</p></div>`;
+      <p class="soluk" style="font-size:14px;margin-top:4px;">"Çete ruhu" başarımı (+5 🪙) ve yalnız çeteyle kazanılan 🧣 Çete bandanası (Kedi > Gardırop > Boyun).</p></div>`;
   document.querySelectorAll("[data-cete]").forEach(b => b.onclick = () => {
     const g = CETE_GOREVLER[+b.dataset.cete]; if (d.ceteOdul[ceteAnahtar(g)]) return;
     d.ceteOdul[ceteAnahtar(g)] = 1; Ekonomi.kazan(d, "cete:" + ceteAnahtar(g), g.odul, bugunNo()); kaydet(); Ses.altin(); konfeti(b, 8); bildir(`${g.ikon} Çete görevi bitti! +${g.odul} 🪙`); rozetKontrol(); herSeyiCiz();

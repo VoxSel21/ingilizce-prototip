@@ -28,9 +28,12 @@ const Sohbet = {
       .replace(/\s+/g, " ").trim().slice(0, sinir);
   },
   // Ekranın üstündeki durum satırı: önce hata, sonra bağlantı, sonra "yazıyor", yoksa boş durum.
-  durumSatiri({ mesajSayisi, cevrimici, yaziyor, hata }) {
+  // gercek: gerçek çete sohbeti (js/cete-ekran.js); bağlantı yokken mesaj bekler, bağlantı gelince gider.
+  durumSatiri({ mesajSayisi, cevrimici, yaziyor, hata, gercek }) {
     if (hata) return { tur: "hata", metin: hata };
-    if (cevrimici === false) return { tur: "baglanti", metin: "📴 Bağlantı yok. Demo sohbet bu cihazda çalışmaya devam eder; mesajların yalnız burada." };
+    if (cevrimici === false) return { tur: "baglanti", metin: gercek
+      ? "📴 Bağlantı yok. Yazdığın mesaj ⏳ ile bekler, bağlantı gelince gider."
+      : "📴 Bağlantı yok. Demo sohbet bu cihazda çalışmaya devam eder; mesajların yalnız burada." };
     if (yaziyor) return { tur: "yaziyor", metin: `${yaziyor} yazıyor…` };
     if (!mesajSayisi) return { tur: "bos", metin: "Henüz mesaj yok. İlk mesajı sen yaz: öğrendiğin bir kelimeyle cümle kur!" };
     return null;

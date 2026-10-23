@@ -676,3 +676,33 @@
   .antrenman.hizli .antrenman-bant { animation-duration: .2s; }
   .antrenman-efekt { position: absolute; left: 60px; top: 8px; z-index: 2; font-size: 14px; font-weight: 900; color: var(--nane); pointer-events: none; animation: efekt 1s ease-out forwards; }
   .antrenman b { color: var(--murekkep); }
+
+  /* Gerçek çete (ek iş 2. parça, js/cete-ekran.js) */
+  .cete-gercek { margin-bottom: 12px; }
+  .cete-gercek > b { font-weight: 900; display: block; }
+  .cete-gercek p.soluk { font-size: 14px; margin-top: 4px; }
+  .cete-dugmeler { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .cete-dugme { flex: 1; min-height: 44px; border-radius: 14px; padding: 9px 12px; background: var(--gunes); color: var(--yazi-koyu, #1B1338); font-weight: 900; font-size: 15px; box-shadow: 0 4px 0 #E0A92A; white-space: nowrap; }
+  .cete-dugme.ikincil { background: var(--krem); color: var(--murekkep); box-shadow: none; border: 2px solid var(--cizgi); }
+  .cete-dugme.kucuk { flex: none; min-height: 36px; padding: 4px 12px; font-size: 13px; background: var(--mercan-a); color: var(--murekkep); box-shadow: none; }
+  .cete-gercek > .cete-dugme { width: 100%; margin-top: 10px; }
+  .cete-bas-gercek { display: flex; align-items: center; gap: 12px; }
+  .cete-bas-gercek .c-ikon { font-size: 40px; } .cete-bas-gercek b { font-weight: 900; font-size: 18px; display: block; overflow-wrap: anywhere; }
+  .cete-bas-gercek small { color: var(--soluk); font-weight: 700; }
+  .cete-uye-liste { display: grid; gap: 8px; margin-top: 12px; }
+  .cete-uye { display: flex; align-items: center; gap: 10px; }
+  .cete-uye .avatar { width: 36px; height: 36px; font-size: 15px; }
+  .cete-uye-ad { flex: 1; min-width: 0; font-weight: 800; overflow-wrap: anywhere; }
+  .cete-uye-ad small { color: var(--soluk); font-weight: 700; }
+  .cete-kod { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; background: var(--lavanta-a); border-radius: 14px; padding: 8px 12px; font-weight: 800; font-size: 14px; }
+  .cete-kod b { font-family: ui-monospace, Consolas, monospace; font-size: 20px; letter-spacing: 3px; }
+  .cete-kod.buyuk { justify-content: center; } .cete-kod.buyuk b { font-size: 30px; letter-spacing: 6px; }
+  .cete-not { font-size: 13px !important; margin-top: 10px !important; }
+  .cete-onay { display: flex; align-items: center; gap: 8px; justify-content: center; font-weight: 800; font-size: 14px; margin-top: 8px; min-height: 44px; }
+  .cete-onay input { width: 22px; height: 22px; }
+  #pencere .onay-dugmeler { margin-top: 12px; }
+  #pencere .buyuk-dugme.vazgec { background: var(--krem); color: var(--murekkep); box-shadow: none; }
+  .mesaj.ben:has(.mesaj-sil) { padding-right: 40px; }
+  .mesaj .mesaj-sil { width: 36px; height: 36px; top: 0; right: 0; }
+  .mesaj .mesaj-sil.onay { width: auto; padding: 0 6px; opacity: 1; font-weight: 900; color: var(--murekkep); background: var(--mercan-a); border-radius: 999px; }
+  .mesaj.bekliyor { opacity: .7; } .mesaj.bekliyor::after { content: " ⏳"; font-size: 12px; }

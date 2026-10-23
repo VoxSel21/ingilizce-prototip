@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>İngilizce Prototip</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css?v=0.8.0">
+<link rel="stylesheet" href="css/stil.css?v=0.9.0">
 </head>
 <body>
 <div id="uygulama">
@@ -181,8 +181,9 @@
     <div class="dolap-sekme sosyal-sekme" id="sosyal-sekme" style="margin-top:60px;">
       <button data-sosyal="arkadas" class="aktif">👫 Arkadaşlar</button><button data-sosyal="cete">🐾 Çete</button><button data-sosyal="sohbet">💬 Sohbet</button>
     </div>
-    <div class="demo-bant" role="note"><b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.</div>
+    <div class="demo-bant" id="sosyal-demo-bant" role="note"><b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.</div>
     <div id="sosyal-arkadas">
+      <div id="cete-gercek-arkadas"></div>
       <h2>Birlikte görevler</h2>
       <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Bir arkadaşını seç, ikiniz birlikte bitirin. Bitince ikiniz de ödül alırsınız.</p>
       <div id="ikili-gorevler"></div>
@@ -193,6 +194,7 @@
       <div class="kart lig" id="lig"></div>
     </div>
     <div id="sosyal-cete" style="display:none;">
+      <div id="cete-gercek-yonet"></div>
       <div class="kart cete-bas"><span class="c-ikon">🐾</span><div><b>Patiler Çetesi</b><small id="cete-uye-yazi">5 üye · kod KUZU-4821</small></div></div>
       <h2>⚔️ Çete savaşı</h2>
       <div id="savas-kart"></div>
@@ -202,10 +204,11 @@
     </div>
     <div id="sosyal-sohbet" style="display:none;">
       <h2>💬 Çete sohbeti</h2>
+      <div id="cete-gercek-sohbet"></div>
       <button class="kart sohbet-onizleme" id="sohbet-ac"><span class="h-ikon">💬</span><div><b>Sadece İngilizce konuşulur</b><small id="sohbet-son"></small></div><span class="ok">›</span></button>
-      <p class="soluk" style="font-size:14px;margin:8px 0 0;">Öğrendiğin kelimeleri cümlede kullan; kullandıkların yeşil yanar, günde bir kez +1 🪙. Bu demoda cevaplar otomatik ve örnek; mesajın kimseye gönderilmez, yalnız bu cihazda durur.</p>
+      <p class="soluk" id="sohbet-demo-not" style="font-size:14px;margin:8px 0 0;">Öğrendiğin kelimeleri cümlede kullan; kullandıkların yeşil yanar, günde bir kez +1 🪙. Bu demoda cevaplar otomatik ve örnek; mesajın kimseye gönderilmez, yalnız bu cihazda durur.</p>
     </div>
-    <p class="prototip-not">Gerçek arkadaşlık, çete üyeliği ve mesajlaşma bu sürümde yok: hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.</p>
+    <p class="prototip-not" id="sosyal-prototip-not">Gerçek arkadaşlık, çete üyeliği ve mesajlaşma bu sürümde yok: hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.</p>
   </section>
 
   <!-- ========== KELİME ÇALIŞMA: önce tanış, sonra sorularla tekrar (Serhat, 2026-10-18) ========== -->
@@ -353,34 +356,36 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.8.0"></script>
-<script src="veri/kelimeler.js?v=0.8.0"></script>
-<script src="veri/phrasal.js?v=0.8.0"></script>
-<script src="veri/cumleler.js?v=0.8.0"></script>
-<script src="js/yardimci.js?v=0.8.0"></script>
-<script src="js/kayit.js?v=0.8.0"></script>
-<script src="js/ekonomi.js?v=0.8.0"></script>
-<script src="js/ilerleme.js?v=0.8.0"></script>
-<script src="js/ogrenme.js?v=0.8.0"></script>
-<script src="js/oyun.js?v=0.8.0"></script>
-<script src="js/esitleme.js?v=0.8.0"></script>
-<script src="js/durum.js?v=0.8.0"></script>
-<script src="js/firebase-ayar.js?v=0.8.0"></script>
-<script src="js/bulut.js?v=0.8.0"></script>
-<script src="js/ana-sayfa.js?v=0.8.0"></script>
-<script src="js/kelime-calisma.js?v=0.8.0"></script>
-<script src="js/ses.js?v=0.8.0"></script>
-<script src="js/cihaz.js?v=0.8.0"></script>
-<script src="js/alistirmalar.js?v=0.8.0"></script>
-<script src="js/odul-takvim.js?v=0.8.0"></script>
-<script src="js/hazne.js?v=0.8.0"></script>
-<script src="js/sohbet.js?v=0.8.0"></script>
-<script src="js/sosyal.js?v=0.8.0"></script>
-<script src="js/gezinme.js?v=0.8.0"></script>
-<script src="js/kedi.js?v=0.8.0"></script>
-<script src="js/kedi-cizim.js?v=0.8.0"></script>
-<script src="js/balik-avi.js?v=0.8.0"></script>
-<script src="js/ayarlar.js?v=0.8.0"></script>
-<script src="js/baslat.js?v=0.8.0"></script>
+<script src="vendor/capacitor.js?v=0.9.0"></script>
+<script src="veri/kelimeler.js?v=0.9.0"></script>
+<script src="veri/phrasal.js?v=0.9.0"></script>
+<script src="veri/cumleler.js?v=0.9.0"></script>
+<script src="js/yardimci.js?v=0.9.0"></script>
+<script src="js/kayit.js?v=0.9.0"></script>
+<script src="js/ekonomi.js?v=0.9.0"></script>
+<script src="js/ilerleme.js?v=0.9.0"></script>
+<script src="js/ogrenme.js?v=0.9.0"></script>
+<script src="js/oyun.js?v=0.9.0"></script>
+<script src="js/esitleme.js?v=0.9.0"></script>
+<script src="js/durum.js?v=0.9.0"></script>
+<script src="js/firebase-ayar.js?v=0.9.0"></script>
+<script src="js/bulut.js?v=0.9.0"></script>
+<script src="js/ana-sayfa.js?v=0.9.0"></script>
+<script src="js/kelime-calisma.js?v=0.9.0"></script>
+<script src="js/ses.js?v=0.9.0"></script>
+<script src="js/cihaz.js?v=0.9.0"></script>
+<script src="js/alistirmalar.js?v=0.9.0"></script>
+<script src="js/odul-takvim.js?v=0.9.0"></script>
+<script src="js/hazne.js?v=0.9.0"></script>
+<script src="js/sohbet.js?v=0.9.0"></script>
+<script src="js/cete.js?v=0.9.0"></script>
+<script src="js/sosyal.js?v=0.9.0"></script>
+<script src="js/cete-ekran.js?v=0.9.0"></script>
+<script src="js/gezinme.js?v=0.9.0"></script>
+<script src="js/kedi.js?v=0.9.0"></script>
+<script src="js/kedi-cizim.js?v=0.9.0"></script>
+<script src="js/balik-avi.js?v=0.9.0"></script>
+<script src="js/ayarlar.js?v=0.9.0"></script>
+<script src="js/baslat.js?v=0.9.0"></script>
 </body>
 </html>

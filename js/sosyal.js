@@ -69,6 +69,7 @@ function arkadasCiz() {
     if (tepkiler[i + t]) return;
     tepkiler[i + t] = 1; d.tepki++; kaydet(); konfeti(b, 5); bildir(`${ARKADASLAR[i][0]}'e ${t} gönderildi`); rozetKontrol(); arkadasCiz();
   });
+  if (typeof ceteEkranCiz === "function") ceteEkranCiz(); // gerçek çete kartları (js/cete-ekran.js)
 }
 // Miyavlama: arkadaşa "hadi çalış" dürtmesi. Spam olmasın diye her arkadaşa günde bir kez.
 let tbZaman;
@@ -82,7 +83,16 @@ function miyavla(i, b) {
   tb.classList.add("acik"); clearTimeout(tbZaman); tbZaman = setTimeout(() => tb.classList.remove("acik"), 3200);
   arkadasCiz();
 }
-document.getElementById("ekle-dugme").onclick = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : "Arkadaş ekle", sosyalBolum === "cete" ? "Bu sürümde gerçek çete daveti yok: çete ve üyeleri örnek. Gerçek çete; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek." : "Bu sürümde gerçek arkadaş ekleme yok: listedeki arkadaşlar örnek. Gerçek arkadaşlık; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.", "Tamam");
+document.getElementById("ekle-dugme").onclick = () => {
+  // Hesap varken gerçek çete: çetedeysen davet, değilsen kur/katıl. Arkadaşlar = çete üyeleri (ayrı arkadaş sistemi yok).
+  if (Bulut.hazirMi() && Bulut.kullanici) {
+    if (CeteEkran.cete) davetPenceresi(CeteEkran.cete);
+    else if (sosyalBolum === "cete") kurPenceresi(); else katilPenceresi("");
+    return;
+  }
+  ekleDemo();
+};
+const ekleDemo = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : "Arkadaş ekle", sosyalBolum === "cete" ? "Bu sürümde gerçek çete daveti yok: çete ve üyeleri örnek. Gerçek çete; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek." : "Bu sürümde gerçek arkadaş ekleme yok: listedeki arkadaşlar örnek. Gerçek arkadaşlık; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.", "Tamam");
 
 // ================= SOSYAL: bölümler =================
 let sosyalBolum = "arkadas";
@@ -223,6 +233,7 @@ function sohbetCiz(benim) {
 }
 let sohbetCevapZaman;
 function sohbetGonder() {
+  if (CeteEkran.sohbet) { gercekGonder(); return; } // gerçek çete sohbeti (js/cete-ekran.js)
   const g = document.getElementById("sohbet-girdi"), metin = Sohbet.temizle(g.value);
   if (!metin) return;
   const kucuk = metin.toLocaleLowerCase("tr");
@@ -251,12 +262,12 @@ function sohbetGonder() {
 }
 document.getElementById("sohbet-gonder").onclick = sohbetGonder;
 document.getElementById("sohbet-girdi").onkeydown = e => { if (e.key === "Enter") sohbetGonder(); };
-document.getElementById("sohbet-ac").onclick = () => { sohbetEkran.sayi = 0; sohbetEkran.hata = null; sohbetCiz(); tamAc("sohbet"); };
+document.getElementById("sohbet-ac").onclick = () => { sohbetBaslik(false); document.getElementById("sohbet-girdi").disabled = document.getElementById("sohbet-gonder").disabled = false; sohbetEkran.sayi = 0; sohbetEkran.hata = null; sohbetCiz(); tamAc("sohbet"); };
 document.getElementById("sohbet-yeni").onclick = () => { const l = document.getElementById("sohbet-liste"); l.scrollTop = l.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; };
 document.getElementById("sohbet-liste").addEventListener("scroll", e => {
   const l = e.currentTarget; if (Sohbet.alttaMi(l.scrollTop, l.scrollHeight, l.clientHeight)) document.getElementById("sohbet-yeni").hidden = true;
 });
-["online", "offline"].forEach(o => window.addEventListener(o, () => { if (document.getElementById("tam-sohbet").classList.contains("aktif")) sohbetDurumCiz(1); }));
+["online", "offline"].forEach(o => window.addEventListener(o, () => { if (document.getElementById("tam-sohbet").classList.contains("aktif")) { if (CeteEkran.sohbet) gercekDurumCiz(); else sohbetDurumCiz(1); } }));
 // Klavye: görünen alan küçülünce aradaki fark sohbet ekranının altına boşluk olur; gönderme alanı klavyenin üstünde kalır.
 if (window.visualViewport) {
   const vv = window.visualViewport;

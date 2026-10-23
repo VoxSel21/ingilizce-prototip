@@ -81,6 +81,7 @@ const Bulut = {
       Bulut.durum = u ? "bekliyor" : "yerel";
       Bulut._ciz();
       if (u) Bulut.esitle();
+      if (typeof ceteYenile === "function") ceteYenile(); // gerçek çete (js/cete-ekran.js)
     });
     window.addEventListener("online", () => Bulut.esitle());
     document.addEventListener("visibilitychange", () => { if (!document.hidden) Bulut.esitle(); });

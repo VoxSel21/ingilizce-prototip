@@ -26,7 +26,7 @@ function tamAc(ad) {
   arkaPlan().forEach(e => e.inert = true);
   setTimeout(() => { const ilk = t.querySelector("button:not(.kapat):not([disabled])") || t.querySelector("button"); if (ilk) ilk.focus(); }, 60);
 }
-function tamKapat() { document.querySelectorAll(".alt-panel.acik").forEach(altPanelKapat); document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif"));
+function tamKapat() { if (typeof ceteSohbetKapat === "function") ceteSohbetKapat(); document.querySelectorAll(".alt-panel.acik").forEach(altPanelKapat); document.querySelectorAll(".tam").forEach(t => t.classList.remove("aktif"));
   // Yarıda kapatılan turun cevap paneli bir sonraki tura taşınmasın (eski "Devam" yeni turu ilerletiyordu).
   document.querySelectorAll(".geri-bildirim").forEach(g => g.className = "geri-bildirim");
   arkaPlan().forEach(e => e.inert = false);

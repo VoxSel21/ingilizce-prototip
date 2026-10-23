@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>İngilizce Prototip</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css?v=0.4.0">
+<link rel="stylesheet" href="css/stil.css?v=0.5.0">
 </head>
 <body>
 <div id="uygulama">
@@ -25,6 +25,7 @@
       <div class="ust-sag"><button class="hap ses-dugme" aria-label="Sesi aç/kapat">🔊</button><span class="hap" id="yildiz-hap">🪙 0</span><button class="hap" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button></div>
     </div>
     <div class="selam" style="position:relative;">
+      <button class="ana-kedi" id="ana-kedi" aria-label="Kedine git"></button>
       <h1 id="selam-baslik">Günaydın!</h1>
       <p id="selam-alt">Bugün birkaç kelime öğrenelim mi?</p>
     </div>
@@ -102,41 +103,76 @@
   <!-- ========== KEDİ ========== -->
   <section class="ekran" id="ekran-kedi">
     <div class="ust"><button class="hap" id="kedi-ad">🐱 Pati ✏️</button><div class="ust-sag"><button class="hap ses-dugme" aria-label="Sesi aç/kapat">🔊</button><span class="hap" id="yildiz-hap3">🪙 0</span></div></div>
+    <!-- Sahne ekranın kalanını kaplar; dükkân listeleri alttan açılan panellerde (3. aşama, U13) -->
     <div class="kedi-sahne" id="kedi-sahne">
+      <button class="kilo-hap" id="kilo-hap" aria-label="Kedinin durumu"><span id="kilo-durum">Pofuduk</span> · <span id="kilo-kg">4.0 kg</span></button>
       <div class="balon" id="kedi-balon">Miyav! 👋</div>
-      <div class="kedi-kutu" id="kedi-kutu"></div>
-      <button class="sev-dugme" id="sev-dugme">💕 Sev</button>
-      <div class="kilo-kutu">
-        <div class="kilo-ust"><span id="kilo-durum">Pofuduk</span><span id="kilo-kg">4.0 kg</span></div>
-        <div class="kilo-cubuk"><i id="kilo-isaret"></i></div>
-        <div class="kilo-etiket"><span>Fit</span><span>Pofuduk</span><span>Tombiş</span><span>Mega Chonk</span></div>
+      <div class="kedi-kutu" id="kedi-kutu" role="button" tabindex="0" aria-label="Kediyi okşa"></div>
+      <div class="sahne-dugmeler">
+        <button data-panel="panel-gardirop"><span>👒</span>Gardırop</button>
+        <button data-panel="panel-renk"><span>🎨</span>Renk</button>
+        <button data-panel="panel-arka"><span>🏞️</span>Arka plan</button>
+        <button data-panel="panel-durum"><span>💪</span>Durum</button>
+        <button id="sev-dugme"><span>💕</span>Sev</button>
       </div>
     </div>
-    <button class="kart av-kart" id="av-kart">
-      <span class="av-kart-ikon">🎣</span>
-      <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙</small></div>
-      <span class="ok">›</span>
-    </button>
-    <button class="kart av-kart" id="spor-kart" style="background:var(--mercan-a);">
-      <span class="av-kart-ikon">🏋️</span>
-      <div><b>Kedi spor salonu</b><small>Eski kelimeleri tekrar et, Pati kilo versin</small></div>
-      <span class="ok">›</span>
-    </button>
-    <h2>Gardırop</h2>
-    <div class="dolap-sekme" id="dolap-sekme">
-      <button data-yer="sapka" class="aktif">🎩 Şapka</button>
-      <button data-yer="boyun">🎀 Boyun</button>
-      <button data-yer="goz">👓 Gözlük</button>
-      <button data-yer="kurk">🎨 Kürk</button>
-    </div>
-    <div class="dolap" id="dolap"></div>
-    <h2>Arka plan</h2>
-    <div class="magaza" id="sahneler"></div>
-    <div class="kart" style="margin-top:14px;background:var(--gunes-a);">
-      <b style="font-weight:900;">🪙 Altın nasıl kazanılır?</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🪙 · Günün avında balığa ulaş: 1 🪙 · Cümle turunda 3 doğru: 1 🪙 · Başarımlar: 1–10 🪙</p>
-    </div>
   </section>
+  <!-- Kedi panelleri ekranın dışında: kaydırılan alanın içinde kalırsa odaklanınca sayfa kayıyordu -->
+    <div class="alt-panel kedi-panel" id="panel-gardirop" role="dialog" aria-label="Gardırop" aria-hidden="true">
+      <div class="panel-ust"><b>👒 Gardırop</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="dolap-sekme" id="dolap-sekme" role="tablist">
+        <button data-yer="sapka" class="aktif" role="tab">🎩 Şapka</button>
+        <button data-yer="boyun" role="tab">🎀 Boyun</button>
+        <button data-yer="goz" role="tab">👓 Gözlük</button>
+      </div>
+      <p class="soluk dene-yazi" id="dene-yazi" role="status" aria-live="polite">Bir eşyaya dokun: önce üstünde dene, beğenirsen al.</p>
+      <div class="panel-ic"><div class="dolap" id="dolap"></div></div>
+    </div>
+    <div class="alt-panel kedi-panel" id="panel-renk" role="dialog" aria-label="Kürk rengi" aria-hidden="true">
+      <div class="panel-ust"><b>🎨 Kürk rengi</b><button class="kapat" data-panel-kapat aria-label="İptal et ve kapat">✕</button></div>
+      <div class="panel-ic renk-ic">
+        <div class="renk-hazir" id="renk-hazir" aria-label="Hazır renkler"></div>
+        <label class="renk-kaydir"><span>Renk</span><input type="range" id="renk-ton" min="0" max="359" aria-label="Renk tonu"></label>
+        <label class="renk-kaydir"><span>Canlılık</span><input type="range" id="renk-doy" min="0" max="100" aria-label="Canlılık"></label>
+        <label class="renk-kaydir"><span>Açıklık</span><input type="range" id="renk-acik" min="8" max="96" aria-label="Açıklık"></label>
+        <div class="renk-satir">
+          <span class="renk-ornek" id="renk-ornek"></span>
+          <input id="renk-hex" maxlength="7" spellcheck="false" autocomplete="off" aria-label="Renk kodu (HEX)" placeholder="#FDBE86">
+          <button class="al" id="renk-varsayilan">Varsayılan</button>
+        </div>
+        <div class="renk-son-kutu" id="renk-son-kutu"><small class="soluk">Son kullanılanlar</small><div class="renk-hazir" id="renk-son"></div></div>
+        <p class="soluk renk-not">Renk seçmek ücretsiz. Kaydetmeden kapatırsan eski renk kalır.</p>
+        <div class="onay-dugmeler"><button class="buyuk-dugme mor" id="renk-iptal">İptal</button><button class="buyuk-dugme" id="renk-kaydet">Kaydet</button></div>
+      </div>
+    </div>
+    <div class="alt-panel kedi-panel" id="panel-arka" role="dialog" aria-label="Arka plan" aria-hidden="true">
+      <div class="panel-ust"><b>🏞️ Arka plan</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ic"><div class="magaza" id="sahneler"></div></div>
+    </div>
+    <div class="alt-panel kedi-panel" id="panel-durum" role="dialog" aria-label="Durum ve antrenman" aria-hidden="true">
+      <div class="panel-ust"><b>💪 Durum</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ic">
+        <div class="kilo-kutu">
+          <div class="kilo-ust"><span id="kilo-durum2">Pofuduk</span><span id="kilo-kg2">4.0 kg</span></div>
+          <div class="kilo-cubuk"><i id="kilo-isaret"></i></div>
+          <div class="kilo-etiket"><span>Fit</span><span>Pofuduk</span><span>Tombiş</span><span>Mega Chonk</span></div>
+        </div>
+        <button class="kart av-kart" id="av-kart">
+          <span class="av-kart-ikon">🎣</span>
+          <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙</small></div>
+          <span class="ok">›</span>
+        </button>
+        <button class="kart av-kart" id="spor-kart" style="background:var(--mercan-a);">
+          <span class="av-kart-ikon">🏋️</span>
+          <div><b>Kedi spor salonu</b><small>Eski kelimeleri tekrar et, Pati kilo versin</small></div>
+          <span class="ok">›</span>
+        </button>
+        <div class="kart" style="background:var(--gunes-a);">
+          <b style="font-weight:900;">🪙 Altın nasıl kazanılır?</b>
+          <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🪙 · Günün avında balığa ulaş: 1 🪙 · Cümle turunda 3 doğru: 1 🪙 · Başarımlar: 1–10 🪙</p>
+        </div>
+      </div>
+    </div>
 
   <!-- ========== ARKADAŞLAR ========== -->
   <section class="ekran" id="ekran-arkadaslar">
@@ -170,6 +206,7 @@
   <!-- ========== KELİME ÇALIŞMA: önce tanış, sonra sorularla tekrar (Serhat, 2026-10-18) ========== -->
   <section class="tam" id="tam-kartlar">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="k-cubuk"></i></div><b id="k-sayac">0/10</b></div>
+    <div class="antrenman" id="antrenman" hidden><div class="antrenman-kedi" id="antrenman-kedi"></div><div class="antrenman-bant"></div><b id="antrenman-yazi"></b></div>
     <div class="k-alan" id="k-alan"></div>
     <div class="geri-bildirim" id="k-gb">
       <h3 id="k-gb-baslik"></h3>
@@ -249,7 +286,7 @@
       <div class="hedef-balik">🐟</div>
       <div class="balikci" id="av-balikci">🧔</div>
       <div class="unlem" id="av-unlem">❗</div>
-      <div class="kedi" id="av-kedi">🐱</div>
+      <div class="kedi" id="av-kedi"></div>
     </div>
     <div class="kart av-soru"><div class="soluk" style="font-size:14px;">Türkçesi ne?</div><div class="s-kelime" id="av-kelime"></div></div>
     <div class="av-siklar" id="av-siklar"></div>
@@ -302,27 +339,28 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.4.0"></script>
-<script src="veri/kelimeler.js?v=0.4.0"></script>
-<script src="veri/phrasal.js?v=0.4.0"></script>
-<script src="veri/cumleler.js?v=0.4.0"></script>
-<script src="js/yardimci.js?v=0.4.0"></script>
-<script src="js/kayit.js?v=0.4.0"></script>
-<script src="js/ekonomi.js?v=0.4.0"></script>
-<script src="js/ilerleme.js?v=0.4.0"></script>
-<script src="js/durum.js?v=0.4.0"></script>
-<script src="js/ana-sayfa.js?v=0.4.0"></script>
-<script src="js/kelime-calisma.js?v=0.4.0"></script>
-<script src="js/ses.js?v=0.4.0"></script>
-<script src="js/cihaz.js?v=0.4.0"></script>
-<script src="js/alistirmalar.js?v=0.4.0"></script>
-<script src="js/odul-takvim.js?v=0.4.0"></script>
-<script src="js/hazne.js?v=0.4.0"></script>
-<script src="js/sosyal.js?v=0.4.0"></script>
-<script src="js/gezinme.js?v=0.4.0"></script>
-<script src="js/kedi.js?v=0.4.0"></script>
-<script src="js/balik-avi.js?v=0.4.0"></script>
-<script src="js/ayarlar.js?v=0.4.0"></script>
-<script src="js/baslat.js?v=0.4.0"></script>
+<script src="vendor/capacitor.js?v=0.5.0"></script>
+<script src="veri/kelimeler.js?v=0.5.0"></script>
+<script src="veri/phrasal.js?v=0.5.0"></script>
+<script src="veri/cumleler.js?v=0.5.0"></script>
+<script src="js/yardimci.js?v=0.5.0"></script>
+<script src="js/kayit.js?v=0.5.0"></script>
+<script src="js/ekonomi.js?v=0.5.0"></script>
+<script src="js/ilerleme.js?v=0.5.0"></script>
+<script src="js/durum.js?v=0.5.0"></script>
+<script src="js/ana-sayfa.js?v=0.5.0"></script>
+<script src="js/kelime-calisma.js?v=0.5.0"></script>
+<script src="js/ses.js?v=0.5.0"></script>
+<script src="js/cihaz.js?v=0.5.0"></script>
+<script src="js/alistirmalar.js?v=0.5.0"></script>
+<script src="js/odul-takvim.js?v=0.5.0"></script>
+<script src="js/hazne.js?v=0.5.0"></script>
+<script src="js/sosyal.js?v=0.5.0"></script>
+<script src="js/gezinme.js?v=0.5.0"></script>
+<script src="js/kedi.js?v=0.5.0"></script>
+<script src="js/kedi-cizim.js?v=0.5.0"></script>
+<script src="js/balik-avi.js?v=0.5.0"></script>
+<script src="js/ayarlar.js?v=0.5.0"></script>
+<script src="js/baslat.js?v=0.5.0"></script>
 </body>
 </html>

@@ -112,6 +112,7 @@ function adimGoster() {
   const a = kO.sira[kO.i];
   document.getElementById("k-sayac").textContent = `${kO.i}/${kO.sira.length}`;
   document.getElementById("k-cubuk").style.width = (kO.i / kO.sira.length * 100) + "%";
+  antrenmanCiz();
   if (a.tip === "tanis") tanisCiz(a.k); else soruCiz(a);
 }
 function tanisCiz(k) {
@@ -222,6 +223,7 @@ function cevapla(a, dogru, el) {
   }
   soruCevaplandi(dogru);
   kaydet(); rozetKontrol();
+  if (kO.spor && dogru) antrenmanSevin();
   sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
   const gb = document.getElementById("k-gb");
   gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("k-gb-devam");

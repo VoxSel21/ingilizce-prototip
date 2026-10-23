@@ -1,10 +1,13 @@
 // ================= KAYIT ŞEMASI, DOĞRULAMA VE SÜRÜM TAŞIMA =================
 // Saf mantık: tarayıcıya bağlı değil, Node testleri de aynı dosyayı yükler (tests/).
 // Kayıt ve yedek kodu önce burada doğrulanır; bozuk ya da tehlikeli veri mevcut ilerlemenin yerine geçmez.
-const SEMA_SURUM = 3;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22)
+const SEMA_SURUM = 4;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22) · 4: serbest kürk rengi (2026-10-23)
 const YEDEK_EN_FAZLA = 1500000;  // yedek kodunun en fazla karakteri (bozuk ya da şişirilmiş yedeğe karşı)
 const SINIR = { sohbet: 200, metin: 500, kim: 30, kediAd: 14, liste: 500 };
 // Ayarlar ekranının izinli değerleri; bilinmeyen değer varsayılana döner.
+// 4. sürüm: eski hazır kürkler (renk süzgeci) serbest renge çevrilir. Satın alınmış kürk listesi silinmez.
+const ESKI_KURK_RENK = { turuncu: "#FDBE86", krem: "#F1DDBF", gri: "#A9AAB8", siyah: "#4A4458", beyaz: "#F7F7FA" };
+const RENK_DESENI = /^#[0-9a-f]{6}$/i;
 const AYAR_SECENEK = { hedef: [5, 10, 15, 20], tema: ["sistem", "pastel", "koyu", "kontrast"], hareket: ["sistem", "azalt", "normal"] };
 
 const Kayit = {
@@ -35,6 +38,8 @@ const Kayit = {
     if (v.icerikBildirim != null && (!Array.isArray(v.icerikBildirim) || v.icerikBildirim.length > SINIR.liste)) return hata("İçerik bildirimleri bozuk.");
     if (v.sohbet != null && (!Array.isArray(v.sohbet) || v.sohbet.length > SINIR.sohbet * 5)) return hata("Sohbet kaydı bozuk.");
     if (v.kediAd != null && typeof v.kediAd !== "string") return hata("Kedi adı bozuk.");
+    if (v.kurkRenk != null && !(typeof v.kurkRenk === "string" && RENK_DESENI.test(v.kurkRenk))) return hata("Kürk rengi bozuk.");
+    if (v.sonRenkler != null && (!Array.isArray(v.sonRenkler) || v.sonRenkler.length > 50)) return hata("Son renkler listesi bozuk.");
     if (v.ayar != null && !nesne(v.ayar)) return hata("Ayarlar bozuk.");
     return { tamam: true };
   },
@@ -43,7 +48,7 @@ const Kayit = {
   // hiçbir değer artırılmaz, yalnız eksikler tamamlanır, bozuk parçalar atılır, sınır dışı değerler sınıra çekilir.
   // izin: { kelimeler, esyalar, temalar, kurklar } — tanınan kimlik kümeleri (Set).
   tasi(v, varsayilan, izin) {
-    const t = varsayilan;
+    const t = varsayilan, eskiSurum = Number.isInteger(v.surum) ? v.surum : 2;
     for (const a in t) if (v[a] == null || typeof v[a] !== typeof t[a]) v[a] = t[a];
     const liste = (a, kume) => (Array.isArray(v[a]) ? v[a] : t[a]).filter(x => typeof x === "string" && (!kume || kume.has(x)));
     v.yildiz = Math.max(0, Math.floor(v.yildiz));
@@ -61,6 +66,9 @@ const Kayit = {
       .filter(x => x && typeof x.kelime === "string" && Number.isInteger(x.gun)).slice(-200).map(x => ({ kelime: x.kelime.slice(0, 40), gun: x.gun }));
     if (!v.giyili || typeof v.giyili !== "object" || Array.isArray(v.giyili)) v.giyili = t.giyili;
     for (const y of Object.keys(t.giyili)) if (v.giyili[y] != null && !(typeof v.giyili[y] === "string" && v.esyalar.includes(v.giyili[y]))) v.giyili[y] = null;
+    if (eskiSurum < 4 || !RENK_DESENI.test(v.kurkRenk)) v.kurkRenk = ESKI_KURK_RENK[v.kurk] || t.kurkRenk;
+    v.kurkRenk = v.kurkRenk.toUpperCase();
+    v.sonRenkler = [...new Set((Array.isArray(v.sonRenkler) ? v.sonRenkler : []).filter(x => typeof x === "string" && RENK_DESENI.test(x)).map(x => x.toUpperCase()))].slice(0, 8);
     if (typeof v.bugun.sayi !== "number" || v.bugun.sayi < 0) v.bugun.sayi = 0;
     if (typeof v.bugun.hediye !== "boolean") v.bugun.hediye = false;
     if (!v.odulDefteri || typeof v.odulDefteri !== "object") v.odulDefteri = {};
@@ -73,4 +81,4 @@ const Kayit = {
   },
 };
 
-if (typeof module === "object" && module.exports) module.exports = { Kayit, SEMA_SURUM, YEDEK_EN_FAZLA, SINIR, AYAR_SECENEK };
+if (typeof module === "object" && module.exports) module.exports = { Kayit, ESKI_KURK_RENK, SEMA_SURUM, YEDEK_EN_FAZLA, SINIR, AYAR_SECENEK };

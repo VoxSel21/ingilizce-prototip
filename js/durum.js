@@ -14,7 +14,7 @@ function yeniDurum() {
   // Yeni kullanıcı sıfır çalışılmış günle başlar (eski prototipteki 4 sahte gün kaldırıldı, 2026-10-22).
   return { surum: SEMA_SURUM, yildiz: EKONOMI.baslangicAltin, koruyucu: 1, kartlar: {}, gunler: {}, korunan: {},
     bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
-    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
+    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], kurkRenk: "#FDBE86", sonRenkler: [], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
     odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true } };
 }
 // Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.

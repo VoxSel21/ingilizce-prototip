@@ -94,9 +94,11 @@ let altPanelAcan = null;
 function altPanelAc(id) {
   altPanelAcan = document.activeElement;
   const p = document.getElementById(id); p.classList.add("acik"); p.setAttribute("aria-hidden", "false");
-  setTimeout(() => { const ilk = p.querySelector("button, textarea, select, input"); if (ilk) ilk.focus(); }, 60);
+  setTimeout(() => { const ilk = p.querySelector("button, textarea, select, input"); if (ilk) ilk.focus({ preventScroll: true }); }, 60); // panel hâlâ kayarken odak çerçeveyi kaydırmasın
 }
 function altPanelKapat(p) {
+  if (!p.classList.contains("acik")) return;
   p.classList.remove("acik"); p.setAttribute("aria-hidden", "true");
+  if (p._kapaninca) p._kapaninca(); // panelin kendi temizliği (ör. kaydedilmemiş rengi geri al)
   if (altPanelAcan && document.body.contains(altPanelAcan)) try { altPanelAcan.focus(); } catch (e) {}
 }

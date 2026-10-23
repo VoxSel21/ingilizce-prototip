@@ -36,7 +36,7 @@ const ESYALAR = [
 // farkı katman (giy_*.png, 600x500, kedi çerçevesi + çeyrek pay) olarak çıkarıldı (cizim/giydirme.py).
 // Şapkanın altında kalan kulak uçları silme maskesiyle (sil_*.png) kediden silinir, sonra katman konur.
 // Kedinin çizimi, kürk rengi ve hareketleri tek yerde: js/kedi-cizim.js (KediCizici, kediHareket).
-const SILME_VAR = ["kasket", "hasir", "silindir"];
+const SILME_VAR = ["kasket", "hasir", "silindir", "korsan"];
 function kediHali() { return d.kilo < 4.5 ? "fit" : d.kilo < 6 ? "pofuduk" : d.kilo < 7.5 ? "tombis" : "mega"; }
 const resimOnbellek = {};
 function resimYukle(src) {

@@ -27,7 +27,7 @@ function ceteCiz() {
   d.ceteOdul = d.ceteOdul || {};
   document.getElementById("cete-gorevler").innerHTML = CETE_GOREVLER.map((g, i) => {
     const s = ceteDurum(g), alindi = d.ceteOdul[ceteAnahtar(g)];
-    const uyeler = s.hepsi.map(u => `<span class="${g.herkes && u[1] >= g.hedef ? "tamam" : ""}">${u[0]} ${g.herkes ? u[1] + " gün" : "+" + u[1]}</span>`).join("");
+    const uyeler = s.hepsi.map(u => `<span class="${g.herkes && u[1] >= g.hedef ? "tamam" : ""}">${Sohbet.kacis(u[0])} ${g.herkes ? u[1] + " gün" : "+" + u[1]}</span>`).join("");
     return `<div class="kart cete-gorev"><div class="g-ust"><span class="g-ikon">${g.ikon}</span><div><b>${g.ad}</b><small>${g.herkes ? s.deger + "/" + s.hedef + " kişi tamam" : s.deger + "/" + s.hedef}</small></div>
       <button class="al" data-cete="${i}" ${!s.bitti || alindi ? "disabled" : ""}>${alindi ? "Alındı ✓" : "🪙 " + g.odul}</button></div>
       <div class="cete-cubuk"><i style="width:${s.deger / s.hedef * 100}%"></i></div><div class="cete-uyeler">${uyeler}</div></div>`;
@@ -42,23 +42,26 @@ function arkadasCiz() {
   document.querySelectorAll("[data-sosyal]").forEach(b => b.classList.toggle("aktif", b.dataset.sosyal === sosyalBolum));
   document.getElementById("sosyal-arkadas").style.display = sosyalBolum === "arkadas" ? "" : "none";
   document.getElementById("sosyal-cete").style.display = sosyalBolum === "cete" ? "" : "none";
+  document.getElementById("sosyal-sohbet").style.display = sosyalBolum === "sohbet" ? "" : "none";
+  // Ekle düğmesi yalnız arkadaş ve çete bölümünde anlamlı.
+  document.getElementById("ekle-dugme").hidden = sosyalBolum === "sohbet";
   ceteCiz(); ikiliCiz(); savasCiz();
   const sonMesaj = (d.sohbet && d.sohbet.length) ? d.sohbet[d.sohbet.length - 1] : { kim: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][0], metin: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][1] };
   document.getElementById("sohbet-son").textContent = `${sonMesaj.kim}: ${sonMesaj.metin}`;
   const sen = ["Sen", "#9F8BEA", seri(), d.bugun.sayi * 10 + d.cumleDogru * 15 + 80];
   const lig = ARKADASLAR.map(a => a.slice(0, 4)).concat([sen]).sort((a, b) => b[3] - a[3]);
-  document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${["🥇","🥈","🥉"][i] || i + 1}</span><div class="avatar" style="background:${a[1]};width:40px;height:40px;font-size:16px;">${a[0][0]}</div><div><b>${a[0]}</b><small>🔥 ${a[2]} gün</small></div><b>${a[3]} XP</b></div>`).join("");
+  document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${["🥇","🥈","🥉"][i] || i + 1}</span><div class="avatar" style="background:${a[1]};width:40px;height:40px;font-size:16px;">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}${a[0] === "Sen" ? "" : '<span class="ornek-etiket">örnek</span>'}</b><small>🔥 ${a[2]} gün</small></div><b>${a[3]} XP</b></div>`).join("");
   const bugun = bugunNo(); d.miyav = d.miyav || {};
   document.getElementById("arkadas-listesi").innerHTML = ARKADASLAR.map((a, i) => `<div class="kart arkadas-kart">
-    <div class="arkadas"><div class="avatar" style="background:${a[1]}">${a[0][0]}</div><div><b>${a[0]}</b><small>${a[4]}</small></div></div>
+    <div class="arkadas"><div class="avatar" style="background:${a[1]}">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}<span class="ornek-etiket">örnek</span></b><small>${Sohbet.kacis(a[4])}</small></div></div>
     <div class="alt-satir">${["👏","🔥","💜"].map(t => `<button class="tepki ${tepkiler[i + t] ? "gonderildi" : ""}" data-t="${i}|${t}">${t}</button>`).join("")}
       <button class="miyav-dugme ${d.miyav[a[0]] === bugun ? "gonderildi" : ""}" data-miyav="${i}">${d.miyav[a[0]] === bugun ? "😺 Miyavlandı" : "🐱 Miyavla"}</button></div>
     ${(d.ikili || []).some(g => g.arkadas === a[0]) ? "" : `<button class="ikili-dugme" data-ikili="${i}">🤝 Birlikte görev</button>`}</div>`).join("");
   document.querySelectorAll("[data-ikili]").forEach(b => b.onclick = () => ikiliBaslat(+b.dataset.ikili));
-  // Prototip: Elif sana miyavlamış gibi gösterilir
+  // Demo: Elif (örnek arkadaş) sana miyavlamış gibi gösterilir; etiketli.
   const elifeDondun = d.miyav["Elif"] === bugun;
   document.getElementById("gelen-miyav").innerHTML = `<div class="kart gelen-miyav"><span class="g-ikon">😺</span>
-    <div><b>Elif sana miyavladı!</b><small>"Hadi kelime zamanı 🐾" · 1 saat önce</small></div>
+    <div><b>Elif<span class="ornek-etiket">örnek</span> sana miyavladı!</b><small>"Hadi kelime zamanı 🐾" · demo bildirimi</small></div>
     <button class="miyav-dugme ${elifeDondun ? "gonderildi" : ""}" style="flex:none;padding:0 14px;" data-miyav="1">${elifeDondun ? "😺 Döndün" : "Geri miyavla"}</button></div>`;
   document.querySelectorAll("[data-miyav]").forEach(b => b.onclick = () => miyavla(+b.dataset.miyav, b));
   document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
@@ -75,11 +78,11 @@ function miyavla(i, b) {
   d.miyav[a[0]] = bugun; d.tepki++; kaydet(); rozetKontrol(); konfeti(b, 6);
   Ses.miyav();
   const tb = document.getElementById("telefon-bildirim");
-  tb.innerHTML = `<span class="b-ikon">🐱</span><div><b>${d.kediAd} sana miyavladı!</b><small>İngilizce Kedi · şimdi</small><p>Hadi, bugünkü kelimelerin seni bekliyor 🐾</p></div><span class="kimde">${a[0]}'in telefonunda böyle görünecek</span>`;
+  tb.innerHTML = `<span class="b-ikon">🐱</span><div><b>${Sohbet.kacis(d.kediAd)} sana miyavladı!</b><small>İngilizce Kedi · şimdi</small><p>Hadi, bugünkü kelimelerin seni bekliyor 🐾</p></div><span class="kimde">Demo: gerçek sürümde ${Sohbet.kacis(a[0])}'in telefonunda böyle görünür</span>`;
   tb.classList.add("acik"); clearTimeout(tbZaman); tbZaman = setTimeout(() => tb.classList.remove("acik"), 3200);
   arkadasCiz();
 }
-document.getElementById("ekle-dugme").onclick = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : "Arkadaş ekle", sosyalBolum === "cete" ? "Gerçek uygulamada arkadaşın bu kodla çetene katılacak. Çete kodun: <b style='color:#6B55C9'>KUZU-4821</b>" : "Gerçek uygulamada arkadaşının kullanıcı adını ya da davet kodunu yazacaksın. Senin kodun: <b style='color:#6B55C9'>PATI-1907</b>", "Tamam");
+document.getElementById("ekle-dugme").onclick = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : "Arkadaş ekle", sosyalBolum === "cete" ? "Bu sürümde gerçek çete daveti yok: çete ve üyeleri örnek. Gerçek çete; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek." : "Bu sürümde gerçek arkadaş ekleme yok: listedeki arkadaşlar örnek. Gerçek arkadaşlık; hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.", "Tamam");
 
 // ================= SOSYAL: bölümler =================
 let sosyalBolum = "arkadas";
@@ -107,9 +110,9 @@ function ikiliCiz() {
   el.innerHTML = d.ikili.map((g, i) => {
     const sb = IKILI_SABLON.find(x => x.id === g.sablon), sen = Math.min(sb.hedef, sb.sen(g)), o = ikiliArkadasIlerleme(g, sb);
     const bitti = sen >= sb.hedef && o >= sb.hedef;
-    return `<div class="kart ikili-kart"><div class="g-ust"><span style="font-size:28px">${sb.ikon}</span><div><b>${g.arkadas} ile: ${sb.ad}</b><small>Ödül: ikinize de ${sb.odul} 🪙</small></div></div>
+    return `<div class="kart ikili-kart"><div class="g-ust"><span style="font-size:28px">${sb.ikon}</span><div><b>${Sohbet.kacis(g.arkadas)} ile: ${sb.ad}</b><small>Ödül: ikinize de ${sb.odul} 🪙</small></div></div>
       <div class="ikili-satir"><span>Sen</span><div class="cete-cubuk"><i style="width:${sen / sb.hedef * 100}%"></i></div>${sen}/${sb.hedef}</div>
-      <div class="ikili-satir"><span>${g.arkadas}</span><div class="cete-cubuk"><i style="width:${o / sb.hedef * 100}%"></i></div>${o}/${sb.hedef}</div>
+      <div class="ikili-satir"><span>${Sohbet.kacis(g.arkadas)}</span><div class="cete-cubuk"><i style="width:${o / sb.hedef * 100}%"></i></div>${o}/${sb.hedef}</div>
       ${bitti ? `<button class="ikili-dugme" data-ikili-al="${i}">🎉 Ödülü al (+${sb.odul} 🪙)</button>` : ""}</div>`;
   }).join("");
   document.querySelectorAll("[data-ikili-al]").forEach(b => b.onclick = () => {
@@ -123,7 +126,7 @@ function ikiliBaslat(i) {
   const a = ARKADASLAR[i];
   if ((d.ikili || []).some(g => g.arkadas === a[0])) { bildir(`${a[0]} ile zaten bir görevin var`); return; }
   const p = document.getElementById("pencere");
-  p.innerHTML = `<div class="p-ikon">🤝</div><h3>${a[0]} ile ne yapalım?</h3><p>Görevi seç, ${a[0]}'e davet gider.</p>
+  p.innerHTML = `<div class="p-ikon">🤝</div><h3>${Sohbet.kacis(a[0])} ile ne yapalım?</h3><p>Görevi seç. ${Sohbet.kacis(a[0])} örnek bir arkadaş: davet gerçekten gitmez, görev hemen başlar. Senin ilerlemen gerçek, onunki örnek.</p>
     <div class="sablon-sec">${IKILI_SABLON.map(sb => `<button data-sablon="${sb.id}"><span style="font-size:24px">${sb.ikon}</span><span>${sb.ad}<br><small class="soluk">İkinize de ${sb.odul} 🪙</small></span></button>`).join("")}</div>
     <button class="buyuk-dugme" id="p-dugme" style="margin-top:12px;background:var(--krem);color:var(--murekkep);box-shadow:none;">Vazgeç</button>`;
   document.getElementById("perde").classList.add("aktif");
@@ -132,7 +135,7 @@ function ikiliBaslat(i) {
     d.ikili = d.ikili || [];
     d.ikili.push({ arkadas: a[0], sablon: b.dataset.sablon, bas: bugunNo(), basKelime: Object.keys(d.kartlar).length, basCumle: d.cumleDogru });
     kaydet(); Ses.pop(); document.getElementById("perde").classList.remove("aktif");
-    bildir(`🤝 ${a[0]} daveti kabul etti!`); herSeyiCiz();
+    bildir(`🤝 ${a[0]} (örnek) ile görev başladı`); herSeyiCiz();
   });
 }
 
@@ -175,7 +178,8 @@ function sohbetMesajEl(kim, metin, ben, n) {
   if (!ben) {
     const k = document.createElement("span"); k.className = "kim"; k.textContent = kim;
     k.style.color = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
-    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bildir"); b.textContent = "🚩";
+    const o = document.createElement("span"); o.className = "ornek-etiket"; o.textContent = "örnek"; k.append(o);
+    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bu mesajı gizle"); b.textContent = "🚩";
     el.append(k, b, document.createTextNode(metin));
     return el;
   }
@@ -187,23 +191,39 @@ function sohbetMesajEl(kim, metin, ben, n) {
   if (o.kullanilan.length) { const s = document.createElement("span"); s.className = "ogrendi"; s.textContent = `✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın`; el.append(s); }
   return el;
 }
-function sohbetCiz() {
+// Ekran durumu (U07): kim yazıyor, son kayıt hatası, kaç mesaj çizildi (yeni mesajı anlamak için).
+const sohbetEkran = { yaziyor: null, hata: null, sayi: 0 };
+function sohbetDurumCiz(mesajSayisi) {
+  const el = document.getElementById("sohbet-durum");
+  const s = Sohbet.durumSatiri({ mesajSayisi, cevrimici: navigator.onLine, yaziyor: sohbetEkran.yaziyor, hata: sohbetEkran.hata });
+  el.hidden = !s; el.textContent = s ? s.metin : ""; el.className = "sohbet-durum" + (s ? " " + s.tur : "");
+}
+function sohbetCiz(benim) {
   d.sohbet = d.sohbet || [];
   const liste = document.getElementById("sohbet-liste");
+  const altta = Sohbet.alttaMi(liste.scrollTop, liste.scrollHeight, liste.clientHeight);
   const ogeler = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? null : sohbetMesajEl(kim, m, false, "o" + n));
-  const bas = Math.max(0, d.sohbet.length - 30);
+  const bas = Math.max(0, d.sohbet.length - SOHBET.gosterilen);
   d.sohbet.slice(bas).forEach((m, n) => { if (!bildirilen.has("s" + (bas + n))) ogeler.push(sohbetMesajEl(m.kim, m.metin, m.kim === "Sen", "s" + (bas + n))); });
-  liste.replaceChildren(...ogeler.filter(Boolean)); liste.scrollTop = liste.scrollHeight;
+  const cizilen = ogeler.filter(Boolean), yeniVar = d.sohbet.length > sohbetEkran.sayi, ust = liste.scrollTop;
+  liste.replaceChildren(...cizilen);
+  // Eski mesajları okurken zorla aşağı kaydırma yok; yeni mesaj gelince gösterge çıkar.
+  const karar = Sohbet.kaydirmaKarari({ altta, benim: !!benim || !sohbetEkran.sayi, yeniVar });
+  if (karar === "in") { liste.scrollTop = liste.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; }
+  else { liste.scrollTop = ust; if (karar === "goster") document.getElementById("sohbet-yeni").hidden = false; }
+  sohbetEkran.sayi = d.sohbet.length;
+  sohbetDurumCiz(cizilen.length);
   liste.querySelectorAll("[data-bildir]").forEach(b => b.onclick = () => {
-    bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Bildirildi. Moderatör inceleyecek, mesaj senden gizlendi."); sohbetCiz();
+    bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Mesaj senden gizlendi. Bu demoda kimseye gönderilmez."); sohbetCiz();
   });
   // Öneri çipleri: son öğrendiğin kelimelerden
   const son = KELIMELER.filter(k => d.kartlar[k[0]]).slice(-6).map(k => k[0]);
-  document.getElementById("sohbet-oneri").innerHTML = (son.length ? son : ["hello", "today", "study"]).map(w => `<button data-oner="${w}">${w}</button>`).join("");
+  document.getElementById("sohbet-oneri").innerHTML = (son.length ? son : ["hello", "today", "study"]).map(w => `<button data-oner="${Sohbet.kacis(w)}">${Sohbet.kacis(w)}</button>`).join("");
   document.querySelectorAll("[data-oner]").forEach(b => b.onclick = () => { const g = document.getElementById("sohbet-girdi"); g.value = (g.value + " " + b.dataset.oner).trim() + " "; g.focus(); });
 }
+let sohbetCevapZaman;
 function sohbetGonder() {
-  const g = document.getElementById("sohbet-girdi"), metin = g.value.trim();
+  const g = document.getElementById("sohbet-girdi"), metin = Sohbet.temizle(g.value);
   if (!metin) return;
   const kucuk = metin.toLocaleLowerCase("tr");
   if (YASAKLI.some(y => y.test(kucuk))) { Ses.yanlis(); pencere("🙀", "Bu mesaj gönderilemedi", "Çete'de nazik dil kuralı var. Başka türlü söylemeyi dene.", "Tamam"); return; }
@@ -212,19 +232,44 @@ function sohbetGonder() {
   d.sohbet = d.sohbet || []; d.sohbet.push({ kim: "Sen", metin: metin.replace(/[<>]/g, "") });
   let odul = 0;
   if (o.kullanilan.length) { odul = Ekonomi.kazan(d, "sohbet:" + bugunNo(), EKONOMI.odul.sohbet.miktar, bugunNo()); if (odul) d.sohbetOdulGunu = bugunNo(); }
-  kaydet(); // sohbete yazmak çalışma günü saymaz (js/ilerleme.js kuralı) Ses.pop(); g.value = ""; sohbetCiz();
-  if (odul) { Ses.altin(); bildir(`✨ Öğrendiğin kelimeyi gerçek sohbette kullandın! +1 🪙 (günde bir kez)`); }
-  // Örnek cevap: bir çete üyesi yazar
-  setTimeout(() => {
+  // Sohbete yazmak çalışma günü saymaz (js/ilerleme.js kuralı).
+  const kaydedildi = kaydet();
+  sohbetEkran.hata = kaydedildi ? null : "⚠️ Mesaj bu cihaza kaydedilemedi; uygulamayı kapatırsan kaybolabilir.";
+  Ses.pop(); g.value = ""; sohbetCiz(true);
+  if (!kaydedildi) { const ben = document.querySelectorAll("#sohbet-liste .mesaj.ben"); if (ben.length) ben[ben.length - 1].classList.add("kaydedilemedi"); }
+  if (odul) { Ses.altin(); bildir(`✨ Öğrendiğin kelimeyi sohbette kullandın! +1 🪙 (günde bir kez)`); }
+  // Örnek cevap: bir çete üyesi (demo) yazar
+  const uye = CETE_UYELER[Math.floor(Math.random() * CETE_UYELER.length)][0];
+  sohbetEkran.yaziyor = uye; sohbetDurumCiz(1);
+  clearTimeout(sohbetCevapZaman);
+  sohbetCevapZaman = setTimeout(() => {
+    sohbetEkran.yaziyor = null;
     if (!document.getElementById("tam-sohbet").classList.contains("aktif")) return;
-    const uye = CETE_UYELER[Math.floor(Math.random() * CETE_UYELER.length)][0];
     const cevap = o.kullanilan.length && Math.random() < .6 ? `Nice use of "${o.kullanilan[0]}"! 👏` : SOHBET_CEVAP[Math.floor(Math.random() * SOHBET_CEVAP.length)];
     d.sohbet.push({ kim: uye, metin: cevap }); kaydet(); Ses.pop(); sohbetCiz();
   }, 1400);
 }
 document.getElementById("sohbet-gonder").onclick = sohbetGonder;
 document.getElementById("sohbet-girdi").onkeydown = e => { if (e.key === "Enter") sohbetGonder(); };
-document.getElementById("sohbet-ac").onclick = () => { sohbetCiz(); tamAc("sohbet"); };
+document.getElementById("sohbet-ac").onclick = () => { sohbetEkran.sayi = 0; sohbetEkran.hata = null; sohbetCiz(); tamAc("sohbet"); };
+document.getElementById("sohbet-yeni").onclick = () => { const l = document.getElementById("sohbet-liste"); l.scrollTop = l.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; };
+document.getElementById("sohbet-liste").addEventListener("scroll", e => {
+  const l = e.currentTarget; if (Sohbet.alttaMi(l.scrollTop, l.scrollHeight, l.clientHeight)) document.getElementById("sohbet-yeni").hidden = true;
+});
+["online", "offline"].forEach(o => window.addEventListener(o, () => { if (document.getElementById("tam-sohbet").classList.contains("aktif")) sohbetDurumCiz(1); }));
+// Klavye: görünen alan küçülünce aradaki fark sohbet ekranının altına boşluk olur; gönderme alanı klavyenin üstünde kalır.
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const klavye = () => {
+    const l = document.getElementById("sohbet-liste"), altta = Sohbet.alttaMi(l.scrollTop, l.scrollHeight, l.clientHeight);
+    const bosluk = Sohbet.klavyeBoslugu(window.innerHeight, vv.height, vv.offsetTop);
+    document.documentElement.style.setProperty("--klavye", bosluk + "px");
+    // Klavye açıkken kural bandı ve öneri çipleri gizlenir; mesaj listesine yer kalsın.
+    document.documentElement.classList.toggle("klavye-acik", bosluk > 80);
+    if (altta) l.scrollTop = l.scrollHeight;
+  };
+  vv.addEventListener("resize", klavye); vv.addEventListener("scroll", klavye);
+}
 
 // ================= ÇETE SAVAŞI =================
 // Haftalık, eş zamansız: her üye 4 moddan puan toplar; modda en iyi puanın çeteye yazılır.
@@ -247,7 +292,7 @@ function savasDurum() {
 function savasCiz() {
   const s = savasDurum(), oran = s.biz / (s.biz + s.rakip) * 100;
   document.getElementById("savas-kart").innerHTML = `<div class="kart">
-    <div class="savas-skor"><div class="taraf">🐾 Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">🦊 Tilkiler<b>${s.rakip}</b></div></div>
+    <div class="savas-skor"><div class="taraf">🐾 Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">🦊 Tilkiler <small class="ornek-etiket">örnek</small><b>${s.rakip}</b></div></div>
     <div class="savas-cubuk"><i style="width:${oran}%"></i></div>
     <p class="soluk" style="font-size:13px;text-align:center;">${s.biz >= s.rakip ? "Öndeyiz! 🎉" : `${s.rakip - s.biz} puan gerideyiz`} · ${s.kalan > 0 ? `${s.kalan} gün kaldı` : "son gün!"} · Senin katkın: ${s.benim}</p>
     <div class="savas-modlar">${SAVAS_MODLAR.map((m, i) => `<button data-mod="${i}"><span class="m-ikon">${m.ikon}</span><b>${m.ad}</b><small>${d.savas.en[m.id] ? "En iyin: " + d.savas.en[m.id] : m.acik}</small></button>`).join("")}</div>

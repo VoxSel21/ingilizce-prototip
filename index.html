@@ -6,12 +6,13 @@
 <meta name="theme-color" content="#FFFBF4">
 <meta name="theme-color" content="#FFF8EE">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="resim/ikon-192.png">
 <link rel="apple-touch-icon" href="resim/ikon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>İngilizce Prototip</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css?v=0.7.1">
+<link rel="stylesheet" href="css/stil.css?v=0.8.0">
 </head>
 <body>
 <div id="uygulama">
@@ -178,8 +179,9 @@
   <section class="ekran" id="ekran-arkadaslar">
     <div class="ust"><span class="hap">🐾 Sosyal</span><button class="hap" id="ekle-dugme">＋ Ekle</button></div>
     <div class="dolap-sekme sosyal-sekme" id="sosyal-sekme" style="margin-top:60px;">
-      <button data-sosyal="arkadas" class="aktif">👫 Arkadaşlar</button><button data-sosyal="cete">🐾 Çete</button>
+      <button data-sosyal="arkadas" class="aktif">👫 Arkadaşlar</button><button data-sosyal="cete">🐾 Çete</button><button data-sosyal="sohbet">💬 Sohbet</button>
     </div>
+    <div class="demo-bant" role="note"><b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.</div>
     <div id="sosyal-arkadas">
       <h2>Birlikte görevler</h2>
       <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Bir arkadaşını seç, ikiniz birlikte bitirin. Bitince ikiniz de ödül alırsınız.</p>
@@ -194,13 +196,16 @@
       <div class="kart cete-bas"><span class="c-ikon">🐾</span><div><b>Patiler Çetesi</b><small id="cete-uye-yazi">5 üye · kod KUZU-4821</small></div></div>
       <h2>⚔️ Çete savaşı</h2>
       <div id="savas-kart"></div>
-      <h2>💬 Çete sohbeti</h2>
-      <button class="kart sohbet-onizleme" id="sohbet-ac"><span class="h-ikon">💬</span><div><b>Sadece İngilizce konuşulur</b><small id="sohbet-son"></small></div><span class="ok">›</span></button>
       <h2>Haftalık ortak görevler</h2>
       <p class="soluk" style="font-size:14px;margin:-4px 0 10px;">Hep birlikte bitirin, ödülü herkes alır. Pazartesi yenilenir.</p>
       <div id="cete-gorevler"></div>
     </div>
-    <p class="prototip-not">Arkadaşlar, çete üyeleri, mesajları ve puanları örnek: gerçek uygulamada hesaplarla gelecek.</p>
+    <div id="sosyal-sohbet" style="display:none;">
+      <h2>💬 Çete sohbeti</h2>
+      <button class="kart sohbet-onizleme" id="sohbet-ac"><span class="h-ikon">💬</span><div><b>Sadece İngilizce konuşulur</b><small id="sohbet-son"></small></div><span class="ok">›</span></button>
+      <p class="soluk" style="font-size:14px;margin:8px 0 0;">Öğrendiğin kelimeleri cümlede kullan; kullandıkların yeşil yanar, günde bir kez +1 🪙. Bu demoda cevaplar otomatik ve örnek; mesajın kimseye gönderilmez, yalnız bu cihazda durur.</p>
+    </div>
+    <p class="prototip-not">Gerçek arkadaşlık, çete üyeliği ve mesajlaşma bu sürümde yok: hesaplar, engelleme, bildirme ve denetim kurulunca gelecek.</p>
   </section>
 
   <!-- ========== KELİME ÇALIŞMA: önce tanış, sonra sorularla tekrar (Serhat, 2026-10-18) ========== -->
@@ -242,10 +247,14 @@
   <!-- ========== ÇETE SOHBETİ (örnek; gerçek mesajlaşma sunucu ve moderasyon ister) ========== -->
   <section class="tam" id="tam-sohbet">
     <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap">💬 Patiler Çetesi</span><span class="hap" style="font-size:13px;">🇬🇧 English only</span></div>
-    <div class="sohbet-kural">🐾 Çete kuralı: İngilizce yaz, nazik ol. Öğrendiğin kelimeleri kullanırsan yeşil yanar. Kötü mesajı 🚩 ile bildir.</div>
-    <div class="sohbet-liste" id="sohbet-liste"></div>
+    <div class="sohbet-kural"><b class="demo-rozet">🧪 Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı 🚩 ile gizle.</div>
+    <div class="sohbet-govde">
+      <div class="sohbet-liste" id="sohbet-liste" role="log" aria-live="polite" aria-label="Sohbet mesajları" tabindex="0"></div>
+      <button class="sohbet-yeni" id="sohbet-yeni" hidden>↓ Yeni mesaj</button>
+    </div>
+    <div class="sohbet-durum" id="sohbet-durum" aria-live="polite" hidden></div>
     <div class="sohbet-oneri" id="sohbet-oneri"></div>
-    <div class="sohbet-yaz"><input id="sohbet-girdi" placeholder="Write in English..." autocomplete="off" maxlength="160"><button id="sohbet-gonder" aria-label="Gönder">➤</button></div>
+    <div class="sohbet-yaz"><input id="sohbet-girdi" placeholder="Write in English..." autocomplete="off" maxlength="160" enterkeyhint="send" aria-label="Mesajın (İngilizce)"><button id="sohbet-gonder" aria-label="Gönder">➤</button></div>
   </section>
 
   <!-- ========== ÇETE SAVAŞI: hızlı modlar (kelime yarışı, kulak kabart) ========== -->
@@ -344,33 +353,34 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.7.1"></script>
-<script src="veri/kelimeler.js?v=0.7.1"></script>
-<script src="veri/phrasal.js?v=0.7.1"></script>
-<script src="veri/cumleler.js?v=0.7.1"></script>
-<script src="js/yardimci.js?v=0.7.1"></script>
-<script src="js/kayit.js?v=0.7.1"></script>
-<script src="js/ekonomi.js?v=0.7.1"></script>
-<script src="js/ilerleme.js?v=0.7.1"></script>
-<script src="js/ogrenme.js?v=0.7.1"></script>
-<script src="js/oyun.js?v=0.7.1"></script>
-<script src="js/esitleme.js?v=0.7.1"></script>
-<script src="js/durum.js?v=0.7.1"></script>
-<script src="js/firebase-ayar.js?v=0.7.1"></script>
-<script src="js/bulut.js?v=0.7.1"></script>
-<script src="js/ana-sayfa.js?v=0.7.1"></script>
-<script src="js/kelime-calisma.js?v=0.7.1"></script>
-<script src="js/ses.js?v=0.7.1"></script>
-<script src="js/cihaz.js?v=0.7.1"></script>
-<script src="js/alistirmalar.js?v=0.7.1"></script>
-<script src="js/odul-takvim.js?v=0.7.1"></script>
-<script src="js/hazne.js?v=0.7.1"></script>
-<script src="js/sosyal.js?v=0.7.1"></script>
-<script src="js/gezinme.js?v=0.7.1"></script>
-<script src="js/kedi.js?v=0.7.1"></script>
-<script src="js/kedi-cizim.js?v=0.7.1"></script>
-<script src="js/balik-avi.js?v=0.7.1"></script>
-<script src="js/ayarlar.js?v=0.7.1"></script>
-<script src="js/baslat.js?v=0.7.1"></script>
+<script src="vendor/capacitor.js?v=0.8.0"></script>
+<script src="veri/kelimeler.js?v=0.8.0"></script>
+<script src="veri/phrasal.js?v=0.8.0"></script>
+<script src="veri/cumleler.js?v=0.8.0"></script>
+<script src="js/yardimci.js?v=0.8.0"></script>
+<script src="js/kayit.js?v=0.8.0"></script>
+<script src="js/ekonomi.js?v=0.8.0"></script>
+<script src="js/ilerleme.js?v=0.8.0"></script>
+<script src="js/ogrenme.js?v=0.8.0"></script>
+<script src="js/oyun.js?v=0.8.0"></script>
+<script src="js/esitleme.js?v=0.8.0"></script>
+<script src="js/durum.js?v=0.8.0"></script>
+<script src="js/firebase-ayar.js?v=0.8.0"></script>
+<script src="js/bulut.js?v=0.8.0"></script>
+<script src="js/ana-sayfa.js?v=0.8.0"></script>
+<script src="js/kelime-calisma.js?v=0.8.0"></script>
+<script src="js/ses.js?v=0.8.0"></script>
+<script src="js/cihaz.js?v=0.8.0"></script>
+<script src="js/alistirmalar.js?v=0.8.0"></script>
+<script src="js/odul-takvim.js?v=0.8.0"></script>
+<script src="js/hazne.js?v=0.8.0"></script>
+<script src="js/sohbet.js?v=0.8.0"></script>
+<script src="js/sosyal.js?v=0.8.0"></script>
+<script src="js/gezinme.js?v=0.8.0"></script>
+<script src="js/kedi.js?v=0.8.0"></script>
+<script src="js/kedi-cizim.js?v=0.8.0"></script>
+<script src="js/balik-avi.js?v=0.8.0"></script>
+<script src="js/ayarlar.js?v=0.8.0"></script>
+<script src="js/baslat.js?v=0.8.0"></script>
 </body>
 </html>

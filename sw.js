@@ -1,10 +1,10 @@
 // Ana ekrana eklenen uygulama için çevrimdışı destek.
 // Ağ önce: internet varken her zaman sunucudaki en yeni sürüm gelir (eski sürüm takılı kalmasın);
 // internet yoksa en son kaydedilen kopya açılır.
-const ONBELLEK = "pati-v11";
+const ONBELLEK = "pati-v12";
 // Uygulama artık parçalı: stil, veri ve kod dosyaları da çevrimdışı açılış için önbelleğe alınır.
 const KOD = ["css/stil.css", "vendor/capacitor.js", "veri/kelimeler.js", "veri/phrasal.js", "veri/cumleler.js", "js/yardimci.js", "js/kayit.js", "js/ekonomi.js", "js/ilerleme.js", "js/ogrenme.js", "js/oyun.js", "js/esitleme.js", "js/durum.js", "js/firebase-ayar.js", "js/bulut.js", "js/ana-sayfa.js",
-  "js/kelime-calisma.js", "js/ses.js", "js/cihaz.js", "js/alistirmalar.js", "js/odul-takvim.js", "js/hazne.js", "js/sosyal.js",
+  "js/kelime-calisma.js", "js/ses.js", "js/cihaz.js", "js/alistirmalar.js", "js/odul-takvim.js", "js/hazne.js", "js/sohbet.js", "js/sosyal.js",
   "js/gezinme.js", "js/kedi.js", "js/kedi-cizim.js", "js/balik-avi.js", "js/ayarlar.js", "js/baslat.js"];
 const TEMEL = ["./", "index.html", ...KOD, "manifest.json", "resim/ikon-192.png",
   "resim/kedi_fit.png", "resim/kedi_pofuduk.png", "resim/kedi_tombis.png", "resim/kedi_mega.png", "resim/bg_cayir.jpg"];

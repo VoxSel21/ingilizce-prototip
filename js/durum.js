@@ -18,7 +18,7 @@ function yeniDurum() {
     bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
     kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], kurkRenk: "#FDBE86", sonRenkler: [], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
     odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true },
-    oturum: null, sonSunulan: [], antrenman: null, ilkDers: 0 };
+    oturum: null, sonSunulan: [], antrenman: null, ilkDers: 0, kimlik: null };
 }
 // Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.
 // Bozuk kayıt reddedilir; yedek yüklemede mevcut ilerleme hiç değişmez.
@@ -74,6 +74,9 @@ function yukle() {
   if (d.giyili && d.giyili.boyun === "atki") d.giyili.boyun = null;
   if (!d.seviye) d.seviye = "A1";
   d.kediAd = temizAd(d.kediAd) || "Pati";
+  // Misafir kimliği bir kez verilir ve yedekle taşınır: aynı yedek iki cihazdan yüklense de hesaba bir kez aktarılır.
+  if (!d.kimlik) d.kimlik = { misafir: Esitleme.yeniKimlik() };
+  olayTabani = JSON.parse(JSON.stringify(d));
   gunuYenile();
   const linkte = new URLSearchParams(location.search);
   if (location.search) history.replaceState(null, "", location.pathname);
@@ -92,14 +95,37 @@ function yukle() {
 // bu sekme eski halini üstüne yazmaz; güncel hali yükler. "storage" olayı diğer sekmeleri anında günceller.
 const kayitliRev = () => { try { return (JSON.parse(localStorage.getItem(ANAHTAR)) || {}).rev || 0; } catch (e) { return 0; } };
 let kayitUyarildi = false;
+// Eşitleme kuyruğu (js/esitleme.js): her başarılı kayıttan sonra değişenler küçük olaylar olarak ayrı anahtara yazılır.
+// Ana kaydı hiç değiştirmez; yedek koduna girmez. Hesap bağlanınca (5. aşama 2. parça) sunucuya gönderilecek.
+const KUYRUK = ANAHTAR + "-kuyruk";
+let olayTabani = null, bekleyenDefter = [];
+Ekonomi.iz = satir => bekleyenDefter.push(satir);
+function kuyrukOku() {
+  let k = null; try { k = JSON.parse(localStorage.getItem(KUYRUK)); } catch (e) {}
+  return Esitleme.kuyrukDuzelt(k, Esitleme.yeniKimlik("c"));
+}
+function kuyrugaYaz(metin) {
+  try {
+    // Sahip: misafir ilerlemesi hesaba taşındıysa hesap, yoksa misafir (js/bulut.js, Esitleme.sahip).
+    const k = kuyrukOku(), zaman = Date.now(), sahip = typeof Bulut !== "undefined" ? Bulut.sahip() : d.kimlik && d.kimlik.misafir;
+    const olaylar = Esitleme.farkOlaylari(olayTabani, d, bekleyenDefter);
+    for (const o of olaylar) Esitleme.olayEkle(k, o.tur, o.veri, sahip, zaman);
+    localStorage.setItem(KUYRUK, JSON.stringify(Esitleme.sikistir(k)));
+    olayTabani = JSON.parse(metin); bekleyenDefter = [];
+    if (olaylar.length && typeof Bulut !== "undefined") Bulut._kayitSonrasi();
+  } catch (e) {} // kuyruk yazılamazsa taban ilerlemez; değişiklikler sonraki kayıtta yeniden kuyruğa girer
+}
 function kaydet() {
   try {
     if (kayitliRev() > (d.rev || 0)) {
       const guncel = okunanDurum(ANAHTAR);
-      if (guncel) { d = guncel; setTimeout(() => { herSeyiCiz(); bildir("🔄 Başka sekmedeki değişiklik yüklendi"); }, 0); return false; }
+      if (guncel) { d = guncel; olayTabani = JSON.parse(JSON.stringify(d)); bekleyenDefter = []; setTimeout(() => { herSeyiCiz(); bildir("🔄 Başka sekmedeki değişiklik yüklendi"); }, 0); return false; }
     }
     d.rev = (d.rev || 0) + 1;
-    localStorage.setItem(ANAHTAR, JSON.stringify(d)); kayitUyarildi = false; return true;
+    const metin = JSON.stringify(d);
+    localStorage.setItem(ANAHTAR, metin); kayitUyarildi = false;
+    kuyrugaYaz(metin);
+    return true;
   }
   catch (e) {
     // Sessizce geçme: ilerleme ekranda artıp telefona yazılmıyorsa kullanıcı bilmeli.

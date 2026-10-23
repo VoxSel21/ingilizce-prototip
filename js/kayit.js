@@ -1,8 +1,10 @@
 // ================= KAYIT ŞEMASI, DOĞRULAMA VE SÜRÜM TAŞIMA =================
 // Saf mantık: tarayıcıya bağlı değil, Node testleri de aynı dosyayı yükler (tests/).
 // Kayıt ve yedek kodu önce burada doğrulanır; bozuk ya da tehlikeli veri mevcut ilerlemenin yerine geçmez.
-const SEMA_SURUM = 5;            // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22) · 4: serbest kürk rengi (2026-10-23)
+// Kayıt biçimi geçmişi          // 3: sürüm alanı, ödül defteri, ayrıntılı doğrulama (2026-10-22) · 4: serbest kürk rengi (2026-10-23)
                                  // 5: açık kelime turu (oturum), yakında sunulanlar, günün antrenmanı (2026-10-23)
+const SEMA_SURUM = 6;            // 6: misafir kimliği (kimlik.misafir), hesaba tek seferlik taşıma için (2026-10-23)
+const MISAFIR_DESENI = /^m-[0-9a-z]{6,32}$/;
 const YEDEK_EN_FAZLA = 1500000;  // yedek kodunun en fazla karakteri (bozuk ya da şişirilmiş yedeğe karşı)
 const SINIR = { sohbet: 200, metin: 500, kim: 30, kediAd: 14, liste: 500 };
 // Ayarlar ekranının izinli değerleri; bilinmeyen değer varsayılana döner.
@@ -45,6 +47,7 @@ const Kayit = {
     if (v.oturum != null && !(nesne(v.oturum) && Array.isArray(v.oturum.sira) && v.oturum.sira.length <= 200)) return hata("Açık kelime turu bozuk.");
     if (v.sonSunulan != null && (!Array.isArray(v.sonSunulan) || v.sonSunulan.length > 200)) return hata("Son kelimeler listesi bozuk.");
     if (v.antrenman != null && !(nesne(v.antrenman) && ["gun", "tekrar", "kg"].every(a => sayi(v.antrenman[a])))) return hata("Antrenman bilgisi bozuk.");
+    if (v.kimlik != null && !nesne(v.kimlik)) return hata("Kimlik bilgisi bozuk.");
     return { tamam: true };
   },
 
@@ -88,9 +91,11 @@ const Kayit = {
     for (const [a, l] of Object.entries(AYAR_SECENEK)) if (!l.includes(v.ayar[a])) v.ayar[a] = t.ayar[a];
     for (const a of ["titresim", "seslendirme"]) if (typeof v.ayar[a] !== "boolean") v.ayar[a] = t.ayar[a];
     for (const a of Object.keys(v.ayar)) if (!(a in t.ayar)) delete v.ayar[a];
+    // 6. sürüm: misafir kimliği yalnız biçimi doğruysa kalır; yoksa null (yeni kimliği durum.js yükledikten sonra verir).
+    v.kimlik = v.kimlik && typeof v.kimlik === "object" && MISAFIR_DESENI.test(v.kimlik.misafir) ? { misafir: v.kimlik.misafir } : null;
     v.surum = SEMA_SURUM;
     return v;
   },
 };
 
-if (typeof module === "object" && module.exports) module.exports = { Kayit, ESKI_KURK_RENK, SEMA_SURUM, YEDEK_EN_FAZLA, SINIR, AYAR_SECENEK };
+if (typeof module === "object" && module.exports) module.exports = { Kayit, ESKI_KURK_RENK, SEMA_SURUM, MISAFIR_DESENI, YEDEK_EN_FAZLA, SINIR, AYAR_SECENEK };

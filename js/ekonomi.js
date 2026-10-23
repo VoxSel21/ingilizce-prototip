@@ -22,6 +22,8 @@ const EKONOMI = {
 };
 
 const Ekonomi = {
+  // İz: altın her değiştiğinde çağrılır (durum.js eşitleme kuyruğu için bağlar; testlerde boş).
+  iz: null,
   tamSayi: x => Math.max(0, Math.floor(Number(x) || 0)),
 
   // Aynı anahtar (ör. "hediye:20748", "rozet:on") bir kez ödenir. Ödenen miktarı döndürür (zaten ödendiyse 0).
@@ -31,6 +33,7 @@ const Ekonomi = {
     if (!anahtar || d.odulDefteri[anahtar] != null || miktar === 0) return 0;
     d.odulDefteri[anahtar] = bugun != null ? bugun : 0;
     d.yildiz = Ekonomi.tamSayi(d.yildiz) + miktar;
+    if (Ekonomi.iz) Ekonomi.iz({ tur: "kazan", anahtar, miktar });
     return miktar;
   },
   // Günde birden çok kez verilebilen ödül: "cumle:<gün>:0", ":1"... ilk boş sıraya yazılır.
@@ -44,11 +47,13 @@ const Ekonomi = {
   odendiMi: (d, anahtar) => !!(d.odulDefteri && d.odulDefteri[anahtar] != null),
 
   // Bakiye yetmezse hiçbir şey değişmez; bakiye hiçbir zaman eksiye düşmez.
-  harca(d, miktar) {
+  // neden: satın alınan şeyin kimliği ("esyalar:tac"); eşitlemede aynı şey iki cihazdan alınsa da bir kez ücretlenir.
+  harca(d, miktar, neden) {
     if (!Number.isInteger(miktar) || miktar < 0) return false;
     const bakiye = Ekonomi.tamSayi(d.yildiz);
     if (bakiye < miktar) return false;
     d.yildiz = bakiye - miktar;
+    if (Ekonomi.iz) Ekonomi.iz({ tur: "harca", miktar, neden: neden || null });
     return true;
   },
   // Sahiplik ve bakiye aynı anda kontrol edilir: sahip olunan tekrar ücretlendirilmez, çift dokunma çift ödeme yapmaz.
@@ -56,7 +61,7 @@ const Ekonomi = {
   satinAl(d, liste, id, fiyat) {
     d[liste] = d[liste] || [];
     if (d[liste].includes(id)) return "zaten";
-    if (!Ekonomi.harca(d, fiyat)) return "yetersiz";
+    if (!Ekonomi.harca(d, fiyat, `${liste}:${id}`)) return "yetersiz";
     d[liste].push(id);
     return "tamam";
   },

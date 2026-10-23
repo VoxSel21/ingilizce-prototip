@@ -1,6 +1,6 @@
 // ================= AYARLAR =================
 // Ayarlar d.ayar içinde kalıcı (kayit.js izinli değerleri denetler). Yedek ve kaynaklar Ödüller'den buraya taşındı.
-const UYGULAMA_SURUM = "0.6.0";
+const UYGULAMA_SURUM = "0.7.0";
 const AYAR_SATIRLARI = [
   { baslik: "Günlük hedef", aciklama: "Günde kaç soru cevaplayınca hediye açılsın (yanlış cevaplar da çalışma sayılır).", tur: "secim", alan: "hedef",
     secenek: [[5, "5"], [10, "10"], [15, "15"], [20, "20"]] },
@@ -41,7 +41,7 @@ function ayarlarCiz() {
     return kap;
   });
   liste.replaceChildren(
-    bolum("👤 Hesap ve eşitleme", [metin("soluk", "Hesap henüz yok: ilerlemen yalnız bu cihazda saklanıyor. Başka cihaza geçerken aşağıdaki yedeği kullan. Hesapla bulut yedeği sonraki aşamada gelecek.")]),
+    bolum("👤 Hesap ve eşitleme", hesapBolumu(metin, dugme)),
     bolum("🎯 Çalışma ve ses", satirlar.slice(0, 4)),
     bolum("🎨 Görünüm", satirlar.slice(4)),
     bolum("🔔 Bildirimler", [metin("soluk", "Hatırlatma bildirimleri henüz yok. Eklendiğinde buradan açılıp kapatılacak.")]),
@@ -50,7 +50,33 @@ function ayarlarCiz() {
     bolum("ℹ️ Uygulama", [metin("soluk", `Pati İngilizce · sürüm ${UYGULAMA_SURUM} · kayıt biçimi ${SEMA_SURUM}`)]),
   );
 }
-document.getElementById("ayarlar-ac").onclick = () => { ayarlarCiz(); tamAc("ayarlar"); };
+// Hesap bölümü (js/bulut.js). Hesap yokken uygulama aynen çalışır; giriş isteğe bağlı.
+let hesapMesaj = "", cikisSor = false;
+function hesapBolumu(metin, dugme) {
+  if (!Bulut.hazirMi()) return [metin("soluk", "Hesap henüz hazır değil: ilerlemen yalnız bu cihazda saklanıyor. Başka cihaza geçerken aşağıdaki yedeği kullan.")];
+  const sira = (...b) => { const s = document.createElement("div"); s.className = "yedek-dugmeler"; s.append(...b); return s; };
+  const u = Bulut.kullanici;
+  if (u) {
+    const bekleyen = Bulut.bekleyenSayisi(u.uid);
+    if (cikisSor) return [metin("ayar-ad", "Çıkış yapılsın mı?"),
+      metin("soluk", (bekleyen ? `Gönderilmemiş ${bekleyen} değişiklik var; aynı hesapla tekrar girince gönderilir. ` : "") + "İlerlemen bu cihazda kalır; hesabın da bulutta durur."),
+      sira(dugme("Evet, çıkış yap", async () => { cikisSor = false; await Bulut.cikis(); hesapMesaj = "Çıkış yapıldı."; ayarlarCiz(); }),
+        dugme("Vazgeç", () => { cikisSor = false; ayarlarCiz(); }))];
+    return [metin("ayar-ad", `Giriş yapıldı: ${u.email}`), metin("soluk hesap-durum", Bulut.etiket()),
+      sira(dugme("Şimdi eşitle", () => Bulut.esitle()), dugme("Çıkış yap", () => { cikisSor = true; ayarlarCiz(); }))];
+  }
+  const girdi = (tur, yer, oto) => { const i = document.createElement("input"); i.type = tur; i.placeholder = yer; i.autocomplete = oto; i.className = "hesap-girdi"; i.setAttribute("aria-label", yer); return i; };
+  const eposta = girdi("email", "E-posta", "email"), sifre = girdi("password", "Şifre (en az 6 karakter)", "current-password");
+  const gonder = yeni => async () => {
+    hesapMesaj = "Bekle…"; ayarlarCiz();
+    const r = await Bulut.giris(eposta.value.trim(), sifre.value, yeni);
+    hesapMesaj = r.tamam ? "" : r.hata; ayarlarCiz();
+  };
+  const durumYazi = Bulut.durum === "yukleniyor" ? "Hesap hazırlanıyor…" : hesapMesaj;
+  return [metin("soluk", "Misafir olarak devam ediyorsun; ilerlemen bu cihazda saklanıyor. Hesap açarsan bu cihazdaki ilerleme hesabına taşınır ve başka cihazdan da devam edebilirsin."),
+    eposta, sifre, sira(dugme("Giriş yap", gonder(false)), dugme("Hesap aç", gonder(true))), ...(durumYazi ? [metin("soluk hesap-mesaj", durumYazi)] : [])];
+}
+document.getElementById("ayarlar-ac").onclick =() => { ayarlarCiz(); tamAc("ayarlar"); };
 
 // ---------- Yedek: tarayıcı prompt/confirm yerine uygulama içi pencere, yüklemeden önce önizleme ----------
 const yedekKodu = () => "PATI1:" + btoa(unescape(encodeURIComponent(JSON.stringify({ ...d, yedekZamani: Date.now() }))));

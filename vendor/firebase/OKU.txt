@@ -1,0 +1,2 @@
+Firebase JS SDK 13.1.0 (compat sürümleri), npm paketi "firebase" içinden kopyalandı. Lisans: Apache-2.0.
+Yenilemek için: npm i -D firebase@<sürüm> sonra bu üç dosyayı node_modules/firebase/ altından yeniden kopyala.

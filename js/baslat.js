@@ -7,8 +7,10 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && gu
 window.addEventListener("storage", e => {
   if (e.key !== ANAHTAR || !e.newValue) return;
   const v = okunanDurum(ANAHTAR);
-  if (v && (v.rev || 0) > (d.rev || 0)) { d = v; herSeyiCiz(); }
+  // Olay tabanı da güncellenir: öbür sekmenin değişikliği bu sekmeden ikinci kez olay olarak yazılmasın.
+  if (v && (v.rev || 0) > (d.rev || 0)) { d = v; olayTabani = JSON.parse(JSON.stringify(d)); bekleyenDefter = []; herSeyiCiz(); }
 });
+Bulut.baslat(); // hesap ayarı yoksa hiçbir şey yüklemez (js/bulut.js)
 setInterval(sahneCiz, 10 * 60000);
 // Ana ekrana ekleme ve çevrimdışı açılış (sw.js: internet varken hep en yeni sürüm)
 if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});

@@ -510,6 +510,8 @@
   .panel-ust { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px; font-size: 17px; }
   .panel-ust .kapat { width: 40px; height: 40px; }
   .panel-ic { overflow-y: auto; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+  .hesap-girdi { display: block; width: 100%; margin-top: 8px; font: inherit; font-size: 16px; color: var(--murekkep); background: var(--krem); border: 2px solid var(--cizgi); border-radius: 12px; padding: 10px; }
+  .hesap-mesaj { margin-top: 8px; }
   .panel-ic textarea { width: 100%; font: 12px/1.4 ui-monospace, monospace; color: var(--murekkep); background: var(--krem); border: 2px solid var(--cizgi); border-radius: 12px; padding: 8px; resize: vertical; word-break: break-all; }
   .panel-ic hr { border: 0; border-top: 1px solid var(--cizgi); }
   .dosya-sec { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }

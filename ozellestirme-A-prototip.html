@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pati · Özelleştirme</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#14121e;color:#f9f4ff;font:14px system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer;color:inherit;border:0}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #ffd865;outline-offset:3px}button:disabled{cursor:default;opacity:.5}[hidden]{display:none!important}
+.screen{width:min(100%,430px);margin:24px auto;background:#252039;border-radius:30px;box-shadow:0 24px 70px #0005;overflow:clip}.top{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 8px}.eyebrow{font-size:10px;letter-spacing:1.6px;color:#b8a6de}.top h1{font-size:25px;letter-spacing:-.6px;margin:3px 0}.wallet{background:#3a314f;border-radius:24px;padding:9px 12px;font-size:13px;font-weight:700}.intro{margin:0;padding:0 22px 16px;color:#c7bdd9;font-size:12px}
+.preview-zone{position:sticky;top:0;z-index:2;background:#252039;padding:0 20px 10px}.preview{height:200px;border-radius:22px;background:#ccebed url('resim/bg_cayir.jpg') center/cover;display:grid;place-items:center;overflow:hidden;position:relative}.preview canvas{width:240px;height:200px;max-width:100%;object-fit:contain}.preview-label{position:absolute;top:10px;left:12px;background:#fffD;color:#3d3150;border-radius:20px;padding:5px 9px;font-size:10px;font-weight:700}.selection{position:absolute;bottom:8px;right:10px;max-width:80%;background:#282136dc;border-radius:15px;padding:5px 9px;font-size:10px;color:#fff}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:5px;background:#1c1829;border-radius:16px;margin-top:12px}.categories button{min-height:44px;background:transparent;border-radius:12px;color:#c2b7d5;font-size:12px;font-weight:700}.categories button[aria-selected=true]{background:#bda9f5;color:#2b2240}
+.editor{background:#302942;border-radius:24px 24px 0 0;padding:20px;min-height:265px}.section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.section-heading h2{font-size:17px;margin:0}.section-heading small{font-size:10px;color:#c8bdd9}.colors{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:3px}.swatch{height:42px;border-radius:50%;background:var(--c);position:relative;border:2px solid #ffffff18}.selected{outline:3px solid #c7b4ff;outline-offset:2px}.swatch.owned:after{content:'✓';position:absolute;bottom:-3px;right:-2px;width:16px;height:16px;display:grid;place-items:center;border-radius:50%;background:#25785f;color:#fff;font-size:10px}.custom{background:#211c30;border-radius:16px;padding:14px;margin-top:19px}.custom label{display:flex;align-items:center;justify-content:space-between;font-size:12px}.custom input[type=color]{width:48px;height:30px;background:none;border:0}.custom input[type=range]{width:100%;accent-color:#bda9f5}.custom p{font-size:11px;color:#bcb1cf;margin:10px 0}
+.filters{display:flex;gap:8px;margin-bottom:16px}.filters button{min-height:40px;flex:1;background:#211c30;border-radius:12px;font-size:12px}.filters [aria-pressed=true]{background:#6b559b}.catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.item{min-height:126px;border-radius:16px;background:#211c30;padding:10px 6px;text-align:center;position:relative;display:flex;flex-direction:column;align-items:center;gap:5px}.item img{width:64px;height:64px;object-fit:contain}.item b{font-size:11px;font-weight:650}.item small{font-size:10px;color:#c9bbdf}.item .badge{position:absolute;right:5px;top:5px;background:#315c50;color:#d1ffea;padding:3px 5px;border-radius:8px;font-size:9px}.item .none{display:grid;place-items:center;height:64px;font-size:32px;color:#cbb8ed}.item[aria-pressed=true]{outline:2px solid #c7b4ff;outline-offset:1px;background:#45365f}.backgrounds{grid-template-columns:repeat(2,minmax(0,1fr))}.backgrounds .item{padding:7px;min-height:128px}.backgrounds img{width:100%;height:82px;border-radius:10px;object-fit:cover}.catalog-note{font-size:11px;color:#bfb2d3;line-height:1.5;margin:14px 0 0}
+.footer{position:sticky;bottom:0;z-index:3;background:#252039ee;backdrop-filter:blur(16px);padding:12px 20px 14px;box-shadow:0 -8px 20px #15112028}.total{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:10px;gap:8px}.total span{color:#c6bad7}.actions{display:flex;gap:9px}.actions button{min-height:46px;border-radius:14px;font-weight:750}.cancel{background:#40354f;padding:0 14px}.apply{flex:1;background:#bda9f5;color:#261d37;padding:8px}.status{font-size:11px;color:#c6ead7;line-height:1.4;margin:9px 0 0;min-height:16px}.draft-note{font-size:10px;color:#ac9fbe;margin:7px 0 0}.variants{text-align:center;padding:16px;font-size:11px;color:#b6a8c9}.variants a{color:#dfcffb;margin:0 8px}
+.screen{min-height:calc(100dvh - 48px)}.preview-zone,.footer{position:static}.editor{overflow:visible}.preview{height:240px}.preview canvas{width:288px;height:240px}.item{min-height:148px;padding:12px 8px;gap:8px}.item img{width:84px;height:84px;max-width:100%}.item b{font-size:12px}.item small{font-size:11px}.backgrounds .item{min-height:160px}.backgrounds img{width:100%;height:108px;max-width:none}.variants{padding:14px;font-size:10px}
+@media(max-width:450px){.screen{margin:0;border-radius:0;min-height:100dvh}}
+</style>
+<main class="screen">
+  <header class="top"><div><span class="eyebrow">PATI · GÖRÜNÜM ATÖLYESİ</span><h1>Özelleştirme</h1></div><span class="wallet" id="wallet">🪙 50</span></header>
+  <p class="intro">Kürkünü, aksesuarlarını ve arka planını birlikte düzenle.</p>
+  <div class="preview-zone">
+    <div class="preview" id="preview"><span class="preview-label">Görünüm önizlemesi</span><canvas id="cat" width="600" height="500" role="img" aria-label="Seçilen renk ve aksesuarların önizlemesi"></canvas><span class="selection" id="selection"></span></div>
+    <div class="categories" role="tablist" aria-label="Özelleştirme kategorileri">
+      <button id="tab-renk" role="tab" aria-controls="section-renk" aria-selected="true" data-tab="renk">🎨 Kürk rengi</button>
+      <button id="tab-aksesuar" role="tab" aria-controls="section-aksesuar" aria-selected="false" data-tab="aksesuar" tabindex="-1">🎀 Aksesuar</button>
+      <button id="tab-arka" role="tab" aria-controls="section-arka" aria-selected="false" data-tab="arka" tabindex="-1">🏞️ Arka plan</button>
+    </div>
+  </div>
+  <section class="editor" id="section-renk" role="tabpanel" aria-labelledby="tab-renk">
+    <div class="section-heading"><h2>Bir renk seç</h2><small>Yeni renk · 10 🪙</small></div>
+    <div class="colors" id="colors"></div>
+    <div class="custom"><label>Rengini kendin oluştur <input type="color" id="custom" value="#fdbe86" aria-label="Özel kürk rengi"></label><p>Seçili renk: <b id="hex"></b></p><label for="tone">Renk tonu</label><input type="range" id="tone" min="0" max="359" value="25"></div>
+  </section>
+  <section class="editor" id="section-aksesuar" role="tabpanel" aria-labelledby="tab-aksesuar" hidden>
+    <div class="section-heading"><h2>Aksesuarlarını seç</h2><small>Her bölgeye bir parça</small></div>
+    <div class="filters" aria-label="Aksesuar bölgesi"><button data-slot="sapka" aria-pressed="true">Şapka</button><button data-slot="boyun" aria-pressed="false">Boyun</button><button data-slot="goz" aria-pressed="false">Göz</button></div>
+    <div class="catalog" id="accessories"></div>
+    <p class="catalog-note">Dokununca Pati’nin üzerinde denersin. Şapka, boyun ve göz aksesuarları birlikte kullanılabilir.</p>
+  </section>
+  <section class="editor" id="section-arka" role="tabpanel" aria-labelledby="tab-arka" hidden>
+    <div class="section-heading"><h2>Bir arka plan seç</h2><small>Seçince önizlemede gör</small></div>
+    <div class="catalog backgrounds" id="backgrounds"></div>
+  </section>
+  <footer class="footer"><div class="total"><span id="summary"></span><b id="price"></b></div><div class="actions"><button class="cancel" id="cancel">Vazgeç</button><button class="apply" id="apply">Değişiklikleri uygula</button></div><p class="status" id="status" role="status" aria-live="polite">Önce üzerinde dene; beğenirsen birlikte uygula.</p><p class="draft-note">Tasarım taslağı · gerçek kaydın ve altının değişmez.</p></footer>
+  <div class="variants">A · Ayrı özelleştirme ekranı <a href="ozellestirme-prototip.html?tasarim=B">B</a><a href="ozellestirme-prototip.html?tasarim=C">C</a></div>
+</main>
+<script src="js/kedi-cizim.js?v=0.10.0"></script>
+<script src="js/ekonomi.js?v=0.10.0"></script>
+<script>
+// A seçeneği: ayrı özelleştirme ekranı. Bütün denemeler ve satın almalar yalnız bellekte.
+const $=id=>document.getElementById(id);
+const palette=[['#FDBE86','Turuncu'],['#F1DDBF','Krem'],['#A9AAB8','Gri'],['#4A4458','Gece'],['#81C7D4','Mavi'],['#EF8D83','Mercan'],['#69B8BA','Deniz'],['#9681BD','Lavanta'],['#F4A7B9','Pembe'],['#9CCC65','Yeşil'],['#FFD54F','Sarı'],['#D9A066','Bal']];
+const accessories=[
+ ['bere','sapka','Bere'],['kasket','sapka','Kasket'],['hasir','sapka','Hasır şapka'],['silindir','sapka','Silindir'],['asci','sapka','Aşçı şapkası'],['korsan','sapka','Korsan şapkası'],['cicek','sapka','Çiçek tacı'],['tac','sapka','Taç'],['kep','sapka','Mezuniyet kepi','Başarımla açılır'],
+ ['fiyonk','boyun','Papyon'],['yaprak','boyun','Yaprak broş'],['ay','boyun','Ay kolye'],['zil','boyun','Zilli tasma'],['kravat','boyun','Kravat'],['inci','boyun','İnci kolye'],['bandana','boyun','Çete bandanası','Çete başarımı'],
+ ['gozluk','goz','Gözlük'],['gunes','goz','Kalpli gözlük'],['yildiz','goz','Yıldızlı gözlük'],['monokl','goz','Monokl']
+];
+const backgrounds=[['cayir','Çayır'],['sahil','Sahil'],['kar','Karlı dağ'],['sakura','Sakura'],['ev','Ev içi'],['gece','Yıldızlı gece']];
+let draft={renk:'#FDBE86',tema:'cayir',giyili:{sapka:null,boyun:null,goz:null}},applied=structuredClone(draft),gold=50,slot='sapka',tab='renk',drawNo=0;
+const ownedColors=new Set(['#FDBE86','#A9AAB8']),ownedItems=new Set(['bere','gozluk']),ownedBackgrounds=new Set(['cayir']);
+const images=new Map(),ext=id=>['yaprak','ay'].includes(id)?'svg':'png';
+function load(src){if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>{images.delete(src);reject(Error('Resim yüklenemedi'));};img.src=src;}));return images.get(src);}
+function button(text,fn){const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=fn;return b;}
+function caption(el,name,label){const b=document.createElement('b'),s=document.createElement('small');b.textContent=name;s.textContent=label;el.append(b,s);}
+function setColor(hex){draft.renk=hex.toUpperCase();render();}
+function costs(){const items=Object.values(draft.giyili).filter(id=>id&&!ownedItems.has(id));const color=ownedColors.has(draft.renk)?0:EKONOMI.fiyat.yeniRenk;const bg=ownedBackgrounds.has(draft.tema)?0:EKONOMI.fiyat.tema[draft.tema];return{items,total:color+bg+items.reduce((n,id)=>n+EKONOMI.fiyat.esya[id],0),count:items.length+(color?1:0)+(bg?1:0)};}
+async function draw(){
+  const no=++drawNo,g=structuredClone(draft),maskIds=Object.values(g.giyili).filter(id=>['kasket','hasir','silindir','korsan'].includes(id));
+  $('preview').style.backgroundImage=`url('resim/bg_${g.tema}.jpg')`;
+  try{
+    const [base,...masks]=await Promise.all([load('resim/kedi_pofuduk.png'),...maskIds.map(id=>load(`resim/sil_${id}.png`))]);
+    const layers=await Promise.all(['boyun','goz','sapka'].map(yer=>g.giyili[yer]).filter(Boolean).map(id=>load(`resim/giy_${id}.${ext(id)}`)));
+    if(no!==drawNo)return;
+    const body=document.createElement('canvas');body.width=body.height=400;const c=body.getContext('2d');c.drawImage(base,0,0);
+    try{const p=c.getImageData(0,0,400,400);kurkBoya(p.data,g.renk);c.putImageData(p,0,0);}catch(e){}
+    c.globalCompositeOperation='destination-out';for(const mask of masks)c.drawImage(mask,0,0,400,400);
+    const out=$('cat').getContext('2d');out.clearRect(0,0,600,500);out.drawImage(body,100,100);for(const layer of layers)out.drawImage(layer,0,0,600,500);
+  }catch(e){if(no===drawNo)$('status').textContent='Önizleme resmi yüklenemedi. Bağlantını kontrol edip yeniden seç.';}
+}
+function render(){
+  $('wallet').textContent='🪙 '+gold;$('hex').textContent=draft.renk;$('custom').value=draft.renk;$('tone').value=Math.round(rgbHsl(...hexRgb(draft.renk))[0]);
+  $('colors').replaceChildren(...palette.map(([hex,name])=>{const b=button('',()=>setColor(hex));b.className='swatch'+(hex===draft.renk?' selected':'')+(ownedColors.has(hex)?' owned':'');b.style.setProperty('--c',hex);b.setAttribute('aria-label',name+(ownedColors.has(hex)?' · sende':' · 10 altın'));b.setAttribute('aria-pressed',hex===draft.renk);return b;}));
+  document.querySelectorAll('[data-slot]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.slot===slot));
+  const none=button('',()=>{draft.giyili[slot]=null;render();});none.className='item';none.setAttribute('aria-pressed',draft.giyili[slot]===null);const icon=document.createElement('span');icon.className='none';icon.textContent='∅';none.append(icon);caption(none,'Aksesuar yok','Çıkar');
+  $('accessories').replaceChildren(none,...accessories.filter(a=>a[1]===slot).map(([id,yer,name,lock])=>{
+    const b=button('',()=>{draft.giyili[yer]=draft.giyili[yer]===id?null:id;render();});b.className='item';b.setAttribute('aria-pressed',draft.giyili[yer]===id);b.disabled=!!lock;
+    const img=document.createElement('img');img.src=`resim/esya_${id}.${ext(id)}`;img.alt='';b.append(img);caption(b,name,lock|| (ownedItems.has(id)?'Sende ✓':EKONOMI.fiyat.esya[id]+' 🪙'));return b;
+  }));
+  $('backgrounds').replaceChildren(...backgrounds.map(([id,name])=>{const b=button('',()=>{draft.tema=id;render();});b.className='item';b.setAttribute('aria-pressed',draft.tema===id);const img=document.createElement('img');img.src=`resim/bg_${id}.jpg`;img.alt='';b.append(img);caption(b,name,ownedBackgrounds.has(id)?'Sende ✓':EKONOMI.fiyat.tema[id]+' 🪙');return b;}));
+  const {total,count}=costs();$('summary').textContent=count?`${count} yeni seçim · önizleme ücretsiz`:'Seçtiklerin koleksiyonunda';$('price').textContent=total?total+' 🪙':'Ücretsiz kullan';$('apply').textContent=total?'Al ve uygula · '+total+' 🪙':'Değişiklikleri uygula';$('apply').disabled=gold<total;
+  if(gold<total)$('summary').textContent='Seçimlerin için '+(total-gold)+' altın daha gerekiyor';
+  const n=Object.values(draft.giyili).filter(Boolean).length;$('selection').textContent=backgrounds.find(x=>x[0]===draft.tema)[1]+' · '+(n?n+' aksesuar':'Aksesuar yok');draw();
+}
+function openTab(name,focus=false){tab=name;document.querySelectorAll('[data-tab]').forEach(b=>{const selected=b.dataset.tab===name;b.setAttribute('aria-selected',selected);b.tabIndex=selected?0:-1;if(selected&&focus)b.focus();});for(const id of ['renk','aksesuar','arka'])$('section-'+id).hidden=id!==name;}
+document.querySelectorAll('[data-tab]').forEach(b=>{b.onclick=()=>openTab(b.dataset.tab);b.onkeydown=e=>{const tabs=['renk','aksesuar','arka'];if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const i=e.key==='Home'?0:e.key==='End'?2:(tabs.indexOf(tab)+(e.key==='ArrowRight'?1:2))%3;openTab(tabs[i],true);}};});
+document.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{slot=b.dataset.slot;render();});
+$('custom').oninput=e=>setColor(e.target.value);$('tone').oninput=e=>{const [,s,l]=rgbHsl(...hexRgb(draft.renk));setColor(rgbHex(...hslRgb(+e.target.value,s,l)));};
+$('cancel').onclick=()=>{draft=structuredClone(applied);$('status').textContent='Son uyguladığın görünüme dönüldü.';render();};
+$('apply').onclick=()=>{const {total,items}=costs();if(gold<total)return;gold-=total;ownedColors.add(draft.renk);ownedBackgrounds.add(draft.tema);items.forEach(id=>ownedItems.add(id));applied=structuredClone(draft);$('status').textContent='Taslak görünüm uygulandı. Gerçek kaydın değişmedi.';render();};
+render();
+</script>
+</html>

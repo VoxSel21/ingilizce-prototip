@@ -45,8 +45,7 @@ function gorunumUygula() {
 
 // ---------- Geri: Android geri tuşu, tarayıcı geri düğmesi ve uygulama içi geri tek yerden ----------
 // Sıra: açık pencere → açık tam ekran (oyunda yarıda kalacaksa önce sorulur) → ana sekme dışındaysa ana sayfa.
-// Ana sayfada geri uygulamayı kapatmaz (telefonda); tarayıcıda siteden çıkmaya izin verilir.
-const OYUN_EKRANLARI = { av: () => av && !av.bitti, savas: () => sv && !sv.bitti, esles: () => es && !es.bitti };
+// Ana sayfada Android uygulaması kapanır; tarayıcıda siteden çıkmaya izin verilir.
 function onayPenceresi(baslik, yazi, evet, hayir, sonra) {
   const p = document.getElementById("pencere");
   p.innerHTML = `<div class="p-ikon">🐾</div><h3></h3><p></p><div class="onay-dugmeler"><button class="buyuk-dugme mor" id="onay-hayir"></button><button class="buyuk-dugme" id="onay-evet"></button></div>`;
@@ -66,14 +65,16 @@ const Geri = {
   // true: bir katman kapatıldı; false: kapatılacak bir şey yoktu (ana sayfadayız).
   bas() {
     const perde = document.getElementById("perde");
-    if (perde.classList.contains("aktif")) { perde.classList.remove("aktif"); herSeyiCiz(); return true; }
+    if (perde.classList.contains("aktif")) { if (typeof panelAcikAvGirisi === 'function' && panelAcikAvGirisi()) avGirisKapat(); else if (sonucOnayi) sonucOnayi(); else { perde.classList.remove("aktif"); herSeyiCiz(); } return true; }
     const altPanel = document.querySelector(".alt-panel.acik");
     if (altPanel) { altPanelKapat(altPanel); return true; }
     const t = document.querySelector(".tam.aktif");
+    if (t?.id === 'tam-sohbet' && sosyalBolum === 'cete') {
+      while(document.querySelector('.tam.aktif')) tamKapat(); sekme('ana'); return true;
+    }
     if (t) {
-      const ad = t.id.replace("tam-", ""), oyunda = OYUN_EKRANLARI[ad] && OYUN_EKRANLARI[ad]();
-      const avHakki = ad === "av" && av && !av.s.pratik && av.hak;
-      if (oyunda) onayPenceresi("Oyundan çıkılsın mı?", avHakki ? "Bugünkü ödüllü av hakkın kullanılmış sayılır; sonra yalnız pratik oynayabilirsin." : "Bu turdaki ilerleme sayılmaz.", "Çık", "Devam et", () => tamEkraniKapat(t));
+      const ad = t.id.replace("tam-", ""), oyunda = Oturumlar.aktif(ad);
+      if (oyunda) onayPenceresi("Oyundan çıkılsın mı?", Oturumlar.uyari(ad) || "Bu turdaki ilerleme sayılmaz.", "Çık", "Devam et", () => tamEkraniKapat(t));
       else tamEkraniKapat(t);
       return true;
     }
@@ -83,7 +84,7 @@ const Geri = {
   },
   kur() {
     const App = yerliEklenti("App");
-    if (App) { App.addListener("backButton", () => { Geri.bas(); }); return; } // telefonda: ana sayfada hiçbir şey yapma
+    if (App) { App.addListener("backButton", () => { if (!Geri.bas()) App.exitApp(); }); return; }
     // Tarayıcı: geçmişe tek bir işaret konur; geri düğmesi önce uygulama içi katmanı kapatır.
     history.replaceState({ pati: "kok" }, ""); history.pushState({ pati: "ic" }, "");
     addEventListener("popstate", () => { if (Geri.bas()) history.pushState({ pati: "ic" }, ""); else history.back(); });

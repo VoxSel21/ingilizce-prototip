@@ -40,14 +40,48 @@ const Ses = (() => {
   };
 })();
 function sonucSesi(dogru) { dogru ? Ses.dogru() : Ses.yanlis(); }
-function seslendir(metin, otomatik = false) {
-  if (otomatik && (d.sesKapali || (d.ayar && d.ayar.seslendirme === false))) return; // 🔊 düğmesi her zaman okur
-  try { const u = new SpeechSynthesisUtterance(metin); u.lang = "en-US"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+let kelimeSes=null,sesIstegi=0,sesIptal=null;
+function sesDurdur(){sesIstegi++;if(sesIptal){sesIptal();sesIptal=null;}if(kelimeSes){kelimeSes.pause();kelimeSes=null;}if(typeof speechSynthesis!=='undefined')speechSynthesis.cancel();}
+Oturumlar.ekle('ses', sesDurdur, undefined, undefined, '*');
+function seslendir(metin, otomatik = false, secenek = {}) {
+  if (otomatik && (d.sesKapali || (d.ayar && d.ayar.seslendirme === false))) return Promise.resolve(false);
+  sesDurdur(); const istek=sesIstegi;
+  return new Promise(resolve => {
+    let basladi=false, bitti=false, tts=false, bekleme, zaman;
+    const temizle=()=>{clearTimeout(bekleme);clearTimeout(zaman);};
+    const iptal=()=>{bitti=true;temizle();resolve(false);}; sesIptal=iptal;
+    const hata=()=>{
+      if(bitti||istek!==sesIstegi)return;
+      bitti=true;temizle();resolve(false);sesDurdur();
+      if(secenek.hata)secenek.hata();else bildir('🔇 Ses başlatılamadı. İngilizce cihaz sesini ve bağlantını kontrol edip tekrar dene.');
+    };
+    const basla=()=>{if(bitti||istek!==sesIstegi)return;basladi=true;clearTimeout(zaman);resolve(true);};
+    const bitir=()=>{bitti=true;temizle();resolve(basladi);};
+    const cihazSesi=()=>{
+      if(tts||bitti||istek!==sesIstegi)return;tts=true;
+      if(kelimeSes){kelimeSes.onerror=null;kelimeSes.pause();kelimeSes=null;}
+      if(typeof speechSynthesis==='undefined'||typeof SpeechSynthesisUtterance==='undefined')return hata();
+      const oku=()=>{
+        if(bitti||istek!==sesIstegi)return;
+        const sesler=speechSynthesis.getVoices(), ses=sesler.find(s=>/^en[-_]/i.test(s.lang));
+        if(!ses)return hata();
+        try{
+          const u=new SpeechSynthesisUtterance(metin);u.voice=ses;u.lang=ses.lang;u.rate=.9;
+          u.onstart=basla;u.onend=bitir;u.onerror=hata;
+          speechSynthesis.speak(u);
+        }catch(e){hata();}
+      };
+      if(speechSynthesis.getVoices().length)oku();else bekleme=setTimeout(oku,1200);
+    };
+    zaman=setTimeout(()=>{if(!basladi)hata();},8000);
+    const dosya=typeof KELIME_SESLERI!=='undefined'&&KELIME_SESLERI[String(metin).toLowerCase().trim()];
+    if(dosya){try{const a=kelimeSes=new Audio(dosya);a.onplaying=basla;a.onended=bitir;a.onerror=()=>basladi?hata():cihazSesi();a.play().catch(cihazSesi);}catch(e){cihazSesi();}}else cihazSesi();
+  });
 }
 function sesDugmeleriCiz() { document.querySelectorAll(".ses-dugme").forEach(b => b.textContent = d.sesKapali ? "🔇" : "🔊"); }
 document.querySelectorAll(".ses-dugme").forEach(b => b.onclick = () => {
   d.sesKapali = !d.sesKapali; kaydet(); sesDugmeleriCiz();
-  if (d.sesKapali) speechSynthesis && speechSynthesis.cancel(); else Ses.pop();
+  if (d.sesKapali) sesDurdur(); else Ses.pop();
   bildir(d.sesKapali ? "🔇 Sesler kapandı" : "🔊 Sesler açıldı");
 });
 

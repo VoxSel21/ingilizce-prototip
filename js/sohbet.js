@@ -7,6 +7,16 @@
 const SOHBET = { altEsik: 48, mesajSinir: 160, gosterilen: 30 };
 
 const Sohbet = {
+  saat(zaman, simdi = Date.now()) {
+    const ms = typeof zaman?.toMillis === 'function' ? zaman.toMillis() : typeof zaman === 'number' ? zaman : zaman?.seconds * 1000;
+    if (!Number.isFinite(ms) || ms <= 0) return '';
+    const t=new Date(ms),bugun=new Date(simdi);
+    const saat=t.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    return t.toDateString()===bugun.toDateString()?saat:t.toLocaleDateString('tr-TR')+' '+saat;
+  },
+  yanitKaydirmasi(dx, dy, sure) {
+    return dx >= 64 && Math.abs(dy) < 28 && dx > Math.abs(dy) * 2 && sure <= 900;
+  },
   // Liste en alttaysa (birkaç piksel pay ile) true.
   alttaMi(ustKaydirma, toplamYukseklik, gorunenYukseklik, esik = SOHBET.altEsik) {
     return toplamYukseklik - ustKaydirma - gorunenYukseklik <= esik;

@@ -1,0 +1,47 @@
+[
+  {
+    "kelime": "apple",
+    "dosya": "ses/apple.ogg",
+    "kaynak": "https://commons.wikimedia.org/wiki/File:En-apple.ogg",
+    "yazar": "Askaqp",
+    "lisans": "CC0 1.0",
+    "lisansUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sha256": "cfd5392cce090d3b87b67d9ddf4424acf4cfb2c744c75cca70c2ef00261e072e"
+  },
+  {
+    "kelime": "eat",
+    "dosya": "ses/eat.ogg",
+    "kaynak": "https://commons.wikimedia.org/wiki/File:En-eat.ogg",
+    "yazar": "Baïkoro Tinouche",
+    "lisans": "CC0 1.0",
+    "lisansUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sha256": "90e78552ac4f7c9b2f4059b7f491b8f6d717d951176c56014593febee3723520"
+  },
+  {
+    "kelime": "book",
+    "dosya": "ses/book.ogg",
+    "kaynak": "https://commons.wikimedia.org/wiki/File:En-us-book.ogg",
+    "yazar": "Dvortygirl",
+    "lisans": "CC BY-SA 3.0",
+    "lisansUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "sha256": "b0bbc739f90a9da7d4b5f2b20224a80fa0c7b24a2af843e0cdcaeeeae59379a8"
+  },
+  {
+    "kelime": "bird",
+    "dosya": "ses/bird.ogg",
+    "kaynak": "https://commons.wikimedia.org/wiki/File:En-us-bird.ogg",
+    "yazar": "Dvortygirl",
+    "lisans": "CC BY-SA 3.0",
+    "lisansUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "sha256": "a73885ede08a81cc4a4acaf7211ee99daa8803b2920e08a2adf068e35037f81f"
+  },
+  {
+    "kelime": "hot",
+    "dosya": "ses/hot.ogg",
+    "kaynak": "https://commons.wikimedia.org/wiki/File:En-uk-hot.ogg",
+    "yazar": "Association Shtooka, Judith Franck",
+    "lisans": "CC BY 3.0",
+    "lisansUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
+    "sha256": "f03c57cf1cf831d958e1705ff68a666ede73301b5d714403dedfc4828d0f3959"
+  }
+]

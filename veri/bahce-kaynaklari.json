@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-07",
+  "tool": "OpenAI Imagegen (yerleşik image_gen)",
+  "source_and_license": "Bu proje için yapay zekâ ile üretildi. Haricî stok/depo görseli kullanılmadı. Ayrı bir üçüncü taraf lisansı beyan edilmiyor; mevcut varlıkların lisansları değişmedi.",
+  "processing": "System.Drawing; orantılı yeniden boyutlandırma, JPEG kalite 88. Kompozisyon düzenlemeleri yalnız Imagegen ile.",
+  "assets": [
+    {
+      "path": "resim/bg_bahce.jpg",
+      "width": 768,
+      "height": 1152,
+      "bytes": 133786,
+      "reference": "Görsel dosyası referansı yok; yeni kompozisyon."
+    },
+    {
+      "path": "resim/bg_bahce-ana.jpg",
+      "width": 960,
+      "height": 417,
+      "bytes": 37447,
+      "reference": "Bu çalışma sırasında Imagegen ile üretilen yeni bahçe."
+    }
+  ],
+  "prompts": [
+    "Use case: illustration-story. Asset type: a new portrait mobile game environment background, approximately 2:3 aspect ratio, for Pati's small peaceful English-learning world. Create a wholly new composition, NOT a recoloring or redraw of an old rolling-meadow image. A charming tiny cream cottage with a muted terracotta roof and simple wooden veranda sits off to the upper left, a gently curving sandy footpath travels from it toward the lower right edge, with just a few rounded distant trees and small garden shrubs. Soft sky blue upper area, warm cream clouds, sage and soft spring greens, restrained orange accents. Rounded simple hand-drawn shapes with consistent warm dark-brown outlines, matching a cute flat orange kitten and small flat apple/bread illustrations. Warm diffuse daylight; very subtle paper texture only, no glow, no blur, no photographic elements. Composition for an overlay character: keep the CENTER and lower middle a spacious quiet open lawn with a small light cream-green ground patch where a separately rendered kitten can sit. Horizon around 40 percent from top; cottage and trees should stay within inner 80 percent safe area so they survive phone crops. Leave the upper middle mostly quiet sky for a speech bubble. Foreground detail sparse and at the side edges. Garden feels like a cozy small place, not sweeping distant landscape. Camera near level, consistent perspective and light. No animals, no characters, no text, no letters, no signs, no logos, no buttons or UI embedded, no sparkles, no random objects. Full opaque illustration.",
+    "Use case: precise-object-edit / environment adaptation. Create a QUIET LANDSCAPE BANNER variation of this same new cottage garden illustration, approximately 2.3:1 aspect ratio, for the greeting area of the same mobile game. Preserve exactly the warm brown outline family, flat rounded storybook style, cream cottage with terracotta roof/veranda, sky blue and sage green palette, subtle paper texture and gentle light. Change framing and composition to a much more distant wide view: a small recognizable cottage in the far LOWER LEFT corner, one small rounded tree at the far LOWER RIGHT edge, a very low green lawn with a hint of the curved path along the bottom edge only. The central and upper 75 percent must be calm nearly empty soft blue sky, with at most a small cream cloud toward an edge. UI text will be separately overlaid on the left-center and a separately rendered kitten on the right-center, so leave those areas peaceful; do not bake in those elements. No words, no characters, no controls, no logos. This is the same garden from farther away, not an unrelated scene. Opaque image."
+  ]
+}

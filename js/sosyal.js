@@ -9,11 +9,9 @@ const tepkiler = {};
 const haftaBasi = () => { const b = bugunNo(); return b - ((new Date().getDay() + 6) % 7); };
 const haftaSay = obj => Object.keys(obj || {}).filter(g => +g >= haftaBasi() && +g <= bugunNo()).length;
 const CETE_GOREVLER = [
-  { id: "tanis", ikon: "🃏", ad: "Çetece 60 yeni kelimeyle tanışın", hedef: 60, odul: 2,
+  { id: "tanis", ikon: "🃏", ad: "Çetece 60 yeni kelimeyle tanışın", hedef: 60, odul: EKONOMI.odul.cete.tanis,
     uyeler: [["Ahmet", 18], ["Elif", 19], ["Mert", 4], ["Zeynep", 11]], sen: () => Object.entries(d.tanisGun || {}).filter(([g]) => +g >= haftaBasi() && +g <= bugunNo()).reduce((t, [, n]) => t + n, 0) },
-  { id: "gun", ikon: "📅", ad: "Herkes bu hafta en az 3 gün çalışsın", hedef: 3, herkes: true, odul: 3,
-    uyeler: [["Ahmet", 4], ["Elif", 3], ["Mert", 2], ["Zeynep", 3]], sen: () => haftaSay(d.gunler) },
-  { id: "av", ikon: "🎣", ad: "Çetece 6 balık avına çıkın", hedef: 6, odul: 2,
+  { id: "av", ikon: "🎣", ad: "Çetece 6 balık avına çıkın", hedef: 6, odul: EKONOMI.odul.cete.av,
     uyeler: [["Ahmet", 2], ["Elif", 2], ["Mert", 0], ["Zeynep", 1]], sen: () => haftaSay(d.avlar) },
 ];
 function ceteDurum(g) {
@@ -39,6 +37,10 @@ function ceteCiz() {
   });
 }
 function arkadasCiz() {
+  const baslik=document.querySelector('#ekran-arkadaslar>.ust .hap');
+  baslik.textContent=sosyalBolum==='arkadas'?'👫 Arkadaşlar':'🐾 Çete';
+  document.querySelector('nav [data-sekme="arkadaslar"]').setAttribute('aria-label','Sosyal · '+(sosyalBolum==='arkadas'?'Çeteye geç':'Arkadaşlara geç'));
+
   document.querySelectorAll("[data-sosyal]").forEach(b => b.classList.toggle("aktif", b.dataset.sosyal === sosyalBolum));
   document.getElementById("sosyal-arkadas").style.display = sosyalBolum === "arkadas" ? "" : "none";
   document.getElementById("sosyal-cete").style.display = sosyalBolum === "cete" ? "" : "none";
@@ -46,6 +48,7 @@ function arkadasCiz() {
   // Ekle düğmesi yalnız arkadaş ve çete bölümünde anlamlı.
   document.getElementById("ekle-dugme").hidden = sosyalBolum === "sohbet";
   ceteCiz(); ikiliCiz(); savasCiz();
+  if (Bulut.kullanici) { ceteEkranCiz(); arkadasGercekCiz(); return; }
   const sonMesaj = (d.sohbet && d.sohbet.length) ? d.sohbet[d.sohbet.length - 1] : { kim: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][0], metin: SOHBET_ORNEK[SOHBET_ORNEK.length - 1][1] };
   document.getElementById("sohbet-son").textContent = `${sonMesaj.kim}: ${sonMesaj.metin}`;
   const sen = ["Sen", "#9F8BEA", seri(), d.bugun.sayi * 10 + d.cumleDogru * 15 + 80];
@@ -69,7 +72,22 @@ function arkadasCiz() {
     if (tepkiler[i + t]) return;
     tepkiler[i + t] = 1; d.tepki++; kaydet(); konfeti(b, 5); bildir(`${ARKADASLAR[i][0]}'e ${t} gönderildi`); rozetKontrol(); arkadasCiz();
   });
+  demoArkadasListeCiz();
   if (typeof ceteEkranCiz === "function") ceteEkranCiz(); // gerçek çete kartları (js/cete-ekran.js)
+}
+function demoArkadasListeCiz() {
+  document.querySelectorAll('#arkadas-listesi .arkadas-kart').forEach((kart,i)=>{
+    const a=ARKADASLAR[i],eylemler=[...kart.querySelectorAll('.alt-satir,.ikili-dugme')];
+    const satir=dugmeEl('',null,'arkadas-satir'),kedi=ceteEl('span','arkadas-kedi'),bilgi=ceteEl('span','arkadas-bilgi');
+    kedi.setAttribute('aria-hidden','true');bilgi.append(ceteEl('b',null,a[0]+' · örnek'),ceteEl('small',null,a[4]));
+    satir.append(kedi,bilgi,ceteEl('span',null,'›'));kart.className='demo-arkadas';kart.replaceChildren(satir);
+    arkadasKediCiz(kedi,{hal:'fit',renk:a[1]});
+    satir.onclick=()=>{
+      const menu=ceteEl('div','arkadas-menu');menu.append(...eylemler);
+      menu.addEventListener('click',e=>{if(e.target.closest('button'))document.getElementById('perde').classList.remove('aktif');},true);
+      cetePencere('🐾',a[0]+' · örnek arkadaş',[menu],[['Kapat',null,true]]);
+    };
+  });
 }
 // Miyavlama: arkadaşa "hadi çalış" dürtmesi. Spam olmasın diye her arkadaşa günde bir kez.
 let tbZaman;
@@ -86,6 +104,7 @@ function miyavla(i, b) {
 document.getElementById("ekle-dugme").onclick = () => {
   // Hesap varken gerçek çete: çetedeysen davet, değilsen kur/katıl. Arkadaşlar = çete üyeleri (ayrı arkadaş sistemi yok).
   if (Bulut.hazirMi() && Bulut.kullanici) {
+    if (sosyalBolum === 'arkadas') { arkadasEkleAc(); return; }
     if (CeteEkran.cete) davetPenceresi(CeteEkran.cete);
     else if (sosyalBolum === "cete") kurPenceresi(); else katilPenceresi("");
     return;
@@ -96,16 +115,38 @@ const ekleDemo = () => pencere("🐾", sosyalBolum === "cete" ? "Çeteye kat" : 
 
 // ================= SOSYAL: bölümler =================
 let sosyalBolum = "arkadas";
-document.querySelectorAll("[data-sosyal]").forEach(b => b.onclick = () => { sosyalBolum = b.dataset.sosyal; Ses.pop(); arkadasCiz(); });
+function ceteSohbetAc() {
+  if (CeteEkran.cete) gercekSohbetAc();
+  else if (Bulut.kullanici) tamAc('menu-cete');
+  else document.getElementById('sohbet-ac').click();
+}
+function sosyalSohbetGoster() {
+  if (Bulut.kullanici && !CeteEkran.cete) return;
+  const t=document.getElementById('tam-sohbet');
+  t.classList.remove('tam');t.classList.add('sosyal-sohbet-gomulu');t.removeAttribute('role');t.removeAttribute('aria-modal');
+  document.getElementById('sosyal-cete').append(t);
+  document.getElementById('ekran-arkadaslar').classList.add('cete-sohbet-acik');
+  ceteSohbetAc();
+}
+function sosyalSohbetKapat() {
+  const t=document.getElementById('tam-sohbet');if(!t?.classList.contains('sosyal-sohbet-gomulu'))return;
+  Oturumlar.kapat('sohbet');t.classList.remove('aktif','sosyal-sohbet-gomulu');t.classList.add('tam');
+  document.getElementById('uygulama').append(t);document.getElementById('ekran-arkadaslar').classList.remove('cete-sohbet-acik');
+}
+document.querySelectorAll("[data-sosyal]").forEach(b => b.onclick = async () => {
+  sosyalBolum = b.dataset.sosyal; Ses.pop(); arkadasCiz();
+  if (Bulut.kullanici) await ceteYenile();
+  if (b.dataset.sosyal === 'cete' && sosyalBolum === 'cete' && document.getElementById('ekran-arkadaslar').classList.contains('aktif')) ceteSohbetAc();
+});
 
 // ================= BİRLİKTE GÖREVLER (arkadaşla ikili) =================
 // Seçilen arkadaşla ortak hedef. Senin ilerlemen gerçek, arkadaşınki örnek (gün geçtikçe ilerler).
 const IKILI_SABLON = [
-  { id: "gun3", ikon: "📅", ad: "3 gün boyunca ikiniz de çalışın", hedef: 3, odul: 3, birim: "gün",
+  { id: "gun3", ikon: "📅", ad: "3 gün boyunca ikiniz de çalışın", hedef: 3, odul: EKONOMI.odul.arkadas.gun, birim: "gün",
     sen: g => Object.keys(d.gunler).filter(x => +x >= g.bas).length },
-  { id: "kelime20", ikon: "🌱", ad: "20 yeni kelimeyle tanışın", hedef: 20, odul: 2, birim: "kelime",
+  { id: "kelime20", ikon: "🌱", ad: "20 yeni kelimeyle tanışın", hedef: 20, odul: EKONOMI.odul.arkadas.kelime, birim: "kelime",
     sen: g => Math.max(0, Object.keys(d.kartlar).length - g.basKelime) },
-  { id: "cumle5", ikon: "🧩", ad: "5 cümleyi doğru kurun", hedef: 5, odul: 2, birim: "cümle",
+  { id: "cumle5", ikon: "🧩", ad: "5 cümleyi doğru kurun", hedef: 5, odul: EKONOMI.odul.arkadas.cumle, birim: "cümle",
     sen: g => Math.max(0, d.cumleDogru - g.basCumle) },
 ];
 function ikiliArkadasIlerleme(g, sablon) {
@@ -147,228 +188,5 @@ function ikiliBaslat(i) {
     kaydet(); Ses.pop(); document.getElementById("perde").classList.remove("aktif");
     bildir(`🤝 ${a[0]} (örnek) ile görev başladı`); herSeyiCiz();
   });
-}
-
-// ================= ÇETE SOHBETİ (örnek) =================
-// Amaç: gerçek insanlarla öğrendiğin dilde pratik. Prototipte mesajlar örnek, cevaplar hazır.
-// Gerçekte: sunucu, moderasyon, bildir/engelle, yaş kuralları gerekir (README).
-const CETE_UYELER = [["Ahmet", "#FF8A7A"], ["Elif", "#5CC9A7"], ["Mert", "#6DB8EE"], ["Zeynep", "#F5A3C7"]];
-const SOHBET_ORNEK = [
-  ["Elif", "Good morning team! I learned the word \"journey\" today 🧳"],
-  ["Ahmet", "Nice! Can you make a sentence with it?"],
-  ["Elif", "My journey to school takes twenty minutes."],
-  ["Mert", "I am tired but I will study ten cards tonight 💪"],
-  ["Zeynep", "Who wants to practice phrasal verbs? I can't figure out \"put up with\" 😅"],
-];
-const SOHBET_CEVAP = ["Great sentence! 👏", "Nice! I didn't know that word.", "Good job! Keep going 💪", "Haha, me too 😄", "Can you use it in another sentence?", "Wow, your English is getting better!"];
-// Kaba ifadeler kelime sınırıyla aranır: "normal day" içindeki "mal" gibi kelime parçaları engellenmez.
-// Türkçe kökler (aptallık, salaklar...) ekli halleriyle de yakalanır; "mal" yalnız tek başına.
-const HARF = "a-zçğıöşü";
-const YASAKLI = [["stupid", 1], ["idiot", 1], ["shut up"], ["hate you"], ["dumb"], ["aptal", 1], ["salak", 1], ["gerizekal", 1], ["mal"]]
-  .map(([s, kok]) => new RegExp(`(^|[^${HARF}])${s}${kok ? "" : `(?=$|[^${HARF}])`}`));
-const bildirilen = new Set();
-// Sohbet güvenliği (R02): mesajlar HTML metni olarak değil, öğe öğe (textContent) kurulur.
-// Yedekten ya da dışarıdan gelen metin ne içerirse içersin sayfada kod olarak çalışamaz.
-function ogrenilenleriIsaretle(metin) {
-  const kullanilan = [], parcalar = [];
-  let son = 0;
-  for (const m of String(metin).matchAll(/[A-Za-z']+/g)) {
-    const k = KELIMELER.find(x => x[0] === m[0].toLowerCase());
-    if (k && d.kartlar[k[0]] && !kullanilan.includes(k[0])) {
-      kullanilan.push(k[0]);
-      parcalar.push({ metin: metin.slice(son, m.index) }, { metin: m[0], isaretli: true });
-      son = m.index + m[0].length;
-    }
-  }
-  parcalar.push({ metin: String(metin).slice(son) });
-  return { parcalar, kullanilan };
-}
-function sohbetMesajEl(kim, metin, ben, n) {
-  const el = document.createElement("div"); el.className = "mesaj" + (ben ? " ben" : "");
-  if (!ben) {
-    const k = document.createElement("span"); k.className = "kim"; k.textContent = kim;
-    k.style.color = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
-    const o = document.createElement("span"); o.className = "ornek-etiket"; o.textContent = "örnek"; k.append(o);
-    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bu mesajı gizle"); b.textContent = "🚩";
-    el.append(k, b, document.createTextNode(metin));
-    return el;
-  }
-  const o = ogrenilenleriIsaretle(metin);
-  for (const p of o.parcalar) {
-    if (!p.isaretli) { el.append(document.createTextNode(p.metin)); continue; }
-    const m = document.createElement("mark"); m.textContent = p.metin; el.append(m);
-  }
-  if (o.kullanilan.length) { const s = document.createElement("span"); s.className = "ogrendi"; s.textContent = `✓ Öğrendiğin ${o.kullanilan.length} kelimeyi kullandın`; el.append(s); }
-  return el;
-}
-// Ekran durumu (U07): kim yazıyor, son kayıt hatası, kaç mesaj çizildi (yeni mesajı anlamak için).
-const sohbetEkran = { yaziyor: null, hata: null, sayi: 0 };
-function sohbetDurumCiz(mesajSayisi) {
-  const el = document.getElementById("sohbet-durum");
-  const s = Sohbet.durumSatiri({ mesajSayisi, cevrimici: navigator.onLine, yaziyor: sohbetEkran.yaziyor, hata: sohbetEkran.hata });
-  el.hidden = !s; el.textContent = s ? s.metin : ""; el.className = "sohbet-durum" + (s ? " " + s.tur : "");
-}
-function sohbetCiz(benim) {
-  d.sohbet = d.sohbet || [];
-  const liste = document.getElementById("sohbet-liste");
-  const altta = Sohbet.alttaMi(liste.scrollTop, liste.scrollHeight, liste.clientHeight);
-  const ogeler = SOHBET_ORNEK.map(([kim, m], n) => bildirilen.has("o" + n) ? null : sohbetMesajEl(kim, m, false, "o" + n));
-  const bas = Math.max(0, d.sohbet.length - SOHBET.gosterilen);
-  d.sohbet.slice(bas).forEach((m, n) => { if (!bildirilen.has("s" + (bas + n))) ogeler.push(sohbetMesajEl(m.kim, m.metin, m.kim === "Sen", "s" + (bas + n))); });
-  const cizilen = ogeler.filter(Boolean), yeniVar = d.sohbet.length > sohbetEkran.sayi, ust = liste.scrollTop;
-  liste.replaceChildren(...cizilen);
-  // Eski mesajları okurken zorla aşağı kaydırma yok; yeni mesaj gelince gösterge çıkar.
-  const karar = Sohbet.kaydirmaKarari({ altta, benim: !!benim || !sohbetEkran.sayi, yeniVar });
-  if (karar === "in") { liste.scrollTop = liste.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; }
-  else { liste.scrollTop = ust; if (karar === "goster") document.getElementById("sohbet-yeni").hidden = false; }
-  sohbetEkran.sayi = d.sohbet.length;
-  sohbetDurumCiz(cizilen.length);
-  liste.querySelectorAll("[data-bildir]").forEach(b => b.onclick = () => {
-    bildirilen.add(b.dataset.bildir); Ses.pop(); bildir("🚩 Mesaj senden gizlendi. Bu demoda kimseye gönderilmez."); sohbetCiz();
-  });
-  // Öneri çipleri: son öğrendiğin kelimelerden
-  const son = KELIMELER.filter(k => d.kartlar[k[0]]).slice(-6).map(k => k[0]);
-  document.getElementById("sohbet-oneri").innerHTML = (son.length ? son : ["hello", "today", "study"]).map(w => `<button data-oner="${Sohbet.kacis(w)}">${Sohbet.kacis(w)}</button>`).join("");
-  document.querySelectorAll("[data-oner]").forEach(b => b.onclick = () => { const g = document.getElementById("sohbet-girdi"); g.value = (g.value + " " + b.dataset.oner).trim() + " "; g.focus(); });
-}
-let sohbetCevapZaman;
-function sohbetGonder() {
-  if (CeteEkran.sohbet) { gercekGonder(); return; } // gerçek çete sohbeti (js/cete-ekran.js)
-  const g = document.getElementById("sohbet-girdi"), metin = Sohbet.temizle(g.value);
-  if (!metin) return;
-  const kucuk = metin.toLocaleLowerCase("tr");
-  if (YASAKLI.some(y => y.test(kucuk))) { Ses.yanlis(); pencere("🙀", "Bu mesaj gönderilemedi", "Çete'de nazik dil kuralı var. Başka türlü söylemeyi dene.", "Tamam"); return; }
-  if (/[çğıöşüÇĞİÖŞÜ]/.test(metin)) { Ses.yanlis(); bildir("🇬🇧 Çete sohbeti İngilizce. Öneri çiplerindeki kelimelerle dene!"); return; }
-  const o = ogrenilenleriIsaretle(metin);
-  d.sohbet = d.sohbet || []; d.sohbet.push({ kim: "Sen", metin: metin.replace(/[<>]/g, "") });
-  let odul = 0;
-  if (o.kullanilan.length) { odul = Ekonomi.kazan(d, "sohbet:" + bugunNo(), EKONOMI.odul.sohbet.miktar, bugunNo()); if (odul) d.sohbetOdulGunu = bugunNo(); }
-  // Sohbete yazmak çalışma günü saymaz (js/ilerleme.js kuralı).
-  const kaydedildi = kaydet();
-  sohbetEkran.hata = kaydedildi ? null : "⚠️ Mesaj bu cihaza kaydedilemedi; uygulamayı kapatırsan kaybolabilir.";
-  Ses.pop(); g.value = ""; sohbetCiz(true);
-  if (!kaydedildi) { const ben = document.querySelectorAll("#sohbet-liste .mesaj.ben"); if (ben.length) ben[ben.length - 1].classList.add("kaydedilemedi"); }
-  if (odul) { Ses.altin(); bildir(`✨ Öğrendiğin kelimeyi sohbette kullandın! +1 🪙 (günde bir kez)`); }
-  // Örnek cevap: bir çete üyesi (demo) yazar
-  const uye = CETE_UYELER[Math.floor(Math.random() * CETE_UYELER.length)][0];
-  sohbetEkran.yaziyor = uye; sohbetDurumCiz(1);
-  clearTimeout(sohbetCevapZaman);
-  sohbetCevapZaman = setTimeout(() => {
-    sohbetEkran.yaziyor = null;
-    if (!document.getElementById("tam-sohbet").classList.contains("aktif")) return;
-    const cevap = o.kullanilan.length && Math.random() < .6 ? `Nice use of "${o.kullanilan[0]}"! 👏` : SOHBET_CEVAP[Math.floor(Math.random() * SOHBET_CEVAP.length)];
-    d.sohbet.push({ kim: uye, metin: cevap }); kaydet(); Ses.pop(); sohbetCiz();
-  }, 1400);
-}
-document.getElementById("sohbet-gonder").onclick = sohbetGonder;
-document.getElementById("sohbet-girdi").onkeydown = e => { if (e.key === "Enter") sohbetGonder(); };
-document.getElementById("sohbet-ac").onclick = () => { sohbetBaslik(false); document.getElementById("sohbet-girdi").disabled = document.getElementById("sohbet-gonder").disabled = false; sohbetEkran.sayi = 0; sohbetEkran.hata = null; sohbetCiz(); tamAc("sohbet"); };
-document.getElementById("sohbet-yeni").onclick = () => { const l = document.getElementById("sohbet-liste"); l.scrollTop = l.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; };
-document.getElementById("sohbet-liste").addEventListener("scroll", e => {
-  const l = e.currentTarget; if (Sohbet.alttaMi(l.scrollTop, l.scrollHeight, l.clientHeight)) document.getElementById("sohbet-yeni").hidden = true;
-});
-["online", "offline"].forEach(o => window.addEventListener(o, () => { if (document.getElementById("tam-sohbet").classList.contains("aktif")) { if (CeteEkran.sohbet) gercekDurumCiz(); else sohbetDurumCiz(1); } }));
-// Klavye: görünen alan küçülünce aradaki fark sohbet ekranının altına boşluk olur; gönderme alanı klavyenin üstünde kalır.
-if (window.visualViewport) {
-  const vv = window.visualViewport;
-  const klavye = () => {
-    const l = document.getElementById("sohbet-liste"), altta = Sohbet.alttaMi(l.scrollTop, l.scrollHeight, l.clientHeight);
-    const bosluk = Sohbet.klavyeBoslugu(window.innerHeight, vv.height, vv.offsetTop);
-    document.documentElement.style.setProperty("--klavye", bosluk + "px");
-    // Klavye açıkken kural bandı ve öneri çipleri gizlenir; mesaj listesine yer kalsın.
-    document.documentElement.classList.toggle("klavye-acik", bosluk > 80);
-    if (altta) l.scrollTop = l.scrollHeight;
-  };
-  vv.addEventListener("resize", klavye); vv.addEventListener("scroll", klavye);
-}
-
-// ================= ÇETE SAVAŞI =================
-// Haftalık, eş zamansız: her üye 4 moddan puan toplar; modda en iyi puanın çeteye yazılır.
-// Rakip ve üyelerin puanı örnek veri. "Savaş" bir oyun modu adı: hepsi dil pratiği.
-const SAVAS_MODLAR = [
-  { id: "hiz", ikon: "⚡", ad: "Kelime Yarışı", acik: "45 sn, en çok doğru", ac: () => savasHizliAc("hiz") },
-  { id: "dinle", ikon: "🎧", ad: "Kulak Kabart", acik: "Duy, doğru yazılışı seç", ac: () => savasHizliAc("dinle") },
-  { id: "cumle", ikon: "🧩", ad: "Cümle Düellosu", acik: "5 cümle, her doğru 30", ac: () => { cSavas = true; cumleAc(); } },
-  { id: "esles", ikon: "🐾", ad: "Pati Çabukluğu", acik: "Ne kadar hızlı, o kadar puan", ac: () => eslesAc(true) },
-];
-const SAVAS_UYE_PUAN = [["Ahmet", 420], ["Elif", 510], ["Mert", 180], ["Zeynep", 350]];
-function savasDurum() {
-  if (!d.savas || d.savas.hafta !== haftaBasi()) d.savas = { hafta: haftaBasi(), en: {} };
-  const gun = bugunNo() - haftaBasi(); // 0 = pazartesi
-  const benim = Object.values(d.savas.en).reduce((a, b) => a + b, 0);
-  const biz = SAVAS_UYE_PUAN.reduce((a, u) => a + Math.round(u[1] * (0.4 + gun * 0.1)), 0) + benim;
-  const rakip = 1200 + gun * 130;
-  return { gun, benim, biz, rakip, kalan: 6 - gun };
-}
-function savasCiz() {
-  const s = savasDurum(), oran = s.biz / (s.biz + s.rakip) * 100;
-  document.getElementById("savas-kart").innerHTML = `<div class="kart">
-    <div class="savas-skor"><div class="taraf">🐾 Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">🦊 Tilkiler <small class="ornek-etiket">örnek</small><b>${s.rakip}</b></div></div>
-    <div class="savas-cubuk"><i style="width:${oran}%"></i></div>
-    <p class="soluk" style="font-size:13px;text-align:center;">${s.biz >= s.rakip ? "Öndeyiz! 🎉" : `${s.rakip - s.biz} puan gerideyiz`} · ${s.kalan > 0 ? `${s.kalan} gün kaldı` : "son gün!"} · Senin katkın: ${s.benim}</p>
-    <div class="savas-modlar">${SAVAS_MODLAR.map((m, i) => `<button data-mod="${i}"><span class="m-ikon">${m.ikon}</span><b>${m.ad}</b><small>${d.savas.en[m.id] ? "En iyin: " + d.savas.en[m.id] : m.acik}</small></button>`).join("")}</div>
-    <p class="soluk" style="font-size:12px;margin-top:8px;">Her modda en iyi puanın çetene yazılır. Hafta sonunda kazanan çeteye ödül.</p></div>`;
-  document.querySelectorAll("[data-mod]").forEach(b => b.onclick = () => SAVAS_MODLAR[+b.dataset.mod].ac());
-}
-function savasSonuc(mod, puan) {
-  savasDurum();
-  const m = SAVAS_MODLAR.find(x => x.id === mod), eski = d.savas.en[mod] || 0, rekor = puan > eski;
-  if (rekor) d.savas.en[mod] = puan;
-  gunIsaretle(); kaydet(); rozetKontrol();
-  rekor ? Ses.zafer() : Ses.dogru();
-  tamKapat();
-  pencere(m.ikon, rekor ? "Yeni en iyi puan!" : `${m.ad} bitti`, `${puan} puan. ${rekor ? `Çetene ${puan - eski} puan eklendi ⚔️` : `En iyin ${eski}; çeteye en iyi puanın sayılır.`}`, "Tamam");
-}
-// Hızlı modlar: Kelime Yarışı (İngilizce → Türkçe) ve Kulak Kabart (duy → doğru yazılış)
-let sv = null;
-function savasKelimeleri() {
-  const tanis = karistir(KELIMELER.filter(k => d.kartlar[k[0]]));
-  return tanis.concat(karistir(KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye))).slice(0, 30);
-}
-function savasHizliAc(mod) {
-  sv = { mod, kelimeler: savasKelimeleri(), i: 0, puan: 0, dogru: 0, sure: mod === "hiz" ? 45 : 60, bas: performance.now(), kilit: false, bitti: false };
-  if (mod === "dinle") sv.kelimeler = sv.kelimeler.slice(0, 8);
-  document.getElementById("sv-yon").textContent = mod === "hiz" ? "Türkçesi ne? (her doğru 10)" : "Dinle, doğru yazılışı seç (her doğru 15)";
-  tamAc("savas"); savasSoru();
-  const oyun = sv;
-  const t = setInterval(() => {
-    if (sv !== oyun || sv.bitti) return clearInterval(t);
-    const kalan = Math.max(0, sv.sure - (performance.now() - sv.bas) / 1000);
-    document.getElementById("sv-sure").textContent = Math.ceil(kalan);
-    document.getElementById("sv-cubuk").style.width = (kalan / sv.sure * 100) + "%";
-    if (kalan <= 0) savasHizliBitir();
-  }, 100);
-}
-function savasSoru() {
-  if (sv.i >= sv.kelimeler.length) return savasHizliBitir();
-  const k = sv.kelimeler[sv.i];
-  let siklar, dogru;
-  if (sv.mod === "hiz") {
-    document.getElementById("sv-soru").textContent = k[0];
-    dogru = k[1]; siklar = [k[1], ...karistir(KELIMELER.filter(x => x[1] !== k[1])).slice(0, 3).map(x => x[1])];
-  } else {
-    document.getElementById("sv-soru").innerHTML = `<button class="dinle-dugme" id="sv-ses" style="margin:4px auto 0;">🔊</button>`;
-    document.getElementById("sv-ses").onclick = () => seslendir(k[0]);
-    setTimeout(() => seslendir(k[0]), 200);
-    // Çeldiriciler: benzer uzunlukta, aynı harfle başlayan kelimeler (duyulana benzesin)
-    const benzer = KELIMELER.filter(x => x[0] !== k[0] && !x[0].includes(" ") && (x[0][0] === k[0][0] || Math.abs(x[0].length - k[0].length) <= 1));
-    dogru = k[0]; siklar = [k[0], ...karistir(benzer).slice(0, 3).map(x => x[0])];
-  }
-  document.getElementById("sv-siklar").innerHTML = karistir(siklar).map(x => `<button class="av-sik">${x}</button>`).join("");
-  sv.kilit = false;
-  document.querySelectorAll("#sv-siklar .av-sik").forEach(b => b.onclick = () => {
-    if (sv.kilit || sv.bitti) return; sv.kilit = true;
-    const ok = b.textContent === dogru;
-    b.classList.add(ok ? "dogru" : "yanlis");
-    if (!ok) document.querySelectorAll("#sv-siklar .av-sik").forEach(x => { if (x.textContent === dogru) x.classList.add("dogru"); });
-    if (ok) { sv.dogru++; sv.puan += sv.mod === "hiz" ? 10 : 15; Ses.dogru(); } else Ses.yanlis();
-    document.getElementById("sv-puan").textContent = `⚔️ ${sv.puan} puan`;
-    const oyun = sv; setTimeout(() => { if (sv !== oyun || oyun.bitti) return; sv.i++; savasSoru(); }, ok ? 250 : 700);
-  });
-}
-function savasHizliBitir() {
-  if (!sv || sv.bitti) return; sv.bitti = true;
-  const mod = sv.mod, puan = sv.puan; sv = null;
-  savasSonuc(mod, puan);
 }
 

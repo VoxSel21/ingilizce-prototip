@@ -1,24 +1,19 @@
 // ================= DURUM (telefonda saklanır) =================
 const ANAHTAR = "ing-prototip-v2";
+const KayitDeposu = YerelKayit.olustur(localStorage, ANAHTAR);
 const GUN_MS = 86400000;
 // Yerel takvim günü. Saat dilimi değişip gün bir geri giderse kayıttaki gün sürer (js/ilerleme.js etkinGun).
 const gercekGun = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60000) / GUN_MS);
 const bugunNo = () => Ilerleme.etkinGun(gercekGun(), d && d.bugun && d.bugun.no);
 const ARALIK = [0, 1, 3, 7, 21]; // kutu -> kaç gün sonra tekrar
 // Ortak öğrenme durumu: her ekran, sayaç ve rozet bunu kullanır (1. kutu tanışıldı, 2-3 çalışılıyor, 4 öğrenildi).
-const DURUM = { tanisildi: "Tanışıldı", calisiliyor: "Çalışılıyor", ogrenildi: "Öğrenildi ⭐" };
+const DURUM = { tanisildi: "Çalışıldı", calisiliyor: "Tekrar edildi", ogrenildi: "Pekişti ⭐" };
 const durumu = c => !c ? null : c.kutu >= 4 ? "ogrenildi" : c.kutu >= 2 ? "calisiliyor" : "tanisildi";
 const durumdaSay = (deste, dr) => deste.filter(k => durumu(d.kartlar[k[0]]) === dr).length;
 let d;
 
 function yeniDurum() {
-  const b = bugunNo();
-  // Yeni kullanıcı sıfır çalışılmış günle başlar (eski prototipteki 4 sahte gün kaldırıldı, 2026-10-22).
-  return { surum: SEMA_SURUM, yildiz: EKONOMI.baslangicAltin, koruyucu: 1, kartlar: {}, gunler: {}, korunan: {},
-    bugun: { no: b, sayi: 0, dogru: 0, hediye: false }, cumleDogru: 0, tepki: 0, enUzun: 0, tema: "cayir", temalar: ["cayir"], rozet: {},
-    kediAd: "Pati", kilo: 4.0, seviye: "A1", kurk: "turuncu", kurklar: ["turuncu"], kurkRenk: "#FDBE86", sonRenkler: [], esyalar: [], giyili: { sapka: null, boyun: null, goz: null },
-    odulDefteri: {}, ayar: { hedef: 10, tema: "sistem", hareket: "sistem", titresim: true, seslendirme: true },
-    oturum: null, sonSunulan: [], antrenman: null, ilkDers: 0, kimlik: null };
+  return DurumModeli.yeni(bugunNo());
 }
 // Kayıt ve yedek: önce Kayit.dogrula (js/kayit.js), sonra Kayit.tasi ile bugünkü biçime getirilir.
 // Bozuk kayıt reddedilir; yedek yüklemede mevcut ilerleme hiç değişmez.
@@ -31,12 +26,12 @@ const izinliKimlikler = () => ({
 const durumGecerliMi = v => Kayit.dogrula(v).tamam;
 const tamamla = v => Kayit.tasi(v, yeniDurum(), izinliKimlikler());
 function okunanDurum(anahtar) {
-  try { const v = JSON.parse(localStorage.getItem(anahtar)); return durumGecerliMi(v) ? tamamla(v) : null; } catch (e) { return null; }
+  try { const v = JSON.parse(anahtar === ANAHTAR ? KayitDeposu.oku().durum : localStorage.getItem(anahtar)); return durumGecerliMi(v) ? tamamla(v) : null; } catch (e) { return null; }
 }
 // Sürüm taşımasından önce eski kayıt bir kez, sürüm numarasıyla ayrı saklanır (geri dönüş yolu).
 function surumYedegiAl() {
   try {
-    const ham = localStorage.getItem(ANAHTAR); if (!ham) return;
+    const ham = KayitDeposu.oku().durum; if (!ham) return;
     const eski = (JSON.parse(ham) || {}).surum || 2;
     const yedekAnahtar = `${ANAHTAR}-yedek-s${eski}`;
     if (eski < SEMA_SURUM && !localStorage.getItem(yedekAnahtar)) localStorage.setItem(yedekAnahtar, ham);
@@ -45,7 +40,12 @@ function surumYedegiAl() {
 // Gün değişimi: uygulama gece açık kalsa da ilk eylemde ve sayfaya dönüldüğünde yeni gün başlar.
 function gunuYenile() {
   if (d.bugun.no === bugunNo()) return false;
-  koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, dogru: 0, hediye: false }; Ekonomi.defterTemizle(d, bugunNo()); kaydet();
+  // Defter temizliği kayıttaki günden en çok bir gün ileri gider: saat bir anda aylarca ileri alınsa da
+  // bugünün ödül kayıtları silinmez, saat geri alınınca aynı ödül ikinci kez ödenmez. Dürüst kullanıcı
+  // bir şey kaybetmez; ara verilen günlerde temizlik yalnız biraz gecikir.
+  const onceki = d.bugun.no;
+  koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, dogru: 0, hediye: false };
+  Ekonomi.defterTemizle(d, Ekonomi.temizlikGunu(onceki, d.bugun.no)); kaydet();
   return true;
 }
 // Ortak çalışma kaydı: her öğrenme sorusu (kart, phrasal, harf, Kelime Kur, cümle) buradan sayılır.
@@ -93,38 +93,39 @@ function yukle() {
 }
 // İki sekme: her kayıt bir sıra numarası (rev) taşır. Başka sekme daha yeni bir kayıt yazdıysa
 // bu sekme eski halini üstüne yazmaz; güncel hali yükler. "storage" olayı diğer sekmeleri anında günceller.
-const kayitliRev = () => { try { return (JSON.parse(localStorage.getItem(ANAHTAR)) || {}).rev || 0; } catch (e) { return 0; } };
+const kayitliRev = () => { try { return (JSON.parse(KayitDeposu.oku().durum) || {}).rev || 0; } catch (e) { return 0; } };
 let kayitUyarildi = false;
-// Eşitleme kuyruğu (js/esitleme.js): her başarılı kayıttan sonra değişenler küçük olaylar olarak ayrı anahtara yazılır.
-// Ana kaydı hiç değiştirmez; yedek koduna girmez. Hesap bağlanınca (5. aşama 2. parça) sunucuya gönderilecek.
-const KUYRUK = ANAHTAR + "-kuyruk";
+// Durum, olay kuyruğu ve hesap sahipliği tek zarfta saklanır. UI yedeği yalnız ilerleme kaydını içerir.
 let olayTabani = null, bekleyenDefter = [];
 Ekonomi.iz = satir => bekleyenDefter.push(satir);
 function kuyrukOku() {
-  let k = null; try { k = JSON.parse(localStorage.getItem(KUYRUK)); } catch (e) {}
+  const k = KayitDeposu.oku().kuyruk;
   return Esitleme.kuyrukDuzelt(k, Esitleme.yeniKimlik("c"));
 }
-function kuyrugaYaz(metin) {
-  try {
+function kuyrugaYaz(metin, hesap) {
     // Sahip: misafir ilerlemesi hesaba taşındıysa hesap, yoksa misafir (js/bulut.js, Esitleme.sahip).
-    const k = kuyrukOku(), zaman = Date.now(), sahip = typeof Bulut !== "undefined" ? Bulut.sahip() : d.kimlik && d.kimlik.misafir;
+    const k = kuyrukOku(), zaman = Date.now(), sahip = hesap ? Esitleme.sahip(hesap, d) : typeof Bulut !== "undefined" ? Bulut.sahip() : d.kimlik && d.kimlik.misafir;
     const olaylar = Esitleme.farkOlaylari(olayTabani, d, bekleyenDefter);
     for (const o of olaylar) Esitleme.olayEkle(k, o.tur, o.veri, sahip, zaman);
-    localStorage.setItem(KUYRUK, JSON.stringify(Esitleme.sikistir(k)));
+    KayitDeposu.yaz(metin, Esitleme.sikistir(k), hesap);
     olayTabani = JSON.parse(metin); bekleyenDefter = [];
     if (olaylar.length && typeof Bulut !== "undefined") Bulut._kayitSonrasi();
-  } catch (e) {} // kuyruk yazılamazsa taban ilerlemez; değişiklikler sonraki kayıtta yeniden kuyruğa girer
 }
-function kaydet() {
+function kaydet(hesap) {
   try {
     if (kayitliRev() > (d.rev || 0)) {
       const guncel = okunanDurum(ANAHTAR);
       if (guncel) { d = guncel; olayTabani = JSON.parse(JSON.stringify(d)); bekleyenDefter = []; setTimeout(() => { herSeyiCiz(); bildir("🔄 Başka sekmedeki değişiklik yüklendi"); }, 0); return false; }
     }
-    d.rev = (d.rev || 0) + 1;
+    const oncekiRev = d.rev || 0;
+    d.esitlemeSurum = 1;
+    d.rev = oncekiRev + 1;
     const metin = JSON.stringify(d);
-    localStorage.setItem(ANAHTAR, metin); kayitUyarildi = false;
-    kuyrugaYaz(metin);
+    try { kuyrugaYaz(metin, hesap); } catch (e) { d.rev = oncekiRev; throw e; }
+    kayitUyarildi = false;
+    if(typeof ArkadasEkran !== 'undefined') ArkadasEkran.katkiGonder();
+    if(typeof SavasEkran !== 'undefined') SavasEkran.gonder();
+    if(typeof OzelSohbet !== 'undefined') OzelSohbet.profilGuncelle();
     return true;
   }
   catch (e) {
@@ -155,6 +156,10 @@ const turBoyu = deste => deste === PHRASAL ? 6 : 10;
 function yeniHavuz(deste = KELIMELER) {
   const yeni = deste.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye && (deste !== KELIMELER || !d.konu || konuOf(k[0]) === d.konu));
   // Phrasal verb'ler az: seçili seviyede yeni kalmadıysa diğer seviyelerden gelsin
-  return deste === PHRASAL && !yeni.length ? deste.filter(k => !d.kartlar[k[0]]) : yeni;
+  const havuz=deste === PHRASAL && !yeni.length ? deste.filter(k => !d.kartlar[k[0]]) : yeni;
+  if(!d.degerlendirme?.atlaBilinen)return havuz;
+  // Her turda bir alt seviye örneği geri kontrol edilir; hiçbir kart otomatik öğrenildi yapılmaz.
+  const alt=deste.filter(k=>!d.kartlar[k[0]]&&SINAV_SEVIYELER.indexOf(k[5])<SINAV_SEVIYELER.indexOf(d.degerlendirme.seviye));
+  return alt.length?[karistir(alt)[0],...havuz]:havuz;
 }
 

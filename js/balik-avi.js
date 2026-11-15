@@ -5,6 +5,9 @@
 // Süre gerçek geçen zamandan işler; uygulama arka plana geçince oyun durur, dönünce 3'ten geri sayıp sürer.
 // Günlük hak: günün ilk avında ilk cevap verilince hak kullanılır; sonraki oyunlar açıkça ödülsüz pratiktir.
 let av = null;
+Oturumlar.ekle('av', () => {
+  if (av) { av.bitti = true; cancelAnimationFrame(av.kareId); if (av.gorunum) av.gorunum.kapat(); } av = null;
+}, () => av && !av.bitti, () => av && !av.s.pratik && av.hak ? 'Bugünkü ödüllü av hakkın kullanılmış sayılır; sonra yalnız pratik oynayabilirsin.' : null);
 function avOynandiMi() { return !Av.odulluMu(d, bugunNo()); }
 function avDugmeCiz() {} // ana sayfa butonu kaldırıldı; durum kedi sekmesindeki kartta gösterilir
 const halAdi = () => kiloDurumu().ad.replace(/ \S+$/u, "");
@@ -14,16 +17,33 @@ function avKuralYazi() {
     `${d.kediAd} şu an ${halAdi()}: balığa ${g} doğru yeter.`;
 }
 function avAc() {
-  if (avOynandiMi()) {
-    pencere("🐟", "Bugünkü avını yaptın", `${d.avSonuc || ""} Tekrar oynarsan ödülsüz pratik olur; yarın yeni ödüllü av.`, "Tamam", null);
-    avIkinciDugme("Pratik için tekrar oyna (ödülsüz)", () => avBasla(true));
-    return;
-  }
-  const hal = Kilo.hali(d.kilo), agir = hal === "tombis" || hal === "mega";
-  const neden = agir ? ` Kilo arttıkça atılma kısalır: her doğruda ${Av.atilma(d.kilo)} adım (Fit kedide ${Av.atilma(KILO.enAz)}). Spor salonunda kilo verirsen daha az doğru yeter.` : "";
-  pencere(agir ? "🙀" : "🐟", "Günün balık avı", `${avKuralYazi()}${neden} Balığa ulaşırsan 1 🪙 (günde bir). İlk cevapla bugünkü hak başlar; yarıda bırakırsan sonrası pratik olur.`, "Başla", () => avBasla(false));
-  if (agir) avIkinciDugme("Önce spora git 🏋️", sporAc);
+  const odullu = !avOynandiMi();
+  pencere(patiIkon('fish'), 'Pati ile balık avı',
+    `Doğru cevapla Pati’yi balığa yaklaştır. Üç soruluk alıştırmada süre ve ödül yok; günlük hakkın korunur.`,
+    'Önce alıştır · 3 soru', () => avBasla(true,true));
+  avIkinciDugme(odullu ? 'Ödüllü deneme · 30 saniye' : 'Serbest pratik · ödülsüz', () => avBasla(!odullu));
+  avIkinciDugme('Kediye dön', avGirisKapat);
+  document.getElementById('pencere').dataset.avGiris='1';
+  const bilgi=document.createElement('details'), bas=document.createElement('summary'), yazi=document.createElement('p');
+  bas.textContent='Diğer kurallar';yazi.textContent=`${avKuralYazi()} Ödüllü denemede ilk cevap veya sürenin bitmesi günlük hakkı kullanır. Sonraki denemeler ödülsüzdür. Alıştırma hiçbir ilerleme veya ödül kaydını değiştirmez.`;
+  bilgi.append(bas,yazi);document.getElementById('pencere').append(bilgi);
 }
+
+function avGirisKapat() {
+  document.getElementById('perde').classList.remove('aktif');
+  delete document.getElementById('pencere').dataset.avGiris;
+  document.getElementById('kedi-etkinlik')?.focus();
+}
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape' && panelAcikAvGirisi()) { e.preventDefault(); avGirisKapat(); }
+});
+document.addEventListener('click', e => {
+  if(e.target===document.getElementById('perde') && panelAcikAvGirisi()) avGirisKapat();
+});
+function panelAcikAvGirisi() {
+  return document.getElementById('perde').classList.contains('aktif') && document.getElementById('pencere').dataset.avGiris==='1';
+}
+
 function avIkinciDugme(yazi, sonra) {
   const p = document.getElementById("pencere"), t = document.createElement("button");
   t.textContent = yazi; t.className = "ikinci-dugme";
@@ -35,17 +55,28 @@ function avKelimeleri() {
   const diger = karistir(KELIMELER.filter(k => !d.kartlar[k[0]] && k[5] === d.seviye).map(k => k[0]));
   return calisilan.concat(diger).slice(0, AV_KURAL.soru).map(kelimeAl);
 }
-function avBasla(pratik = false) {
-  av = { s: Av.yeni(d.kilo, pratik), saat: Av.saat(), kelimeler: avKelimeleri(), gorunen: 0, hak: false, bitti: false, kilit: true };
-  tamAc("av"); avKonumCiz(); avSoruCiz();
+function avBasla(pratik = false, egitim = false) {
+  delete document.getElementById('pencere').dataset.avGiris;
+  if (av && av.gorunum) av.gorunum.kapat();
+  av = { s: Av.yeni(d.kilo, pratik), egitim, hareketAz: document.documentElement.dataset.hareket === "azalt", saat: Av.saat(), kelimeler: avKelimeleri(), gorunen: 0, hak: false, bitti: false, kilit: true };
+  if (egitim) { av.kelimeler=(KELIMELER.filter(k=>d.kartlar[k[0]]).length >= 3 ? av.kelimeler : ["apple","bread","cat"].map(kelimeAl)).slice(0,3);av.s.atilma=34; }
+  const oyun = av;
+  document.getElementById('av-mod').hidden=!egitim;
+  document.getElementById('av-sure').hidden=egitim;
+  document.getElementById('av-sure-cubuk').parentElement.hidden=egitim;
+  oyun.kare = simdi => avDongu(simdi, oyun);
+  tamAc("av");
+  oyun.gorunum = AvGorunum.olustur({ pist: document.getElementById('pist'), kedi: document.getElementById('av-kedi'),
+    hedef: document.querySelector('#pist .hedef-balik'), cubuk: document.getElementById('av-sure-cubuk'), sure: document.getElementById('av-sure'), adim: document.getElementById('av-adim') }, AV_KURAL.sure);
+  oyun.gorunum.sayac(0, Av.hedefDogru(oyun.s)); avKonumCiz(); avSoruCiz();
   avUyari();
   document.getElementById("av-balikci").classList.remove("dondu");
   document.getElementById("av-pratik").hidden = !pratik;
   // Avdaki kedi, Kedi sekmesindekiyle aynı çizici: aynı renk, eşyalar ve beden (U17).
-  KediCizici.yerlestir(document.getElementById("av-kedi"));
+  av.govde = KediCizici.yerlestir(document.getElementById("av-kedi"));
   avGeriSay();
 }
-function avUyari(m) { document.getElementById("av-uyari").textContent = m || `Balıkçı fark etmeden yetiş! ${Av.gereken(av.s.kilo)} doğru yeter`; }
+function avUyari(m) { document.getElementById("av-uyari").textContent = m || (av.egitim ? "Doğru cevapla Pati’yi yaklaştır." : `Balıkçı fark etmeden yetiş! ${Av.gereken(av.s.kilo)} doğru yeter`); }
 // Başta ve arka plandan dönüşte 3'ten geri sayılır; bu sırada süre işlemez, cevap verilemez.
 function avGeriSay() {
   const gs = document.getElementById("geri-sayim"); gs.classList.add("aktif");
@@ -56,56 +87,56 @@ function avGeriSay() {
     clearInterval(t); gs.classList.remove("aktif"); oyun.geriSayim = false;
     if (document.hidden) return; // dönüşte yeniden sayılır
     oyun.kilit = false; Av.surdur(oyun.saat, performance.now());
-    requestAnimationFrame(z => avDongu(z, oyun));
+    oyun.kareId = requestAnimationFrame(oyun.kare);
   }, 700);
 }
 document.addEventListener("visibilitychange", () => {
   if (!av || av.bitti || av.geriSayim) return;
-  if (document.hidden) { Av.duraklat(av.s, av.saat, performance.now()); av.kilit = true; }
+  if (document.hidden) { cancelAnimationFrame(av.kareId); if(av.egitim) av.saat.durdu=true; else Av.duraklat(av.s, av.saat, performance.now()); av.kilit = true; }
   else avGeriSay();
 });
 function avDongu(simdi, oyun) {
   if (av !== oyun || oyun.bitti || oyun.saat.durdu) return; // eski oyunun döngüsü yeni oyuna karışmasın; durunca döngü biter
   const once = oyun.saat.son;
-  Av.tik(oyun.s, oyun.saat, simdi);
+  if (!oyun.egitim) Av.tik(oyun.s, oyun.saat, simdi);
   // Görünen konum gerçek konuma yaklaşık 0,2 sn'de yetişir (yalnız görüntü; kural konumu anında değişir).
   const fark = oyun.s.konum - oyun.gorunen, adim = 90 * Math.max(0, (simdi - once) / 1000);
-  oyun.gorunen += Math.sign(fark) * Math.min(Math.abs(fark), adim);
+  if(oyun.hareketAz) oyun.gorunen=oyun.s.konum;
+  else oyun.gorunen += Math.sign(fark) * Math.min(Math.abs(fark), adim);
   avKonumCiz();
   const govde = avKediGovde();
-  if (govde && ["bekle", "kos"].includes(govde.dataset.hareket)) govde.dataset.hareket = Math.abs(fark) > 0.5 ? "kos" : "bekle";
+  if (govde && (govde.dataset.hareket === 'bekle' || govde.dataset.hareket === 'kos')) {
+    const hareket = Math.abs(fark) > 0.5 ? 'kos' : 'bekle'; if (govde.dataset.hareket !== hareket) govde.dataset.hareket = hareket;
+  }
   const sonuc = oyun.s.sonuc;
   if (sonuc && (sonuc !== "kazandi" || Math.abs(fark) < 0.5)) return avBitir();
-  requestAnimationFrame(z => avDongu(z, oyun));
+  oyun.kareId = requestAnimationFrame(oyun.kare);
 }
-const avKediGovde = () => document.querySelector("#av-kedi .kedi-govde");
+const avKediGovde = () => av && av.govde;
 function avKonumCiz() {
-  const pist = document.getElementById("pist"), kedi = document.getElementById("av-kedi");
-  const menzil = pist.clientWidth - 64 - 40 - 6; // balığın soluna kadar
-  kedi.style.transform = `translateX(${Math.min(1, av.gorunen / AV_KURAL.yol) * menzil}px)`;
-  const s = Av.kalan(av.s);
-  document.getElementById("av-sure").textContent = Math.ceil(s);
-  const c = document.getElementById("av-sure-cubuk"); c.style.width = (s / AV_KURAL.sure * 100) + "%"; c.classList.toggle("az", s < 8);
-  document.getElementById("av-adim").textContent = `🐾 ${av.s.dogru}/${Av.hedefDogru(av.s)} doğru`;
+  av.gorunum.ciz(av.gorunen, Av.kalan(av.s), AV_KURAL.yol);
 }
 function avSoruCiz() {
   if (av.s.i >= av.kelimeler.length) { document.getElementById("av-siklar").innerHTML = ""; return; } // bitiş kontrolü oyun döngüsünde
   const k = av.kelimeler[av.s.i];
-  d.sonSunulan = Ogrenme.sunuldu(d.sonSunulan, k[0]);
+  if (!av.egitim) d.sonSunulan = Ogrenme.sunuldu(d.sonSunulan, k[0]);
   document.getElementById("av-kelime").textContent = k[0];
-  const siklar = karistir([k[1], ...karistir(KELIMELER.filter(x => x[0] !== k[0] && !anlamCakisir(x, k))).slice(0, 3).map(x => x[1])]);
+  const siklar = karistir([k[1], ...yanlisSecenekler(k,KELIMELER).map(x => x[1])]);
   document.getElementById("av-siklar").innerHTML = siklar.map(s => `<button class="av-sik">${s}</button>`).join("");
   document.querySelectorAll(".av-sik").forEach(b => b.onclick = () => avCevap(b, b.textContent === k[1], k));
 }
 function avCevap(b, dogru, k) {
   if (av.kilit || av.bitti || av.s.sonuc) return;
-  Av.tik(av.s, av.saat, performance.now()); // cevap anına kadar geçen gerçek süre işlenir; süre dolduysa cevap sayılmaz
+  if (!av.egitim) Av.tik(av.s, av.saat, performance.now()); // cevap anına kadar geçen gerçek süre işlenir; süre dolduysa cevap sayılmaz
   if (av.s.sonuc) return;
   av.kilit = true;
   // Gecikmeli işlemler yalnız kendi av oturumunu etkiler; kapatılıp yeni av başlarsa eskisi yeniye karışmaz.
   const oturum = av, buOturum = () => av === oturum && !oturum.bitti;
-  if (!av.s.pratik && !av.hak) { av.hak = true; Av.hakKullan(d, bugunNo()); d.avSonuc = "Av yarıda kaldı."; kaydet(); }
+  if (!av.s.pratik && !av.hak) { av.hak = true; Av.hakKullan(d, bugunNo()); d.avSonuc = "Av yarıda kaldı."; }
+  if (!av.egitim) Ilerleme.kelimeIsaretle(d, k[0]);
   const olay = Av.cevap(av.s, dogru);
+  if (av.egitim && av.s.i >= av.kelimeler.length && !av.s.sonuc) av.s.sonuc="soru";
+  av.gorunum.sayac(av.s.dogru, Av.hedefDogru(av.s));
   if (dogru) {
     b.classList.add("dogru"); avEfekt("💨"); Ses.dogru();
     kediHareket(avKediGovde(), "kos", 0);
@@ -123,7 +154,8 @@ function avCevap(b, dogru, k) {
     kediHareket(avKediGovde(), "uzgun", 900);
   }
   // Bilinen kelime kart sistemine de işlenir: yanlış bilinen yarın tekrar gelir
-  if (d.kartlar[k[0]] && !dogru) d.kartlar[k[0]] = { kutu: 1, sira: bugunNo() + 1, hata: (d.kartlar[k[0]].hata || 0) + 1 };
+  if (!av.egitim && d.kartlar[k[0]] && !dogru) d.kartlar[k[0]] = { ...d.kartlar[k[0]], kutu: 1, sira: bugunNo() + 1, hata: (d.kartlar[k[0]].hata || 0) + 1 };
+  if (!av.egitim) kaydet();
   setTimeout(() => { if (!buOturum() || oturum.s.sonuc) return; oturum.kilit = false; avSoruCiz(); }, (dogru ? AV_KURAL.dogruBekleme : AV_KURAL.yanlisBekleme) * 1000);
 }
 function avEfekt(e) {
@@ -140,24 +172,20 @@ function avBitir() {
   const odul = ulasti && !s.pratik ? Ekonomi.kazan(d, "av:" + bugunNo(), EKONOMI.odul.balikAvi.miktar, bugunNo()) : 0;
   if (ulasti && !s.pratik) kiloDegis(KILO.fark.balik); // balığı yedi
   if (!s.pratik) { if (!av.hak) Av.hakKullan(d, bugunNo()); d.avSonuc = `${s.dogru} doğru, ${s.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🪙.`; }
-  gunIsaretle();
-  kaydet(); avDugmeCiz();
+  if (!av.egitim) { gunIsaretle(); kaydet(); } avDugmeCiz();
   if (ulasti) { kediHareket(avKediGovde(), "kutla"); avUyari("Kaptı! 🐟"); Ses.zafer(); }
   else { kediHareket(avKediGovde(), "uzgun"); document.getElementById("av-balikci").classList.add("dondu"); avUyari(s.sonuc === "sure" ? "Süre bitti! ❗" : "Balıkçı fark etti! ❗"); }
   const oyun = av;
   setTimeout(() => {
     if (av !== oyun || !document.getElementById("tam-av").classList.contains("aktif")) return;
-    tamKapat();
     const neden = ulasti ? `Kalan süre: ${Math.ceil(Av.kalan(s))} sn.` : `${d.kediAd} yolun %${yuzde}'ine geldi${s.sonuc === "sure" ? ", süre bitti" : ""}.`;
-    pencere(ulasti ? "😻" : "🙀", ulasti ? "Balığı kaptın!" : s.sonuc === "sure" ? "Süre bitti!" : "Balıkçı fark etti!",
-      `${s.dogru} doğru, ${s.yanlis} yanlış. ${neden} ${s.pratik ? "Pratik turu: ödül yok." : `+${odul} 🪙`}`, "Tamam");
-    av = null;
+    turSonucu(ulasti ? "😻" : "🙀", av.egitim ? "Alıştırma tamam" : ulasti ? "Balığı kaptın!" : s.sonuc === "sure" ? "Süre doldu; bir daha deneyebiliriz" : "Bir tur daha deneyelim mi?",
+      `${s.dogru} doğru, ${s.yanlis} yanlış. ${av.egitim ? "Alıştırma tamamlandı; günlük ödüllü hakkın yerinde." : neden} ${s.pratik ? "Ödülsüz pratik." : `+${odul} altın.`} İstersen yeniden deneyebilirsin.`, avAc);
   }, 1100);
 }
 // Yarıda kapatma (✕ ya da geri tuşu): ödüllü avda ilk cevap verildiyse günün hakkı kullanılmış kalır.
 document.getElementById("av-kapat").onclick = () => {
   const hakGitti = av && !av.bitti && !av.s.pratik && av.hak;
-  if (av && !av.bitti) { av.bitti = true; av = null; }
   tamKapat();
   if (hakGitti) bildir("🐟 Av yarıda kaldı. Bugün pratik oynayabilirsin, ödüllü av yarın.");
 };

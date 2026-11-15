@@ -1,18 +1,23 @@
 // ================= PENCERELER / ÖDÜL =================
 function pencere(ikon, baslik, yazi, dugme, sonra) {
   const p = document.getElementById("pencere");
-  p.innerHTML = `<div class="p-ikon">${ikon}</div><h3>${baslik}</h3><p>${yazi}</p><button class="buyuk-dugme" id="p-dugme">${dugme}</button>`;
+  delete p.dataset.avGiris;
+  p.innerHTML = `<div class="p-ikon">${patiPencereGorseli(ikon)}</div><h3>${baslik}</h3><p>${yazi}</p><button class="buyuk-dugme" id="p-dugme">${dugme}</button>`;
   document.getElementById("perde").classList.add("aktif");
   document.getElementById("p-dugme").onclick = () => { document.getElementById("perde").classList.remove("aktif"); sonra && sonra(); herSeyiCiz(); };
+  document.getElementById("p-dugme").focus();
 }
 function bitisPenceresi() {
   if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
   else pencere("🃏", "Tur bitti!", `Bugün ${d.bugun.sayi} kart çalıştın.`, "Tamam");
 }
+function hediyeHazirsaAc() {
+  if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
+}
 function hediyePenceresi() {
   const p = document.getElementById("pencere");
   Ses.zafer();
-  p.innerHTML = `<button class="p-ikon hediye" id="hediye" aria-label="Günlük hediyeyi aç">🎁</button><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
+  p.innerHTML = `<button class="p-ikon hediye" id="hediye" aria-label="Günlük hediyeyi aç">${patiPencereGorseli("🎁")}</button><h3>Günlük hedef tamam!</h3><p>Hediyeni açmak için kutuya dokun.</p>`;
   document.getElementById("perde").classList.add("aktif");
   setTimeout(() => document.getElementById("hediye").focus(), 60);
   document.getElementById("hediye").onclick = e => {
@@ -25,7 +30,7 @@ function hediyePenceresi() {
     // Ödeme anında gün + hedef + tekil ödeme (defter anahtarı "hediye:<gün>") birlikte kontrol edilir.
     const h = EKONOMI.odul.gunlukHediye, kazanc = Ekonomi.kazan(d, "hediye:" + bugunNo(), h.taban + (Math.random() < h.bonusOlasilik ? h.bonus : 0), bugunNo());
     d.bugun.hediye = true; if (!kazanc) return kaydet(); kaydet(); konfeti(e.target, 16); Ses.altin();
-    setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 Yarın yine bekleriz.`, "Süper"), 350);
+    setTimeout(() => pencere("🪙", `+${kazanc} altın!`, `Serin ${seri()} gün oldu 🔥 ${sonrakiTekrarYazi()}`, "Süper"), 350);
   };
 }
 function konfeti(el, n) {
@@ -43,18 +48,22 @@ function bildir(m) { const b = document.getElementById("bildirim"); b.textConten
 
 // ================= BAŞARIMLAR =================
 const ROZETLER = [
-  ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, 1],
-  ["on", "📚", "10 kelime", "10 kelimeyi çalışılıyor aşamasına (2. kutu) taşı", () => durumdaSay(KELIMELER, "calisiliyor") + durumdaSay(KELIMELER, "ogrenildi") >= 10, 3],
-  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= gunlukHedef(), 2],
-  ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, 2],
-  ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, 10],
-  ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, 2],
-  ["ogrendi", "🎓", "Usta", "Bir kelimeyi tamamen öğren (4. kutu)", () => durumdaSay(KELIMELER, "ogrenildi") > 0, 3],
-  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, 1],
-  ["cete", "🐾", "Çete ruhu", "Bir haftanın tüm ortak görevlerini bitir", () => ceteHaftaTamam(), 5],
-  ["ikili", "🤝", "Takım oyuncusu", "Bir arkadaşınla birlikte görev bitir", () => (d.ikiliBiten || 0) >= 1, 2],
-  ["savas", "⚔️", "Çete savaşçısı", "Bir haftada savaşın 4 modunu da oyna", () => d.savas && Object.keys(d.savas.en).length >= 4, 3],
-  ["tema", "🎨", "Dekoratör", "Kedine bir eşya al", () => d.esyalar.length > 0, 1],
+  ["farkli50", "📖", "Kelime gezgini", "50 farklı kelime veya ifadeyi çalış", () => Ilerleme.calisilanSayisi(d) >= 50, EKONOMI.basarim.farkli50],
+  ["farkli100", "🗺️", "Kelime kaşifi", "100 farklı kelime veya ifadeyi çalış", () => Ilerleme.calisilanSayisi(d) >= 100, EKONOMI.basarim.farkli100],
+  ["ifade10", "💬", "İfade dostu", "10 farklı phrasal verb çalış", () => PHRASAL.filter(k => d.calisilanlar[k[0]] || d.kartlar[k[0]]).length >= 10, EKONOMI.basarim.ifade10],
+  ["gun7", "🗓️", "Düzenli adımlar", "Toplam 7 farklı gün çalış", () => Object.keys(d.gunler).length >= 7, EKONOMI.basarim.gun7],
+  ["ilk", "🌱", "İlk adım", "İlk kartını çalış", () => Object.keys(d.kartlar).length >= 1, EKONOMI.basarim.ilk],
+  ["on", "📚", "10 kelime", "10 kelimeyi çalışılıyor aşamasına (2. kutu) taşı", () => durumdaSay(KELIMELER, "calisiliyor") + durumdaSay(KELIMELER, "ogrenildi") >= 10, EKONOMI.basarim.on],
+  ["hedef", "🎯", "Hedefçi", "Bir günlük hedefi bitir", () => d.bugun.hediye || d.bugun.sayi >= gunlukHedef(), EKONOMI.basarim.hedef],
+  ["seri5", "🔥", "Ateşli", "5 günlük seriye ulaş", () => seri() >= 5, EKONOMI.basarim.seri5],
+  ["seri30", "🌋", "Yanardağ", "30 günlük seriye ulaş", () => seri() >= 30, EKONOMI.basarim.seri30],
+  ["cumle", "🧩", "Cümle ustası", "5 cümleyi doğru kur", () => d.cumleDogru >= 5, EKONOMI.basarim.cumle],
+  ["ogrendi", "🎓", "Usta", "Bir kelimeyi 4. kutuya taşı (pekişti)", () => durumdaSay(KELIMELER, "ogrenildi") > 0, EKONOMI.basarim.ogrendi],
+  ["sosyal", "💌", "Neşe kaynağı", "Arkadaşına tepki gönder", () => d.tepki >= 1, EKONOMI.basarim.sosyal],
+  ["cete", "🐾", "Çete ruhu", "Bir haftanın tüm ortak görevlerini bitir", () => ceteHaftaTamam(), EKONOMI.basarim.cete],
+  ["ikili", "🤝", "Takım oyuncusu", "Bir arkadaşınla birlikte görev bitir", () => (d.ikiliBiten || 0) >= 1, EKONOMI.basarim.ikili],
+  ["savas", "⚔️", "Çete savaşçısı", "Bir haftada savaşın 4 modunu da oyna", () => d.savas && Object.keys(d.savas.en).length >= 4, EKONOMI.basarim.savas],
+  ["tema", "🎨", "Dekoratör", "Kedine bir eşya al", () => d.esyalar.length > 0, EKONOMI.basarim.tema],
 ];
 function rozetKontrol() {
   ROZETLER.forEach(([id, ikon, ad, , kosul, odul]) => {
@@ -64,9 +73,10 @@ function rozetKontrol() {
 function odulCiz() {
   document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
     `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🪙"}</small></div>`).join("");
-  let h = `<div class="kart urun"><div class="u-ikon" style="background:var(--gok-a)">🧊</div><div><b>Seri koruyucu</b><small>Tek bir kaçırılan günü kurtarır: seri kopmaz, o gün çalışılmış sayılmaz. Elinde: ${d.koruyucu}</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>🪙 ${EKONOMI.fiyat.koruyucu}</button></div>`;
-  document.getElementById("magaza").innerHTML = h;
-  document.querySelector('[data-al="koruyucu"]').onclick = () => { if (!Ekonomi.harca(d, EKONOMI.fiyat.koruyucu)) { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); } d.koruyucu++; kaydet(); Ses.altin(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
+}
+function koruyucuSatisCiz() {
+  document.getElementById("koruyucu-satis").innerHTML = `<div class="menu-koruyucu"><span>🧊</span><div><b>Seri koruyucu</b><small>Elinde ${d.koruyucu} · bir günü korur</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>${EKONOMI.fiyat.koruyucu} 🪙</button></div>`;
+  document.querySelector('[data-al="koruyucu"]').onclick = () => { if (!Ekonomi.koruyucuAl(d, EKONOMI.fiyat.koruyucu)) { Ses.yanlis(); return bildir("🪙 Altın yetmiyor"); } kaydet(); Ses.altin(); bildir("🧊 Seri koruyucu alındı"); herSeyiCiz(); };
 }
 
 // ================= TAKVİM =================
@@ -75,11 +85,13 @@ const AYLAR = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağus
 const AY_EMOJI = ["❄️","⛄","🌱","🌷","🌸","☀️","🍉","🏖️","🍎","🍂","🍁","🎄"];
 const GUN_RENK = [["#FF8A7A","#FFB38A"], ["#FFC94D","#FFDF8A"], ["#5CC9A7","#8FE0C4"], ["#6DB8EE","#9FD2F7"], ["#9F8BEA","#C3B4F5"]];
 function takvimCiz() {
+  koruyucuSatisCiz();
   const simdi = new Date(), ay = new Date(simdi.getFullYear(), simdi.getMonth(), 1);
   document.getElementById("ay-adi").textContent = AYLAR[ay.getMonth()] + " " + ay.getFullYear();
   document.getElementById("ay-emoji").textContent = AY_EMOJI[ay.getMonth()];
   let h = ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"].map((g, i) => `<div class="bas ${i > 4 ? "hafta-sonu" : ""}">${g}</div>`).join("");
   const bas = (ay.getDay() + 6) % 7, gunSayi = new Date(ay.getFullYear(), ay.getMonth() + 1, 0).getDate();
+  document.getElementById("gunler").style.setProperty('--takvim-hafta', Math.ceil((bas + gunSayi) / 7));
   for (let i = 0; i < bas; i++) h += "<div></div>";
   let calisilan = 0, renkSira = 0;
   for (let g = 1; g <= gunSayi; g++) {
@@ -100,7 +112,10 @@ function takvimCiz() {
   const oz = seriOzet();
   document.getElementById("i-seri").textContent = oz.seri;
   document.getElementById("i-enuzun").textContent = oz.enUzun;
-  document.getElementById("i-ogrenilen").textContent = durumdaSay(KELIMELER, "ogrenildi");
+  const kelimeSayisi = KELIMELER.filter(k => d.kartlar[k[0]] || d.calisilanlar?.[k[0]]).length;
+  document.getElementById("i-ogrenilen").textContent = kelimeSayisi;
+  document.getElementById("i-ogrenilen-not").textContent = `${kelimeSayisi} kelime çalışıldı · ${durumdaSay(KELIMELER, "calisiliyor")} tekrar edildi · ${durumdaSay(KELIMELER, "ogrenildi")} pekişti. Tekrarlarla ilerler.`;
   document.getElementById("i-gun").textContent = oz.calisilanGun;
 }
+
 

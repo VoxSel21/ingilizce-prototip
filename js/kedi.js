@@ -8,28 +8,38 @@ const KURKLER = {
   siyah:   { ad: "Gece", ana: "#4A4458", koyu: "#2E2A3A", fiyat: 5 },
   beyaz:   { ad: "Beyaz", ana: "#FFFFFF", koyu: "#D9D9E0", fiyat: 4 },
 };
+const OZEL_RENKLER = { mercan: { ad: "Mercan", ana: "#EF8D83" }, deniz: { ad: "Deniz", ana: "#69B8BA" }, lavanta: { ad: "Lavanta", ana: "#9681BD" } };
+Object.assign(KURKLER, OZEL_RENKLER);
 const ESYALAR = [
-  { id: "kasket", yer: "sapka", ad: "Kasket", fiyat: 5 },
-  { id: "hasir", yer: "sapka", ad: "Hasır şapka", fiyat: 6 },
-  { id: "silindir", yer: "sapka", ad: "Silindir", fiyat: 8 },
-  { id: "kep", yer: "sapka", ad: "Mezuniyet kepi", fiyat: 0, rozet: "ogrendi" },
-  { id: "tac", yer: "sapka", ad: "Taç", fiyat: 42 },
-  { id: "fiyonk", yer: "boyun", ad: "Papyon", fiyat: 5 },
-  { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: 6 },
-  { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: 6 },
-  { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: 8 },
+  { id: "kurdele", yer: "sapka", ad: "Lavanta kurdele", fiyat: EKONOMI.fiyat.esya.kurdele },
+  { id: "mantar", yer: "sapka", ad: "Mantar şapka", fiyat: EKONOMI.fiyat.esya.mantar },
+  { id: "atki", yer: "boyun", ad: "Örgü atkı", fiyat: EKONOMI.fiyat.esya.atki },
+  { id: "pati", yer: "boyun", ad: "Pati madalyonu", fiyat: EKONOMI.fiyat.esya.pati },
+  { id: "yuvarlak", yer: "goz", ad: "Yuvarlak gözlük", fiyat: EKONOMI.fiyat.esya.yuvarlak },
+  { id: "uyku", yer: "goz", ad: "Bulut uyku maskesi", fiyat: EKONOMI.fiyat.esya.uyku },
+  { id: "yaprak", yer: "boyun", ad: "Yaprak broş", fiyat: EKONOMI.fiyat.esya.yaprak },
+  { id: "ay", yer: "boyun", ad: "Ay kolye", fiyat: EKONOMI.fiyat.esya.ay },
+  { id: "kasket", yer: "sapka", ad: "Kasket", fiyat: EKONOMI.fiyat.esya.kasket },
+  { id: "hasir", yer: "sapka", ad: "Hasır şapka", fiyat: EKONOMI.fiyat.esya.hasir },
+  { id: "silindir", yer: "sapka", ad: "Silindir", fiyat: EKONOMI.fiyat.esya.silindir },
+  { id: "kep", yer: "sapka", ad: "Mezuniyet kepi", fiyat: EKONOMI.fiyat.esya.kep, rozet: "ogrendi" },
+  { id: "tac", yer: "sapka", ad: "Taç", fiyat: EKONOMI.fiyat.esya.tac },
+  { id: "fiyonk", yer: "boyun", ad: "Papyon", fiyat: EKONOMI.fiyat.esya.fiyonk },
+  { id: "zil", yer: "boyun", ad: "Zilli tasma", fiyat: EKONOMI.fiyat.esya.zil },
+  { id: "gozluk", yer: "goz", ad: "Gözlük", fiyat: EKONOMI.fiyat.esya.gozluk },
+  { id: "gunes", yer: "goz", ad: "Kalpli gözlük", fiyat: EKONOMI.fiyat.esya.gunes },
   // 3. aşama (2026-10-23, Gemini; cizim/gemini-komutlari.md 6). Fiyat basamakları U01 hedefine göre, normal kullanıcı
   // günde ~4 altın: küçük 5–8 (1–2 gün), orta 17–29 (4–7 gün), özel 42–59 (10–14 gün). Eskiler 4. aşamada aynı basamaklara
   // taşındı (önceden 2–10); daha önce alınmış eşya sahiplikte kalır, kimseden altın alınmaz.
-  { id: "bere", yer: "sapka", ad: "Bere", fiyat: 6 },
-  { id: "kravat", yer: "boyun", ad: "Kravat", fiyat: 6 },
-  { id: "asci", yer: "sapka", ad: "Aşçı şapkası", fiyat: 18 },
-  { id: "inci", yer: "boyun", ad: "İnci kolye", fiyat: 18 },
-  { id: "korsan", yer: "sapka", ad: "Korsan şapkası", fiyat: 20 },
-  { id: "yildiz", yer: "goz", ad: "Yıldızlı gözlük", fiyat: 20 },
-  { id: "cicek", yer: "sapka", ad: "Çiçek tacı", fiyat: 22 },
-  { id: "monokl", yer: "goz", ad: "Monokl", fiyat: 45 },
-  { id: "bandana", yer: "boyun", ad: "Çete bandanası", fiyat: 0, rozet: "cete" }, // yalnız çeteyle kazanılır
+  { id: "bere", yer: "sapka", ad: "Bere", fiyat: EKONOMI.fiyat.esya.bere },
+  { id: "kravat", yer: "boyun", ad: "Kravat", fiyat: EKONOMI.fiyat.esya.kravat },
+  { id: "asci", yer: "sapka", ad: "Aşçı şapkası", fiyat: EKONOMI.fiyat.esya.asci },
+  { id: "inci", yer: "boyun", ad: "İnci kolye", fiyat: EKONOMI.fiyat.esya.inci },
+  { id: "korsan", yer: "sapka", ad: "Korsan şapkası", fiyat: EKONOMI.fiyat.esya.korsan },
+  { id: "yildiz", yer: "goz", ad: "Yıldızlı gözlük", fiyat: EKONOMI.fiyat.esya.yildiz },
+  { id: "cicek", yer: "sapka", ad: "Çiçek tacı", fiyat: EKONOMI.fiyat.esya.cicek },
+  { id: "monokl", yer: "goz", ad: "Monokl", fiyat: EKONOMI.fiyat.esya.monokl },
+  { id: "bandana", yer: "boyun", ad: "Çete bandanası", fiyat: EKONOMI.fiyat.esya.bandana, rozet: "cete" }, // yalnız çeteyle kazanılır
 ];
 // Çizimler Gemini'den (cizim/gemini-komutlari.md), cizim/hazirla.py ile temizlendi.
 // Kedi dört kilo halinde de aynı pozda; eşyaların yeri tek ayarla hepsine oturur.
@@ -37,6 +47,7 @@ const ESYALAR = [
 // farkı katman (giy_*.png, 600x500, kedi çerçevesi + çeyrek pay) olarak çıkarıldı (cizim/giydirme.py).
 // Şapkanın altında kalan kulak uçları silme maskesiyle (sil_*.png) kediden silinir, sonra katman konur.
 // Kedinin çizimi, kürk rengi ve hareketleri tek yerde: js/kedi-cizim.js (KediCizici, kediHareket).
+const esyaUzanti = id => ["yaprak", "ay", "kurdele", "mantar", "atki", "pati", "yuvarlak", "uyku"].includes(id) ? "svg" : "png";
 const SILME_VAR = ["kasket", "hasir", "silindir", "korsan"];
 function kediHali() { return Kilo.hali(d.kilo); }
 const resimOnbellek = {};
@@ -78,7 +89,8 @@ function kediCiz() {
   const oynandi = avOynandiMi();
   document.getElementById("av-kart").classList.toggle("oynandi", oynandi);
   document.getElementById("av-kart-yazi").textContent = oynandi ? "Bugünkü avını yaptın. Pratik serbest, yarın yeni ödüllü av!" : `${AV_KURAL.sure} saniye, ${AV_KURAL.soru} kelime · ${kiloDurumu().ad.replace(/ \S+$/u, "")}: ${Av.gereken(d.kilo)} doğru yeter · 1 🪙`;
-  dolapCiz(); sahnelerCiz();
+  dolapCiz(); sahnelerCiz(); sevgiCiz();
+  if(!document.getElementById("kedi-etkinlik")) kediSoyle(document.getElementById("kedi-balon").textContent);
 }
 function dolapCiz() {
   document.querySelectorAll("#dolap-sekme button").forEach(b => { b.classList.toggle("aktif", b.dataset.yer === dolapYer); b.setAttribute("aria-selected", b.dataset.yer === dolapYer); });
@@ -88,7 +100,7 @@ function dolapCiz() {
     const kilit = e.rozet && !d.rozet[e.rozet];
     const etiket = giyili ? "Giyili ✓" : var_ ? "Giy" : dene ? "Deneniyor" : kilit ? "🔒 Başarım" : "🪙 " + e.fiyat;
     h += `<button class="esya-kart ${giyili ? "giyili" : ""} ${dene ? "deneniyor" : ""}" data-esya="${e.id}" aria-pressed="${giyili || dene}">
-      <span class="e-ikon"><img src="resim/esya_${e.id}.png" alt=""></span><b>${e.ad}</b><span class="esya-etiket">${etiket}</span></button>`;
+      <span class="e-ikon"><img src="resim/esya_${e.id}.${esyaUzanti(e.id)}" alt=""></span><b>${e.ad}</b><span class="esya-etiket">${etiket}</span></button>`;
   }
   document.getElementById("dolap").innerHTML = h;
   // Deneme çubuğu: denenen eşyanın adı, fiyatı ve "Al ve giy"
@@ -146,6 +158,7 @@ function sahnelerCiz() {
 // Panel açıkken alt menü, üst çubuk ve sahne düğmeleri tıklanmaz (inert); kapanınca odak açan düğmeye döner (js/cihaz.js).
 const PANEL_ARKASI = "nav, #ekran-kedi > .ust, .sahne-dugmeler, #kilo-hap";
 function kediPanelAc(id) {
+  if(['panel-renk','panel-gardirop','panel-arka'].includes(id)&&typeof Ozellestirme!=='undefined')return Ozellestirme.ac(id==='panel-gardirop'?'aksesuar':id==='panel-arka'?'arka':'renk');
   document.querySelectorAll(".kedi-panel.acik").forEach(p => altPanelKapat(p));
   document.getElementById("ekran-kedi").classList.add("panelli");
   if (id === "panel-renk") renkPanelHazirla();
@@ -153,7 +166,7 @@ function kediPanelAc(id) {
   document.querySelectorAll(PANEL_ARKASI).forEach(e => e.inert = true);
 }
 document.querySelectorAll(".kedi-panel").forEach(p => p._kapaninca = () => {
-  if (p.id === "panel-renk") renkTaslak = null;     // kaydedilmeden kapanan renk geri alınır
+  if (p.id === "panel-renk") renkTaslak = null; // kaydedilmeden kapanan taslak geri alınır
   if (p.id === "panel-gardirop") denenen = null;    // denenen eşya üstünden çıkar
   if (!document.querySelector(".kedi-panel.acik")) {
     document.getElementById("ekran-kedi").classList.remove("panelli");
@@ -174,9 +187,11 @@ const renkDugmesi = (hex, ad) => `<button class="renk-dugme" data-renk="${hex}" 
 let renkOnizlemeIstek = 0;
 function renkPanelHazirla() {
   renkTaslak = d.kurkRenk;
-  document.getElementById("renk-hazir").innerHTML = HAZIR_RENKLER.map(([h, ad]) => renkDugmesi(h, ad)).join("");
-  document.getElementById("renk-son").innerHTML = (d.sonRenkler || []).map(h => renkDugmesi(h)).join("");
-  document.getElementById("renk-son-kutu").hidden = !(d.sonRenkler || []).length;
+  const etiket=(h,ad)=>ad+(Ekonomi.renkVar(d,h)?' · sende':' · 10 altın');
+  document.getElementById("renk-hazir").innerHTML = HAZIR_RENKLER.map(([h, ad]) => renkDugmesi(h, etiket(h,ad))).join("") + Object.values(OZEL_RENKLER).map(r => renkDugmesi(r.ana, etiket(r.ana,r.ad))).join("");
+  const koleksiyon=[...new Set([...(d.sonRenkler||[]),...(d.kurklar||[]).map(id=>hexGecerli(id)?id:KURKLER[id]?.ana)].filter(hexGecerli))];
+  document.getElementById("renk-son").innerHTML = koleksiyon.map(h => renkDugmesi(h,etiket(h,h))).join("");
+  document.getElementById("renk-son-kutu").hidden = !koleksiyon.length;
   document.querySelectorAll("#panel-renk [data-renk]").forEach(b => b.onclick = () => { Ses.pop(); renkSec(b.dataset.renk); });
   renkSec(renkTaslak);
 }
@@ -193,6 +208,8 @@ function renkSec(hex, kaynak) {
   if (kaynak !== "hex") document.getElementById("renk-hex").value = renkTaslak;
   document.getElementById("renk-hex").classList.remove("hatali");
   document.getElementById("renk-ornek").style.background = renkTaslak;
+  const ozel = Object.keys(OZEL_RENKLER).find(id => OZEL_RENKLER[id].ana === renkTaslak);
+  document.getElementById("renk-kaydet").textContent = Ekonomi.renkVar(d,renkTaslak) ? 'Kaydet · sende' : `Al ve kaydet · ${EKONOMI.fiyat.yeniRenk} 🪙`;
   document.querySelectorAll("#panel-renk [data-renk]").forEach(b => b.setAttribute("aria-pressed", b.dataset.renk.toUpperCase() === renkTaslak));
   // Canlı önizleme: kaydırırken her olayda değil, ekran karesi başına bir kez boyanır.
   const istek = ++renkOnizlemeIstek;
@@ -212,6 +229,9 @@ document.getElementById("renk-iptal").onclick = () => altPanelKapat(document.get
 document.getElementById("renk-kaydet").onclick = () => {
   const yeni = renkTaslak;
   if (hexGecerli(yeni)) {
+    const ozel = Object.keys(OZEL_RENKLER).find(id => OZEL_RENKLER[id].ana === yeni);
+    if (Ekonomi.renkAl(d,yeni) === 'yetersiz') { bildir('🪙 Bu renk için 10 altın gerekiyor'); return; }
+    d.kurk = ozel || "turuncu";
     d.kurkRenk = yeni;
     d.sonRenkler = [yeni, ...(d.sonRenkler || []).filter(x => x !== yeni)].slice(0, 8);
     if (kaydet()) { Ses.altin(); bildir("🎨 Kürk rengi kaydedildi"); }
@@ -221,25 +241,36 @@ document.getElementById("renk-kaydet").onclick = () => {
   kediHareketSahne("kutla", 1000);
 };
 
-function kediSoyle(m) { const b = document.getElementById("kedi-balon"); b.textContent = m; b.animate([{ transform: "scale(.8)" }, { transform: "none" }], { duration: 250, easing: "cubic-bezier(.3,1.6,.5,1)" }); }
+function kediSoyle(m) { const b = document.getElementById("kedi-balon"); b.textContent = m;
+  let etkinlik=document.getElementById('kedi-etkinlik');
+  if(!etkinlik){etkinlik=document.createElement('button');etkinlik.id='kedi-etkinlik';document.getElementById('kedi-kontroller').prepend(etkinlik);}
+  const spor=/spor|hareket/.test(m);etkinlik.innerHTML=patiIkon(spor?'barbell':'fish')+(spor?'Pati ile hareket et':'Pati ile balık avı');
+  etkinlik.onclick=spor?sporAc:avAc;
+  if (d.ayar.hareket === 'azalt' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  b.animate([{ transform: "scale(.8)" }, { transform: "none" }], { duration: 250, easing: "cubic-bezier(.3,1.6,.5,1)" }); }
 function kediLafi() {
   const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
   const secenek = [`Miyav! Bugün ${d.bugun.sayi} kart çalıştın 💪`];
   if (calisilan.length) { const k = calisilan[Math.floor(Math.random() * calisilan.length)]; secenek.push(`"${k[0]}" = ${k[1]} ${k[2]} Unutma!`, `${k[2]} ${k[0]}... ${k[0]}... aklımda kalsın diye tekrar ediyorum`); }
   if (!avOynandiMi()) secenek.push("Kovada balık var... günün avına çıkalım mı? 🎣");
   secenek.push(kiloDurumu().lafi);
-  if (d.yildiz === 0) secenek.push("Kumbaramız bomboş 🥺 Biraz kelime çalışalım mı?");
-  secenek.push("Her gün biraz, kedi adımlarıyla 🐾", "Yanlış yapmak da öğrenmenin parçası, miyav!", "Bugün bir kelime daha öğrenirsek mama bonusu? 🍣", "Patilerim hazır, sen de hazır mısın? ✨");
+  if (d.yildiz === 0) secenek.push("Bir küçük kelime turu yapabiliriz.");
+  secenek.push("Her gün biraz, kedi adımlarıyla 🐾", "Yanlış yapmak da öğrenmenin parçası, miyav!", "Balığa birkaç doğru cevapla yaklaşabiliriz.", "Patilerim hazır, sen de hazır mısın? ✨");
   const zor = zorlandiklar();
   if (zor.length) secenek.push(`"${zor[0][0]}" biraz inatçı çıktı 😼 Zorlandıkların'a bakalım mı?`);
   return secenek[Math.floor(Math.random() * secenek.length)];
 }
 document.querySelectorAll("#dolap-sekme button").forEach(b => b.onclick = () => { dolapYer = b.dataset.yer; dolapCiz(); });
-document.getElementById("sev-dugme").onclick = () => {
-  kediHareketSahne("sev", 900);
-  kediSoyle("Mırrr... 💜");
-  kalpUcur(["💕", "💗", "💞"]);
-};
+function sevgiCiz() {
+  const bar = document.getElementById("sevgi-bar");
+  bar.value = Math.round(Sevgi.deger(d.sevgi));
+  document.getElementById("sevgi-yazi").textContent = "💕 Sevgi · " + bar.value + "/100";
+}
+function kediOksa() {
+  const yeni = Sevgi.oksa(d.sevgi); if (yeni === d.sevgi) return;
+  d.sevgi = yeni; kaydet(); sevgiCiz();
+  kediHareketSahne("sev", 900); kediSoyle("Mırrr... 💜"); kalpUcur(["💕"]);
+}
 // Kalpler başın üstünden yavaşça süzülür
 function kalpUcur(kalpler) {
   const k = document.getElementById("kedi-kutu"), sahne = document.getElementById("kedi-sahne"), kr = k.getBoundingClientRect(), sr = sahne.getBoundingClientRect();
@@ -251,8 +282,15 @@ function kalpUcur(kalpler) {
   }, i * 220));
 }
 // Kediye dokununca: küçük zıplama, mutlu yüz, bir kalp, miyav ve bir laf (eşyalar sadece görünüş)
-function kediyeDokun() { kediHareketSahne("dokun", 420); kalpUcur(["💗"]); Ses.miyav(); kediSoyle(kediLafi()); }
-document.getElementById("kedi-kutu").onclick = kediyeDokun;
+function kediyeDokun() { d.sevgi = Sevgi.oksa(d.sevgi); kaydet(); sevgiCiz(); kediHareketSahne("dokun", 420); kalpUcur(["💗"]); Ses.miyav(); kediSoyle(kediLafi()); }
+const oksama = { x: 0, y: 0, basili: false, hareket: false };
+const oksamaKutu = document.getElementById("kedi-kutu");
+oksamaKutu.style.touchAction = "none";
+oksamaKutu.addEventListener("pointerdown", e => { oksama.x=e.clientX; oksama.y=e.clientY; oksama.basili=true; oksama.hareket=false; oksamaKutu.setPointerCapture(e.pointerId); });
+oksamaKutu.addEventListener("pointermove", e => { if (!oksama.basili || Math.hypot(e.clientX-oksama.x,e.clientY-oksama.y)<24) return; oksama.hareket=true; oksama.x=e.clientX; oksama.y=e.clientY; kediOksa(); });
+oksamaKutu.addEventListener("pointerup", () => { oksama.basili=false; });
+oksamaKutu.addEventListener("pointercancel", () => { oksama.basili=false; });
+oksamaKutu.onclick = () => { if (!oksama.hareket) kediyeDokun(); };
 document.getElementById("kedi-kutu").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); kediyeDokun(); } };
 document.getElementById("ana-kedi").onclick = () => { Ses.pop(); sekme("kedi"); };
 document.getElementById("kedi-ad").onclick = () => {
@@ -265,9 +303,9 @@ document.getElementById("av-kart").onclick = () => { altPanelKapat(document.getE
 // Kilo kuralları tek yerde: js/oyun.js (KILO, Kilo, Antrenman). Kilo 3–9,5 kg; hal sınırları 4,5 / 6 / 7,5.
 const KILO_HAL = {
   fit: { ad: "Fit 💪", lafi: "Bugün çok çevikim, balığa koşmaya hazırım!" },
-  pofuduk: { ad: "Pofuduk 🐾", lafi: "Ne fit ne tombiş, tam kıvamındayım 😸" },
-  tombis: { ad: "Tombiş 🍙", lafi: "Biraz tombişledim galiba... spor salonuna mı gitsek?" },
-  mega: { ad: "Mega Chonk 🙀", lafi: "Kalkamıyorum! Eski kelimelerle biraz spor lazım." },
+  pofuduk: { ad: "Pofuduk 🐾", lafi: "Yumuşak patiler, küçük adımlar. Birlikte oynayabiliriz." },
+  tombis: { ad: "Tombiş 🍙", lafi: "Bugün yavaş yavaş. Birlikte hareket edelim mi?" },
+  mega: { ad: "Mega Chonk 🙀", lafi: "Benim adımlarım küçük; birlikte de balığa ulaşabiliriz. İstersen spor salonuna uğrayalım." },
 };
 const kiloDurumu = (k = d.kilo) => KILO_HAL[Kilo.hali(k)];
 function kiloDegis(fark) {
@@ -312,8 +350,9 @@ function antrenmanSevin() {
 function antrenmanSonuc(o, bitti) {
   const oz = Antrenman.ozet(o.kiloBas, d.kilo, o.dogru, o.sira.length), gun = d.antrenman && d.antrenman.gun === bugunNo() ? d.antrenman : null;
   const hal = oz.halBas !== oz.halSon ? ` ${KILO_HAL[oz.halBas].ad} → ${KILO_HAL[oz.halSon].ad}!` : "";
-  pencere("🏋️", bitti ? "Antrenman bitti!" : "Antrenman yarıda kaldı",
-    `${oz.dogru} doğru tekrar. ${d.kediAd}: ${o.kiloBas.toFixed(2).replace(".", ",")} → ${d.kilo.toFixed(2).replace(".", ",")} kg (${kgYazi(oz.fark)}).${hal}` +
-    `${gun ? ` Bugün toplam ${gun.tekrar} tekrar, ${kgYazi(gun.kg)}.` : ""}${bitti ? "" : " Kaldığın yerden devam edebilirsin; yapılanlar ikinci kez sayılmaz."}`, "Tamam");
+  const yazi = `${oz.dogru} doğru, ${o.yanlis || 0} yanlış. ${d.kediAd}: ${o.kiloBas.toFixed(2).replace(".", ",")} → ${d.kilo.toFixed(2).replace(".", ",")} kg (${kgYazi(oz.fark)}).${hal}` +
+    `${gun ? ` Bugün toplam ${gun.tekrar} tekrar, ${kgYazi(gun.kg)}.` : ""}${bitti ? "" : " Kaldığın yerden devam edebilirsin; yapılanlar ikinci kez sayılmaz."}`;
+  if (bitti) turSonucu("🏋️", "Antrenman bitti!", yazi, hediyeHazirsaAc);
+  else pencere("🏋️", "Antrenman yarıda kaldı", yazi, "Tamam");
 }
 document.getElementById("spor-kart").onclick = () => { altPanelKapat(document.getElementById("panel-durum")); sporAc(); };

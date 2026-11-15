@@ -10,9 +10,10 @@ const KILO = {
   fark: { yeniKelime: 0.1, tekrar: -0.1, spor: -0.15, balik: 0.5 },
 };
 const Kilo = {
-  sinirla: k => Math.round(Math.min(KILO.enCok, Math.max(KILO.enAz, Number(k) || KILO.baslangic)) * 100) / 100,
-  degis: (k, fark) => Kilo.sinirla(k + (fark || 0)),
-  hali: k => KILO.hal.find(([ust]) => k < ust)[1],
+  sinirla: k => { const n = typeof k === "number" || typeof k === "string" ? Number(k) : NaN;
+    return Math.round(Math.min(KILO.enCok, Math.max(KILO.enAz, Number.isFinite(n) && k !== "" ? n : KILO.baslangic)) * 100) / 100; },
+  degis: (k, fark) => Kilo.sinirla(Kilo.sinirla(k) + (Number(fark) || 0)),
+  hali: k => KILO.hal.find(([ust]) => Kilo.sinirla(k) < ust)[1],
   // Bir kart cevabının kilo etkisi. Yanlış cevap ve turun içindeki ikinci deneme kiloyu değiştirmez.
   cevapFarki({ dogru, spor, yeni, tekrar }) {
     if (!dogru) return 0;
@@ -56,7 +57,7 @@ const AV_KURAL = {
   yol: 100, sure: 30, soru: 10,
   gerekenDogru: { fit: 6, pofuduk: 7, tombis: 8, mega: 9 },
   ustUsteYanlis: 2,          // bu kadar art arda yanlışta kedi bir atılma geri kaçar
-  dogruBekleme: 0.25, yanlisBekleme: 0.6,   // cevaptan sonra yeni soruya geçiş (sn); süre işlemeye devam eder
+  dogruBekleme: 0.25, yanlisBekleme: 1,     // yanlışta doğru cevap bir saniye görünür; süre işlemeye devam eder
 };
 const Av = {
   atilma: kilo => Math.ceil(AV_KURAL.yol / AV_KURAL.gerekenDogru[Kilo.hali(kilo)]),

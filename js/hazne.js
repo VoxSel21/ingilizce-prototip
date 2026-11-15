@@ -4,7 +4,7 @@
 function hazneCiz() {
   const tanisilan = KELIMELER.filter(k => d.kartlar[k[0]]);
   document.getElementById("hazne-ozet").textContent = tanisilan.length
-    ? `${tanisilan.length} kelimeyle tanıştın · ${durumdaSay(tanisilan, "calisiliyor")} çalışılıyor · ${durumdaSay(tanisilan, "ogrenildi")} öğrenildi`
+    ? `${tanisilan.length} kelimeyle tanıştın · ${durumdaSay(tanisilan, "calisiliyor")} tekrar edildi · ${durumdaSay(tanisilan, "ogrenildi")} pekişti`
     : "";
   if (!tanisilan.length && !PHRASAL.some(k => d.kartlar[k[0]])) {
     document.getElementById("hazne-liste").innerHTML = `<p class="hazne-bos">🐾 Haznen boş.<br>Kelime kartlarında tanıştığın kelimeler burada birikecek.</p>`;
@@ -19,7 +19,8 @@ function hazneCiz() {
     h += `<div class="hazne-seviye"><span>${sev === "PV" ? "🔗" : sev}</span>${sevAd}<small>${liste.length}/${toplam}</small></div>`;
     h += liste.map(k => {
       const kutu = Math.min(d.kartlar[k[0]].kutu, 4);
-      return `<div class="hazne-satir"><span class="h-emoji">${k[2]}</span><div class="h-yazi"><b>${k[0]}</b><i>${k[7]}</i><small>${k[1]}</small></div>
+      const beceriler=Object.entries(d.kartlar[k[0]].beceriler||{}).map(([ad,b])=>BECERILER[ad]+': '+({yeni:'yeni',gelisiyor:'gelişiyor',pekismis:'pekişmiş'}[BeceriKural.durum(b)])).join(' · ');
+      return `<div class="hazne-satir"><span class="h-emoji">${k[2]}</span><div class="h-yazi"><b>${k[0]}</b><i>${k[7]}</i><small>${k[1]}</small>${beceriler?`<span class="beceri-ozet">${Sohbet.kacis(beceriler)}</span>`:""}</div>
         <span class="h-kutu" title="${DURUM[durumu(d.kartlar[k[0]])]} · ${kutu}. kutu">${"●".repeat(kutu)}${"○".repeat(4 - kutu)}</span>
         <button class="h-ses" data-oku="${k[0]}" aria-label="${k[0]} sesli oku">🔊</button></div>`;
     }).join("");

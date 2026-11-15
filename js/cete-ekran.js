@@ -11,7 +11,7 @@ const CeteEkran = { cete: null, uid: null, yukleniyor: false, hata: null, sohbet
 // Davet bağlantısıyla gelindiyse kod adres satırından silinir (yenileyince pencere tekrar açılmasın).
 if (CeteEkran.kod) { try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {} }
 
-const ceteC = () => ({ db: Bulut._db, F: firebase.firestore });
+const ceteC = () => Bulut.ceteBaglantisi();
 const ceteAd = (cete, uid) => (cete && cete.adlar && cete.adlar[uid]) || "Eski üye";
 function ceteRenk(uid) {
   const i = CeteEkran.cete ? CeteEkran.cete.uyeler.indexOf(uid) : -1;
@@ -25,6 +25,7 @@ const takmaYaz = t => { try { localStorage.setItem(TAKMA_ANAHTAR, t); } catch (e
 // ---------- Çete bilgisini tazele ----------
 async function ceteYenile() {
   const u = Bulut.kullanici, istek = ++CeteEkran.istek;
+  ceteBildirimKapat();
   if (!u) { CeteEkran.cete = null; CeteEkran.uid = null; CeteEkran.hata = null; ceteEkranCiz(); ceteKodBekleyen(); return; }
   if (CeteEkran.uid !== u.uid) CeteEkran.cete = null;
   CeteEkran.uid = u.uid; CeteEkran.yukleniyor = true; ceteEkranCiz();
@@ -34,7 +35,8 @@ async function ceteYenile() {
     CeteEkran.cete = cete; CeteEkran.hata = null;
   } catch (e) { if (istek !== CeteEkran.istek) return; CeteEkran.hata = CeteKural.hataTuru(e); }
   CeteEkran.yukleniyor = false;
-  ceteEkranCiz(); ceteKodBekleyen();
+  ceteEkranCiz(); ceteKodBekleyen(); ceteBildirimBaslat();
+  if(typeof OzelSohbet!=='undefined')OzelSohbet.profilGuncelle();
 }
 
 // ---------- Sosyal ekrandaki kartlar ----------
@@ -68,6 +70,7 @@ function ceteYonetKarti(c) {
   bas.append(ceteEl("span", "c-ikon", "🐾"));
   const ad = ceteEl("div"); ad.append(ceteEl("b", null, c.ad), ceteEl("small", null, `${c.uyeler.length}/${CETE.enCokUye} üye · gerçek çete`));
   bas.append(ad); k.append(bas);
+  if(typeof ceteSeviyeCiz==='function')ceteSeviyeCiz(k,c);
   const liste = ceteEl("div", "cete-uye-liste");
   c.uyeler.forEach(uid => {
     const s = ceteEl("div", "cete-uye");
@@ -76,16 +79,21 @@ function ceteYonetKarti(c) {
     if (uid === CeteEkran.uid) yazi.append(ceteEl("small", null, " (sen)"));
     if (uid === c.kurucu) yazi.append(ceteEl("small", null, " 👑 kurucu"));
     s.append(av, yazi);
-    if (kurucu && uid !== CeteEkran.uid) s.append(dugmeEl("Çıkar", () => cikarPenceresi(uid), "cete-dugme kucuk"));
+    yazi.setAttribute('role','button');yazi.tabIndex=0;yazi.onclick=()=>profilAc(uid);yazi.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();profilAc(uid);}};
+    if (kurucu && uid !== CeteEkran.uid) s.append(dugmeEl("At", () => cikarPenceresi(uid, false), "cete-dugme kucuk"), dugmeEl("Banla", () => cikarPenceresi(uid, true), "cete-dugme kucuk"));
     liste.append(s);
   });
   k.append(liste);
+  if (kurucu) {
+    for (const uid of c.cikarilanlar) k.append(dugmeEl(ceteAd(c, uid) + " · Banı kaldır", async () => { try { await CeteCekirdek.banKaldir(ceteC(), c.id, uid); await ceteYenile(); } catch(e) { bildir(ceteHataMetni(e)); } }));
+    k.append(dugmeEl("🚩 Bildirilen mesajlar", ceteSikayetleriAc));
+  }
   const kod = ceteEl("div", "cete-kod");
   kod.append(ceteEl("span", null, "Davet kodu"), ceteEl("b", null, c.kod));
   k.append(kod);
   const sira = ceteEl("div", "cete-dugmeler");
   sira.append(dugmeEl("🔗 Davet et", () => davetPenceresi(c)), dugmeEl("🚪 Çeteden ayrıl", ayrilPenceresi, "cete-dugme ikincil"));
-  k.append(sira, ceteEl("p", "soluk cete-not", "Mesajları yalnız çete üyeleri görür; 30 günden eski mesajlar silinir. Kurucu, kötü davranan üyeyi çıkarabilir; çıkarılan bu çeteye geri giremez."));
+  k.append(sira, ceteEl("p", "soluk cete-not", "Mesajları yalnız çete üyeleri görür; 30 günden eski mesajlar silinir. Kurucu üyeyi atabilir veya banlayabilir. Atılan tekrar katılabilir; banlanan yasağı kaldırılana kadar katılamaz."));
   return k;
 }
 
@@ -96,7 +104,7 @@ function ceteSohbetKarti(c) {
   b.append(ceteEl("span", "h-ikon", "💬"), yazi, ceteEl("span", "ok", "›"));
   b.onclick = gercekSohbetAc;
   const f = document.createDocumentFragment();
-  f.append(b, ceteEl("p", "soluk cete-not", "Mesajın çete üyelerine gider. Türkçe harf görürsem uyarırım ama mesaj yine gider. Öğrendiğin kelimeyi kullanınca günde bir kez +1 🪙. Kendi mesajını ✕ ile silebilirsin."));
+  f.append(b, ceteEl("p", "soluk cete-not", "Mesajın çete üyelerine gider. Türkçe harf görürsem uyarırım ama mesaj yine gider. Öğrendiğin kelimeyi kullanınca günde bir kez +1 🪙. Mesaj seçeneklerinden yanıtlayabilir veya bildirebilirsin."));
   return f;
 }
 
@@ -123,11 +131,14 @@ function ceteEkranCiz() {
   // Demo parçaları: çetedeyken demo sohbet ve demo çete başlığı gizlenir, kalan demo kısımlar etiketli kalır.
   document.getElementById("sohbet-ac").hidden = !!c;
   document.getElementById("sohbet-demo-not").hidden = !!c;
-  document.querySelector("#sosyal-cete .cete-bas").hidden = !!c;
+  document.getElementById("cete-demo-bas").hidden = !!c;
   document.getElementById("sosyal-demo-bant").innerHTML = c
-    ? "<b>🧪 Demo</b> Çete savaşı, ortak görevler ve arkadaş kartları hâlâ örnek. Çete üyelerin ve sohbet gerçek."
+    ? "<b>🧪 Demo</b> Arkadaşlık, kişi başına görevler, üyeler, sohbet ve karşılıklı çete savaşı gerçek. Haftalık çete görevleri örnek."
     : "<b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.";
+  if(Bulut.kullanici)document.getElementById("sosyal-demo-bant").innerHTML=c?"<b>🌐 Sosyal</b> Arkadaşlık, görevler, üyeler, sohbet ve karşılıklı savaş gerçek. Haftalık çete görevleri örnek.":"<b>🌐 Sosyal</b> Arkadaşlık ve kişi başına görevler gerçek. Sohbet ve savaş için çete kur veya katıl.";
   document.getElementById("sosyal-prototip-not").hidden = hesapVar;
+  if (Bulut.kullanici && typeof arkadasGercekCiz === "function") arkadasGercekCiz();
+  if(typeof SavasEkran!=="undefined")SavasEkran.bagla();
 }
 
 // ---------- Pencereler ----------
@@ -227,10 +238,7 @@ function ayrilPenceresi() {
     : c.kurucu === CeteEkran.uid ? `Kuruculuk ${ceteAd(c, kalan[0])} kişisine geçer.` : "İstersen sonra kodla tekrar katılabilirsin.";
   const govde = [ceteEl("p", null, acik)];
   let kutu = null;
-  if (kalan.length) {
-    const l = ceteEl("label", "cete-onay"); kutu = ceteEl("input"); kutu.type = "checkbox";
-    l.append(kutu, document.createTextNode(" Bu çeteye yazdığım mesajları da sil")); govde.push(l);
-  }
+
   cetePencere("🚪", `"${c.ad}" çetesinden ayrıl?`, govde, [
     ["Ayrıl", async () => {
       await CeteCekirdek.ayril(ceteC(), CeteEkran.uid, c.id, { mesajlarimiSil: !!(kutu && kutu.checked) });
@@ -238,11 +246,10 @@ function ayrilPenceresi() {
     }], ["Vazgeç", null, true]]);
 }
 
-function cikarPenceresi(uid) {
+function cikarPenceresi(uid, ban = true) {
   const c = CeteEkran.cete; if (!c) return;
-  cetePencere("✋", `${ceteAd(c, uid)} çıkarılsın mı?`, [ceteEl("p", null, "Çıkarılan kişi bu çeteye bir daha katılamaz. Yazdığı eski mesajlar 30 gün içinde kendiliğinden silinir.")], [
-    ["Çıkar", async () => { await CeteCekirdek.cikar(ceteC(), c.id, uid); bildir(`✋ ${ceteAd(c, uid)} çeteden çıkarıldı`); await ceteYenile(); }],
-    ["Vazgeç", null, true]]);
+  cetePencere("✋", ceteAd(c, uid) + (ban ? " banlansın mı?" : " atılsın mı?"), [ceteEl("p", null, ban ? "Bu çeteye ban kaldırılana kadar tekrar katılamaz." : "Davet koduyla yeniden katılabilir.")], [
+    [ban ? "Banla" : "At", async () => { await CeteCekirdek[ban ? "cikar" : "at"](ceteC(), c.id, uid); await ceteYenile(); }], ["Vazgeç", null, true]]);
 }
 
 // Davet bağlantısıyla (?katil=KOD) gelindiyse: hesap varsa katılma penceresi, yoksa önce hesap açması söylenir.
@@ -266,18 +273,20 @@ if (CeteEkran.kod) { const t = setInterval(() => { if (!CeteEkran.kod) clearInte
 
 // ---------- Gerçek sohbet ----------
 function sohbetBaslik(gercek) {
+  sohbetDilUyari();
   const t = document.getElementById("tam-sohbet");
   t.querySelector(".ust .hap").textContent = gercek ? `💬 ${CeteEkran.cete.ad}` : "💬 Patiler Çetesi";
   t.querySelector(".sohbet-kural").innerHTML = gercek
-    ? `<b class="demo-rozet">👥 Gerçek</b> Mesajın çete üyelerine gider. Kural: İngilizce yaz, nazik ol. Mesajlar 30 gün saklanır; kendininkini ✕ ile silebilirsin.`
+    ? `<b class="demo-rozet">👥 Gerçek</b> Mesajın çete üyelerine gider. Kural: İngilizce yaz, nazik ol. Mesajlar 30 gün saklanır; mesajları yanıtlayabilir veya bildirebilirsin.`
     : `<b class="demo-rozet">🧪 Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı 🚩 ile gizle.`;
 }
 
 function gercekSohbetAc() {
   const c = CeteEkran.cete; if (!c) return;
-  ceteSohbetKapat();
+  ceteSohbetKapat(); ceteYanitSec(null);
   const s = { ceteId: c.id, kapat: [], yuklendi: false };
   CeteEkran.sohbet = s; CeteEkran.mesajlar = []; CeteEkran.sonId = null;
+  s.dugumler = new Map();
   sohbetEkran.sayi = 0; sohbetEkran.hata = null; sohbetEkran.yaziyor = null;
   sohbetBaslik(true);
   document.getElementById("sohbet-girdi").disabled = document.getElementById("sohbet-gonder").disabled = false;
@@ -293,9 +302,8 @@ function gercekSohbetAc() {
     s.yuklendi = true; CeteEkran.mesajlar = liste; gercekSohbetCiz();
   }, e => gercekSohbetHata(s, e)));
   // Çete belgesi de dinlenir: yeni üye adı, kuruculuk değişimi, çıkarılma.
-  s.kapat.push(CeteCekirdek.cete(cc, c.id).onSnapshot(snap => {
+  s.kapat.push(CeteCekirdek.ceteDinle(cc, c.id, v => {
     if (CeteEkran.sohbet !== s) return;
-    const v = snap.exists ? snap.data() : null;
     if (!v || !v.uyeler.includes(CeteEkran.uid)) { gercekSohbetHata(s, { code: "permission-denied" }); return; }
     CeteEkran.cete = { id: c.id, ...v };
   }, e => gercekSohbetHata(s, e)));
@@ -307,6 +315,7 @@ function ceteSohbetKapat() {
   CeteEkran.sohbet = null;
   s.kapat.forEach(f => { try { f(); } catch (e) {} });
 }
+Oturumlar.ekle('cete-sohbet', ceteSohbetKapat, undefined, undefined, 'sohbet');
 
 function gercekSohbetHata(s, e) {
   if (CeteEkran.sohbet !== s) return;
@@ -327,22 +336,20 @@ function gercekDurumCiz() {
 }
 
 function gercekMesajEl(m) {
-  const ben = m.uid === CeteEkran.uid;
-  let e;
-  if (ben) {
-    e = sohbetMesajEl("Sen", m.metin, true);
-    if (m.bekliyor) e.classList.add("bekliyor");
-    const sil = ceteEl("button", "bildir mesaj-sil", "✕"); sil.setAttribute("aria-label", "Mesajımı sil");
-    sil.onclick = () => {
-      if (!sil.classList.contains("onay")) { sil.classList.add("onay"); sil.textContent = "Sil?"; setTimeout(() => { sil.classList.remove("onay"); sil.textContent = "✕"; }, 3000); return; }
-      CeteCekirdek.sil(ceteC(), CeteEkran.sohbet ? CeteEkran.sohbet.ceteId : CeteEkran.cete.id, m.id).catch(x => bildir(ceteHataMetni(x)));
-    };
-    e.append(sil);
-  } else {
-    e = ceteEl("div", "mesaj");
-    const k = ceteEl("span", "kim", m.ad); k.style.color = ceteRenk(m.uid);
-    e.append(k, document.createTextNode(m.metin));
+  const ben = m.uid === CeteEkran.uid, e = ceteEl("div", "mesaj" + (ben ? " ben" : ""));
+  const ad = ceteEl("span", "kim", ben ? "Sen" : m.ad); if (!ben) ad.style.color = ceteRenk(m.uid); e.append(ad);
+  ad.setAttribute('role','button');ad.tabIndex=0;ad.onclick=()=>profilAc(m.uid);ad.onkeydown=e=>{if(e.key==='Enter')profilAc(m.uid);};
+  if (m.yanitId) { const eski = CeteEkran.mesajlar.find(x => x.id === m.yanitId); e.append(ceteEl("blockquote", "mesaj-alinti", eski ? eski.ad + ": " + eski.metin : "Önceki mesaj artık görüntülenemiyor")); }
+  const yazi = ceteEl("span");
+  const adlar = Object.values(CeteEkran.cete.adlar || {});
+  const parcalar = m.metin.split(/(@[^@\n]+)/g);
+  for (const p of parcalar) {
+    const ad = p[0] === '@' && adlar.find(n => p.slice(1).startsWith(n) && (!p[n.length+1] || /[\s.,!?]/.test(p[n.length+1])));
+    if (ad) { yazi.append(ceteEl("mark", null, '@'+ad), document.createTextNode(p.slice(ad.length+1))); } else yazi.append(document.createTextNode(p));
   }
+  e.append(yazi,ceteEl('time','mesaj-saati',m.bekliyor?'Gönderiliyor…':Sohbet.saat(m.zaman))); if (m.bekliyor) e.classList.add("bekliyor");
+  const sec = dugmeEl("⋯", () => ceteMesajSecenek(m), "bildir mesaj-secenek"); sec.setAttribute("aria-label", "Mesaj seçenekleri"); e.append(sec);
+  ceteMesajHareketi(e, m);
   return e;
 }
 
@@ -351,13 +358,21 @@ function gercekSohbetCiz() {
   const altta = Sohbet.alttaMi(liste.scrollTop, liste.scrollHeight, liste.clientHeight), ust = liste.scrollTop;
   const son = m[m.length - 1], sonId = son ? son.id : null, yeniVar = sonId !== CeteEkran.sonId && !!son;
   const benim = yeniVar && son.uid === CeteEkran.uid;
-  liste.replaceChildren(...m.map(gercekMesajEl));
+  const dugumler = CeteEkran.sohbet.dugumler, kalan = new Set(m.map(x => x.id));
+  for (const [id, kayit] of dugumler) if (!kalan.has(id)) { kayit.el.remove(); dugumler.delete(id); }
+  m.forEach((mesaj, i) => {
+    const imza = JSON.stringify(mesaj), eski = dugumler.get(mesaj.id);
+    const el = eski && eski.imza === imza ? eski.el : gercekMesajEl(mesaj);
+    if (eski && eski.el !== el) eski.el.replaceWith(el);
+    if (liste.children[i] !== el) liste.insertBefore(el, liste.children[i] || null);
+    dugumler.set(mesaj.id, { el, imza });
+  });
   const karar = Sohbet.kaydirmaKarari({ altta, benim: benim || !sohbetEkran.sayi, yeniVar });
-  if (karar === "in") { liste.scrollTop = liste.scrollHeight; document.getElementById("sohbet-yeni").hidden = true; }
-  else { liste.scrollTop = ust; if (karar === "goster") document.getElementById("sohbet-yeni").hidden = false; }
+  if (karar === "in") sohbetAltaIn();
+  else { liste.scrollTop = ust; sohbetAltDugmeCiz(karar === "goster"); }
   if (yeniVar && !benim && sohbetEkran.sayi) Ses.pop();
-  CeteEkran.sonId = sonId; sohbetEkran.sayi = m.length || 1;
-  gercekDurumCiz();
+  CeteEkran.sonId = sonId; sohbetEkran.sayi = m.length;
+  gercekDurumCiz(); ceteOkunduIsaretle();
 }
 
 function oneriCiz() {
@@ -373,12 +388,15 @@ async function gercekGonder() {
   // Kural iki mesaj arasında 2 sn ister; burada önceden söylenir (yoksa sunucu reddeder, mesaj kaybolmuş gibi görünür).
   if (Date.now() - CeteEkran.sonGonderim < CETE.araSaniye * 1000) { bildir("⏳ Biraz yavaş: iki mesaj arasında 2 saniye bekle."); return; }
   CeteEkran.sonGonderim = Date.now();
-  const uyari = CeteKural.ingilizceUyari(metin), o = ogrenilenleriIsaretle(metin);
+  const uyari = CeteKural.ingilizceUyari(metin), o = ogrenilenleriIsaretle(metin), yanitId = CeteEkran.yanitId;
   g.value = ""; sohbetEkran.hata = null; Ses.pop();
-  if (uyari) bildir("🇬🇧 Türkçe harf gördüm. Çete sohbeti İngilizce; mesajın yine de gitti.");
+  if (uyari) sohbetDilUyari("🇬🇧 Türkçe harfler gördüm. İngilizce pratik yapmayı unutma.");
   try {
-    await CeteCekirdek.gonder(ceteC(), CeteEkran.uid, s.ceteId, ceteAd(c, CeteEkran.uid), metin);
+    await CeteCekirdek.gonder(ceteC(), CeteEkran.uid, s.ceteId, ceteAd(c, CeteEkran.uid), metin, yanitId);
+    if(CeteEkran.sohbet===s && CeteEkran.yanitId===yanitId) ceteYanitSec(null);
+    if(CeteEkran.sohbet===s && uyari)sohbetDilUyari("🇬🇧 Mesajın gönderildi. Sonraki mesajını İngilizce yazmayı dene.");
   } catch (e) {
+    if (CeteEkran.sohbet !== s) return; // Eski oturumun hatası yeni çetenin taslağına yazılmasın.
     if (!g.value) g.value = metin; // yazılan kaybolmasın
     sohbetEkran.hata = CeteKural.hataTuru(e) === "izin"
       ? "⚠️ Mesaj gönderilemedi: çok hızlı yazmış olabilirsin ya da artık bu çetede değilsin."
@@ -393,5 +411,5 @@ async function gercekGonder() {
 }
 
 // Sosyal ekrana her girişte çete bilgisi tazelenir (yeni üye, çıkarılma); canlı dinleme yalnız sohbette.
-document.querySelectorAll('nav button[data-sekme="arkadaslar"], [data-sosyal]').forEach(b => b.addEventListener("click", () => { if (Bulut.kullanici) ceteYenile(); }));
+document.querySelectorAll('nav button[data-sekme="arkadaslar"]').forEach(b => b.addEventListener("click", () => { if (Bulut.kullanici) ceteYenile(); }));
 document.addEventListener("visibilitychange", () => { if (!document.hidden && Bulut.kullanici && !CeteEkran.sohbet) ceteYenile(); });

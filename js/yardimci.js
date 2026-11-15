@@ -17,6 +17,18 @@ function tohumlu(tohum) {
 const anlamlar = k => k[1].toLocaleLowerCase("tr").split(/[;,]/).map(s => s.replace(/\(.*?\)/g, "").trim()).filter(Boolean);
 const anlamCakisir = (a, b) => { const x = anlamlar(b); return anlamlar(a).some(s => x.includes(s)); };
 
+// Tür/seviye yakınlığı tercih edilir; anlamı çakışan ve birbirini yineleyen şıklar elenir.
+function yanlisSecenekler(k, deste, rastgele = Math.random) {
+  const aday = karistir(deste.filter(x => x[0] !== k[0] && !anlamCakisir(x, k)), rastgele);
+  const puan = x => (x[7] === k[7] ? 4 : 0) + (x[5] === k[5] ? 2 : 0) + (typeof konuOf === "function" && konuOf(x[0]) === konuOf(k[0]) ? 1 : 0);
+  aday.sort((a, b) => puan(b) - puan(a));
+  const secilen = [];
+  for (const x of aday) if (!secilen.some(y => y[0] === x[0] || anlamCakisir(x, y))) {
+    secilen.push(x); if (secilen.length === 3) break;
+  }
+  return secilen;
+}
+
 // Arama için sadeleştirme: Türkçe büyük/küçük harf (İ/ı), Türkçe ve aksanlı harfler, emoji ve noktalama
 // fark etmesin. "Doğa", "DOGA", "doga" ve "🌳 Doğa" aynı sonuca iner.
 const TR_SADE = { ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" };
@@ -36,4 +48,10 @@ function kontrast(a, b) {
   return (x + .05) / (y + .05);
 }
 
-if (typeof module === "object" && module.exports) module.exports = { karistir, tohumlu, anlamlar, anlamCakisir, aramaNormal, sinirleyici, kontrast };
+// Ekranlar arası tek parmak hareketi: +1 sonraki, -1 önceki; dikey/kısa/yavaş hareket geçiş değildir.
+function kaydirmaYonu(dx, dy, ms) {
+  if (ms < 0 || ms > 800 || Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.5) return 0;
+  return dx < 0 ? 1 : -1;
+}
+
+if (typeof module === "object" && module.exports) module.exports = { karistir, tohumlu, anlamlar, anlamCakisir, yanlisSecenekler, aramaNormal, sinirleyici, kontrast, kaydirmaYonu };

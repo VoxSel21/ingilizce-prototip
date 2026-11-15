@@ -1,10 +1,18 @@
 // ================= ORTAK İLERLEME KURALLARI =================
 // Saf mantık (Node testleri de yükler). Seri, takvim ve rozetler aynı kuralı kullanır.
 // Nitelikli çalışma günü: o gün en az bir öğrenme sorusu cevaplandı (kart, phrasal, harf, Kelime Kur, cümle)
-// ya da kelimeli bir oyun bitirildi (Pati Çabukluğu, balık avı, çete savaşı). Sohbete yazmak gün saymaz.
+// ya da kelimeli bir oyun bitirildi (Pati Çabukluğu, balık avı). Çete savaşı ve sohbet gün saymaz.
 // Seri koruyucu: dün çalışılmadıysa ve önceki gün çalışıldıysa bir koruyucu harcanır, dün "korunan" olur.
 // Korunan gün seriyi kesmez ama çalışılmış gün sayılmaz (seri uzunluğuna eklenmez).
 const Ilerleme = {
+  kelimeIsaretle(d, id) {
+    if (!d.calisilanlar) d.calisilanlar = {};
+    d.calisilanlar[id] = 1;
+  },
+  calisilanSayisi(d) {
+    // Kullanıcının onayı: eski kart ilerlemesi başlangıçtır; eksik oyun geçmişi tahmin edilmez.
+    return new Set([...Object.keys(d.kartlar || {}), ...Object.keys(d.calisilanlar || {})]).size;
+  },
   seri(gunler, korunan, bugun) {
     let s = 0, g = bugun;
     if (!gunler[g]) g--;

@@ -7,18 +7,22 @@ const KURK_VARSAYILAN = KURK_TABAN;
 const hexGecerli = h => typeof h === "string" && /^#[0-9a-f]{6}$/i.test(h);
 const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
 const rgbHex = (r, g, b) => "#" + [r, g, b].map(x => Math.round(Math.min(255, Math.max(0, x))).toString(16).padStart(2, "0")).join("").toUpperCase();
-function rgbHsl(r, g, b) {
+function rgbHsl(r, g, b, out = []) {
+  if (!out || typeof out !== 'object') out = []; // RGBA girdisindeki dördüncü sayı eskisi gibi yok sayılır.
   r /= 255; g /= 255; b /= 255;
   const en = Math.max(r, g, b), az = Math.min(r, g, b), l = (en + az) / 2, f = en - az;
-  if (!f) return [0, 0, l];
+  if (!f) { out[0] = 0; out[1] = 0; out[2] = l; return out; }
   const s = f / (1 - Math.abs(2 * l - 1));
   const h = en === r ? ((g - b) / f + 6) % 6 : en === g ? (b - r) / f + 2 : (r - g) / f + 4;
-  return [h * 60, s, l];
+  out[0] = h * 60; out[1] = s; out[2] = l; return out;
 }
-function hslRgb(h, s, l) {
+function hslRgb(h, s, l, out = []) {
+  if (!out || typeof out !== 'object') out = [];
   const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
-  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
-  return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; } else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; } else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+  out[0] = (r + m) * 255; out[1] = (g + m) * 255; out[2] = (b + m) * 255; return out;
 }
 const sinirla = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 // Bir pikselin ne kadar "kürk" olduğu (0–1). Kürk ve çizgileri turuncu tonda, doygun ve aydınlık;
@@ -36,13 +40,14 @@ function kurkAgirlik(r, g, b) {
 function kurkBoya(px, hex) {
   const [th, ts, tl] = rgbHsl(...hexRgb(hex)), [, bs, bl] = rgbHsl(...hexRgb(KURK_TABAN));
   const koyuluk = tl < 0.3 ? 0.5 : 1; // çok koyu renkte çizgiler simsiyaha gömülmesin
+  const hsl = new Float64Array(3), rgb = new Float64Array(3);
   for (let i = 0; i < px.length; i += 4) {
     if (!px[i + 3]) continue;
     const r = px[i], g = px[i + 1], b = px[i + 2], w = kurkAgirlik(r, g, b);
     if (!w) continue;
-    const [, ps, pl] = rgbHsl(r, g, b);
-    const [nr, ng, nb] = hslRgb(th, sinirla(ts * ps / bs), sinirla(tl + (pl - bl) * koyuluk, 0.03, 0.98));
-    px[i] = r + (nr - r) * w; px[i + 1] = g + (ng - g) * w; px[i + 2] = b + (nb - b) * w;
+    rgbHsl(r, g, b, hsl);
+    hslRgb(th, sinirla(ts * hsl[1] / bs), sinirla(tl + (hsl[2] - bl) * koyuluk, 0.03, 0.98), rgb);
+    px[i] = r + (rgb[0] - r) * w; px[i + 1] = g + (rgb[1] - g) * w; px[i + 2] = b + (rgb[2] - b) * w;
   }
   return px;
 }
@@ -58,13 +63,13 @@ if (typeof module === "object" && module.exports) module.exports = { KURK_TABAN,
 const YUZLER = ["acik", "kirp", "mutlu"];
 const KediCizici = {
   onbellek: new Map(),
-  gorunum: (ek = {}) => ({ hal: kediHali(), renk: hexGecerli(d.kurkRenk) ? d.kurkRenk : KURK_VARSAYILAN, giyili: { ...d.giyili }, ...ek }),
+  gorunum: (ek = {}) => ({ hal: kediHali(), stil:d.kediStil||'klasik', renk: hexGecerli(d.kurkRenk) ? d.kurkRenk : KURK_VARSAYILAN, giyili: { ...d.giyili }, ...ek }),
   html(g) {
     let h = `<div class="kedi-govde" data-hareket="bekle" role="img" aria-label="${temizAd(d.kediAd)}">`;
     for (const y of YUZLER) h += `<canvas class="kedi-kare" data-yuz="${y}" width="400" height="400" aria-hidden="true"></canvas>`;
     for (const yer of ["boyun", "goz", "sapka"]) {
       const e = ESYALAR.find(x => x.id === g.giyili[yer]); if (!e) continue;
-      h += `<img class="giy" src="resim/giy_${e.id}.png" alt="" aria-hidden="true">`;
+      h += `<img class="giy" src="resim/giy_${e.id}.${esyaUzanti(e.id)}" alt="" aria-hidden="true">`;
     }
     return h + "</div>";
   },
@@ -91,7 +96,7 @@ const KediCizici = {
     }
   },
   kare(g, yuz, [kedi, ...maskeler]) {
-    const anahtar = [g.hal, g.renk.toUpperCase(), yuz, ...Object.values(g.giyili).filter(id => SILME_VAR.includes(id)).sort()].join("|");
+    const anahtar = [g.stil||'klasik', g.hal, g.renk.toUpperCase(), yuz, ...Object.values(g.giyili).filter(id => SILME_VAR.includes(id)).sort()].join("|");
     if (KediCizici.onbellek.has(anahtar)) return KediCizici.onbellek.get(anahtar);
     const t = document.createElement("canvas"); t.width = t.height = 400;
     const c = t.getContext("2d");

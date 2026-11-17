@@ -36,9 +36,8 @@ function sohbetMesajEl(kim, metin, ben, n, zaman) {
   const el = document.createElement("div"); el.className = "mesaj" + (ben ? " ben" : "");
   if (!ben) {
     const k = document.createElement("span"); k.className = "kim"; k.textContent = kim;
-    k.style.color = (CETE_UYELER.find(u => u[0] === kim) || [, "#9F8BEA"])[1];
     const o = document.createElement("span"); o.className = "ornek-etiket"; o.textContent = "örnek"; k.append(o);
-    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bu mesajı gizle"); b.textContent = "🚩";
+    const b = document.createElement("button"); b.className = "bildir"; b.dataset.bildir = n; b.setAttribute("aria-label", "Bu mesajı gizle"); b.textContent = "⚑";
     el.append(k, b, document.createTextNode(metin));
     if (zaman) { const saat=document.createElement('time');saat.className='mesaj-saati';saat.textContent=Sohbet.saat(zaman);el.append(saat); }
   return el;

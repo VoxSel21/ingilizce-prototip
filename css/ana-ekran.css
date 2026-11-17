@@ -1,0 +1,147 @@
+/* =====================================================================
+   Ana ekran · "C · Sakin ve şık" kural seti (2026-11-16)
+   Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
+   Yalnız ana ekranı ve ana ekran açıkken alt menüyü giydirir; diğer
+   ekranlar eski görünümde kalır (ekran ekran geçiş).
+   En son yüklenir: eski kuralları (stil.css, menuler.css, pati-dunya.css)
+   ezmek için seçiciler "html #ekran-ana#ekran-ana" ile başlar (çift kimlik =
+   daha güçlü seçici); alt menüde aynı iş için ":not(#yok)" kullanılır.
+   Eski dosyalardaki ana ekran kuralları, tüm ekranlar geçince silinecek.
+   ===================================================================== */
+
+/* ---------- Zemin: fotoğraflı sahne yerine düz kırık beyaz ---------- */
+:root:not(#yok):has(#ekran-ana.aktif) #uygulama { background: var(--renk-zemin); }
+:root:not(#yok):has(#ekran-ana.aktif) #uygulama > .sahne { display: none; }
+/* Gizli telefon bildiriminin gölgesi ekranın tepesine gri şerit olarak taşıyordu (eski kusur). */
+:root:not(#yok):has(#ekran-ana.aktif) .telefon-bildirim:not(.acik) { box-shadow: none; }
+
+html #ekran-ana#ekran-ana.aktif {
+  display: flex; flex-direction: column; gap: 0;
+  padding: calc(var(--bosluk-2) + var(--ust-bosluk)) 0 calc(112px + var(--alt-bosluk));
+  background: var(--renk-zemin); color: var(--renk-metin);
+  font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+}
+html #ekran-ana#ekran-ana :is(h1, h2, b, small, button, input, summary, .ana-hap) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+html #ekran-ana#ekran-ana :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+
+/* ---------- 1. Üst satır: tarih + selam, sağda altın ve araçlar ---------- */
+html #ekran-ana#ekran-ana .ana-ust { display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0; padding: var(--bosluk-2) var(--kenar-icerik) 0; }
+html #ekran-ana#ekran-ana .ana-selam { min-width: 0; }
+html #ekran-ana#ekran-ana .ana-selam span { display: block; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-selam span::first-letter { text-transform: uppercase; }
+html #ekran-ana#ekran-ana .ana-selam b { display: block; margin-top: 2px; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #ekran-ana#ekran-ana .ana-araclar { display: flex; align-items: center; gap: var(--bosluk-1); flex: none; }
+html #ekran-ana#ekran-ana .ana-ikon-dugme { width: var(--dokunma-min); height: var(--dokunma-min); display: grid; place-items: center; border-radius: var(--kose-hap); color: var(--renk-metin); background: transparent; font-size: 20px; }
+html #ekran-ana#ekran-ana .ana-ikon-dugme .pati-ikon { width: 22px; height: 22px; }
+
+/* Hap: kısa durum bilgisi (12 · 600, adaçayı yeşili) */
+html #ekran-ana#ekran-ana .ana-hap { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 6px 12px; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; white-space: nowrap; }
+html #ekran-ana#ekran-ana .ana-hap .pati-ikon { width: 16px; height: 16px; }
+
+/* ---------- 2. Pati'nin penceresi (kemer) ---------- */
+/* Tepe yarıçapı genişliğin yarısı: kap "container" olur, 50cqw = pencere genişliğinin yarısı. */
+html #ekran-ana#ekran-ana .ana-pencere-kap { container-type: inline-size; margin: var(--bosluk-4) var(--kenar-genis) 0; }
+html #ekran-ana#ekran-ana .ana-pencere {
+  position: relative; overflow: hidden;
+  /* 360 tavan; kısa telefonda düğme ve menü ilk bakışta görünsün diye kısalır */
+  height: clamp(220px, calc(100dvh - 380px), var(--pencere-buyuk));
+  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
+  border: 2px solid var(--renk-pencere-cerceve);
+  border-radius: 50cqw 50cqw var(--kose-xl) var(--kose-xl);
+}
+html #ekran-ana#ekran-ana .ana-pencere::after { content: ""; position: absolute; z-index: 0; left: 0; right: 0; bottom: 0; height: 25%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 40px; border-top-right-radius: 50% 40px; }
+html #ekran-ana#ekran-ana .ana-hap.cam { position: absolute; z-index: 2; top: 12%; left: 50%; transform: translateX(-50%); background: var(--renk-hap-cam); }
+html #ekran-ana#ekran-ana #seri-hap::after { content: " günlük seri"; }
+
+/* Pati: tepeye basar, ortada durur. Asıl kedi tasarımcıdan gelene kadar kesik çizgili yer tutucu;
+   eski kedi çizimi (kedi.js'in koyduğu) gizli kalır, düğme kedi sekmesine götürmeye devam eder. */
+html #ekran-ana#ekran-ana .ana-kedi {
+  position: absolute; z-index: 1; inset: auto; left: 50%; bottom: 9%; transform: translateX(-50%);
+  width: min(46%, 170px); height: auto; aspect-ratio: 200 / 220; padding: 0;
+  border-radius: var(--kose-md); background: none; box-shadow: none; animation: none;
+}
+html #ekran-ana#ekran-ana .ana-kedi > * { display: none !important; }
+html #ekran-ana#ekran-ana .ana-kedi::before {
+  content: ""; position: absolute; inset: 0; background: var(--renk-pati-yer);
+  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='4' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
+}
+html #ekran-ana#ekran-ana .ana-kedi:focus-visible { outline-offset: 4px; }
+
+/* ---------- 3. Ders satırı + ilerleme halkası ---------- */
+html #ekran-ana#ekran-ana .ana-ders-satir { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--bosluk-3); margin: var(--bosluk-5) var(--kenar-icerik) 0; }
+html #ekran-ana#ekran-ana .ana-ders-metin { min-width: 0; }
+html #ekran-ana#ekran-ana .ana-ders-metin small { display: block; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-ders-metin h1 { margin-top: var(--bosluk-1); font-size: var(--yazi-2xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); overflow-wrap: anywhere; }
+html #ekran-ana#ekran-ana .ana-ders-metin p { margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+/* Halka metin renginde (limon değil); iz adaçayı. JS --yuzde değişkenini verir. */
+html #ekran-ana#ekran-ana .ana-halka { --yuzde: 0; flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--renk-metin) calc(var(--yuzde) * 1%), var(--renk-yuzey-adacayi) 0); }
+html #ekran-ana#ekran-ana .ana-halka span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--renk-zemin); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); }
+
+/* ---------- 4. Tek ana düğme ---------- */
+/* Ok dairesi CSS'te: JS düğmenin yazısını değiştirince silinmesin. */
+html #ekran-ana#ekran-ana .dugme-ana {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
+  min-height: var(--dugme-boy); margin: var(--bosluk-4) var(--kenar-icerik) 0; padding: 8px var(--bosluk-5) 8px 22px;
+  border-radius: var(--kose-md); background: var(--renk-dugme); color: var(--renk-dugme-metin); box-shadow: none;
+  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left;
+  transition: transform var(--gecis), opacity var(--gecis);
+}
+html #ekran-ana#ekran-ana .dugme-ana::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: var(--kose-hap); display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
+html #ekran-ana#ekran-ana .dugme-ana:active { transform: scale(.98); }
+html #ekran-ana#ekran-ana .dugme-ana:disabled { opacity: .35; cursor: default; }
+
+/* ---------- 5. Bilgi satırı ---------- */
+html #ekran-ana#ekran-ana .ana-bilgi { display: flex; justify-content: space-between; align-items: baseline; gap: var(--bosluk-3); margin: var(--bosluk-3) var(--kenar-icerik) 0; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-bilgi b { color: var(--renk-metin); font-weight: var(--kalin-orta); white-space: nowrap; }
+
+/* ---------- Kaydırınca: konu, çalışma türü, panellere bağlantılar ---------- */
+html #ekran-ana#ekran-ana .ana-alt { display: grid; gap: var(--bosluk-3); margin-top: var(--bosluk-8); padding: 0 var(--kenar-icerik); }
+html #ekran-ana#ekran-ana .ana-alt h2 { margin: var(--bosluk-5) 0 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #ekran-ana#ekran-ana .ana-alt h2:first-child { margin-top: 0; }
+
+
+html #ekran-ana#ekran-ana .konu-ara { position: relative; margin: 0; }
+html #ekran-ana#ekran-ana .konu-ara input { width: 100%; min-height: var(--dokunma-min); padding: 0 var(--dokunma-min) 0 var(--bosluk-4); border: 1px solid var(--renk-cizgi); border-radius: var(--kose-sm); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-normal); box-shadow: none; }
+html #ekran-ana#ekran-ana .konu-ara input::placeholder { color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .konu-ara button { position: absolute; top: 0; right: 0; width: var(--dokunma-min); height: var(--dokunma-min); color: var(--renk-metin-ikincil); background: none; }
+html #ekran-ana#ekran-ana .konu-sec { display: flex; gap: var(--bosluk-2); overflow-x: auto; padding: 0; margin: 0 calc(-1 * var(--kenar-icerik)); padding-inline: var(--kenar-icerik); scrollbar-width: none; }
+html #ekran-ana#ekran-ana .konu-sec::-webkit-scrollbar { display: none; }
+html #ekran-ana#ekran-ana .konu-sec button { flex: none; min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); white-space: nowrap; }
+html #ekran-ana#ekran-ana .konu-sec button.aktif { background: var(--renk-dugme); color: var(--renk-dugme-metin); }
+html #ekran-ana#ekran-ana .konu-yok { font-size: var(--yazi-sm); color: var(--renk-metin-ikincil); }
+
+html #ekran-ana#ekran-ana .menu-konu { display: grid; gap: var(--bosluk-3); margin: 0; }
+/* Satır düğmesi (kart gibi: beyaz, köşe 22, çerçeve ve gölge yok) */
+html #ekran-ana#ekran-ana .ana-satir { display: flex; align-items: center; justify-content: space-between; gap: var(--bosluk-3); width: 100%; min-height: 64px; padding: var(--bosluk-3) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); text-align: left; }
+html #ekran-ana#ekran-ana .ana-satir b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #ekran-ana#ekran-ana .ana-satir small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-satir .ok { font-size: 22px; color: var(--renk-metin-ikincil); }
+/* js/menu-paneller.js'in ana ekrana eklediği sayaç (bilgi satırı) ve iki panel bağlantısı */
+html #ekran-ana#ekran-ana .menu-count { display: flex; justify-content: space-between; align-items: baseline; gap: var(--bosluk-3); margin: var(--bosluk-5) var(--kenar-icerik) 0; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .menu-count b { font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin); }
+html #ekran-ana#ekran-ana .menu-links { display: grid; grid-template-columns: 1fr; gap: var(--bosluk-3); margin: var(--bosluk-3) var(--kenar-icerik) 0; }
+html #ekran-ana#ekran-ana .menu-links .menu-link { display: flex; align-items: center; justify-content: flex-start; gap: var(--bosluk-3); height: auto; min-height: var(--dugme-boy); padding: 0 var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #ekran-ana#ekran-ana .menu-links .pati-ikon { width: 20px; height: 20px; color: var(--renk-metin-adacayi); }
+
+/* ---------- 6. Yüzen alt menü (ana ekran, Takvim ya da Kedi açıkken; geçen ekranlar listeye eklenir) ---------- */
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav {
+  left: calc(var(--kenar-genis) + var(--sol-bosluk)); right: calc(var(--kenar-genis) + var(--sag-bosluk)); bottom: calc(18px + var(--alt-bosluk));
+  display: flex; justify-content: space-around; padding: var(--bosluk-3) 6px;
+  border: 0; border-radius: var(--kose-lg); background: var(--renk-yuzey); box-shadow: var(--golge-yuzen);
+}
+/* Yalnız ikon: yazı görünmez ama ekran okuyucu için düğmenin adı olarak kalır. */
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button { flex: 1; display: grid; place-items: center; gap: 0; min-height: var(--dokunma-min); padding: 0; border-radius: var(--kose-sm); background: transparent; color: var(--renk-ikon-pasif); font-size: 0; line-height: 0; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button span { width: var(--dokunma-min); height: 36px; margin: 0; display: grid; place-items: center; border-radius: var(--kose-sm); font-size: 22px; filter: none; opacity: 1; transform: none; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button .pati-ikon { width: 22px; height: 22px; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif { color: var(--renk-vurgu); background: transparent; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif span { background: var(--renk-dugme); }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif::after { display: none; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button:focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 0; }
+:root[data-tema="koyu"]:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif span { background: var(--renk-yuzey-adacayi); }
+
+/* ---------- Yüksek kontrast: gölge/dolgu yerine siyah çerçeve ---------- */
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana :is(.ana-hap, .ana-satir, .menu-link, .konu-sec button) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .konu-ara input { border: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-pencere::after { border-top: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-halka span { box-shadow: 0 0 0 1px #000; }

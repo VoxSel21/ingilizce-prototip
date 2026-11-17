@@ -1,0 +1,243 @@
+/* =====================================================================
+   Ders ekranı · "C · Sakin ve şık" kural seti (2026-11-16)
+   Kelime çalışma turu (#tam-kartlar): tanışma kartı, sorular, cevap paneli,
+   harf dizme, sesli söyleme, beceri soruları ve tur sonu penceresi.
+   Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
+   En son yüklenir. Eski kuralları (stil.css, menuler.css, pati-dunya.css)
+   ezmek için seçiciler "html #tam-kartlar#tam-kartlar" ile başlar (çift kimlik =
+   daha güçlü seçici). pati-dunya.css ana düğmenin rengini !important ile
+   verdiği için yalnız orada !important kullanılır.
+   JS düğme yazılarını textContent ile değiştirir; süsler (ok dairesi,
+   "Doğru/Yanlış" etiketi) bu yüzden ::after/::before ile verilir.
+   Eski dosyalardaki ders ekranı kuralları, tüm ekranlar geçince silinecek.
+   ===================================================================== */
+
+/* ---------- Zemin, yazı, odak ---------- */
+html #tam-kartlar#tam-kartlar {
+  padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(var(--bosluk-4) + var(--alt-bosluk));
+  background: var(--renk-zemin); color: var(--renk-metin);
+  font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+}
+html #tam-kartlar#tam-kartlar :is(h2, h3, b, small, p, button, input, i, span, div) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+html #tam-kartlar#tam-kartlar :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+
+/* ---------- Üst satır: kapat, ilerleme çubuğu, sayaç ---------- */
+html #tam-kartlar#tam-kartlar .ilerleme { gap: var(--bosluk-3); margin: 0; min-height: 52px; }
+html #tam-kartlar#tam-kartlar .ilerleme .kapat { flex: 0 0 var(--dokunma-min); width: var(--dokunma-min); height: var(--dokunma-min); min-height: 0; margin-left: calc(-1 * var(--bosluk-2)); display: grid; place-items: center; border-radius: var(--kose-hap); background: transparent; color: var(--renk-metin); font-size: 20px; }
+html #tam-kartlar#tam-kartlar .ilerleme .kapat .pati-ikon { width: 22px; height: 22px; }
+/* Çubuk metin renginde (limon değil), iz adaçayı: ana ekrandaki halkayla aynı dil. */
+html #tam-kartlar#tam-kartlar .ilerleme .cubuk { height: 6px; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); }
+html #tam-kartlar#tam-kartlar .ilerleme .cubuk i { background: var(--renk-metin); border-radius: var(--kose-hap); }
+html #tam-kartlar#tam-kartlar #k-sayac { flex: none; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); white-space: nowrap; }
+
+/* Günlük hedef satırı (ana ekrandaki bilgi satırı gibi: ikincil, sayı kalın) */
+html #tam-kartlar#tam-kartlar .hedef-serit { margin: 0 0 var(--bosluk-3); padding: 0; font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .hedef-serit b { font-weight: var(--kalin-kalin); color: var(--renk-metin); }
+
+/* ---------- Pati'nin penceresi (orta boy: 200) ---------- */
+/* Tepe yarıçapı genişliğin yarısı (kap "container", 50cqw). Kısa telefonda içerik sığsın diye kısalır. */
+html #tam-kartlar#tam-kartlar .ders-pencere-kap { flex: none; container-type: inline-size; margin: 0 0 var(--bosluk-3); }
+html #tam-kartlar#tam-kartlar .ders-pencere {
+  position: relative; overflow: hidden;
+  height: clamp(104px, calc(100dvh - 612px), var(--pencere-orta));
+  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
+  border: 2px solid var(--renk-pencere-cerceve);
+  border-radius: 50cqw 50cqw var(--kose-xl) var(--kose-xl);
+}
+/* Tanışma kartı uzun (resim, anlam, örnek, söyle): "Tanıştık" düğmesi ilk bakışta görünsün diye pencere küçük boya (120) iner. */
+html #tam-kartlar#tam-kartlar:has(#k-alan > .tanis) .ders-pencere { height: var(--pencere-kucuk); }
+html #tam-kartlar#tam-kartlar .ders-pencere::after { content: ""; position: absolute; z-index: 0; left: 0; right: 0; bottom: 0; height: 24%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 28px; border-top-right-radius: 50% 28px; }
+/* Pati: tepeye basar, ortada durur. Kesik çizgili yer tutucu (ana ekrandakiyle aynı çizim). */
+html #tam-kartlar#tam-kartlar .ders-kedi {
+  position: absolute; z-index: 1; left: 50%; bottom: 8%; translate: -50% 0;
+  height: 62%; aspect-ratio: 200 / 220; background: var(--renk-pati-yer);
+  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
+}
+/* Pati soruya tepki verir: doğruda sevinip zıplar, yanlışta başını eğer. Pencerede tek hap: kısa tepki sözü
+   (görsel süs; ekran okuyucu aynı bilgiyi cevap panelinden duyar). */
+html #tam-kartlar#tam-kartlar .ders-pencere::before { position: absolute; z-index: 2; top: 14%; left: 50%; translate: -50% 0; padding: 6px 12px; border-radius: var(--kose-hap); background: var(--renk-hap-cam); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; white-space: nowrap; }
+html #tam-kartlar#tam-kartlar:has(#k-gb.acik.dogru) .ders-pencere::before { content: "Aferin!"; color: var(--renk-dogru); }
+html #tam-kartlar#tam-kartlar:has(#k-gb.acik.yanlis) .ders-pencere::before { content: "Olsun, birlikte tekrar ederiz"; color: var(--renk-metin-adacayi); }
+html #tam-kartlar#tam-kartlar:has(#k-gb.acik.dogru) .ders-kedi { animation: ders-kedi-sevin 520ms cubic-bezier(.3,1.5,.5,1); }
+html #tam-kartlar#tam-kartlar:has(#k-gb.acik.yanlis) .ders-kedi { rotate: -6deg; transition: rotate var(--gecis); }
+@keyframes ders-kedi-sevin { 0% { translate: -50% 0; } 40% { translate: -50% -14%; } 100% { translate: -50% 0; } }
+/* Koşu (antrenman) turunda kendi kedisi var: iki kedi olmasın. */
+html #tam-kartlar#tam-kartlar:has(#antrenman:not([hidden])) .ders-pencere-kap { display: none; }
+
+/* ---------- Kart: tanışma ve soru (beyaz, köşe 22, çerçeve/gölge yok) ---------- */
+html #tam-kartlar#tam-kartlar .k-alan { gap: var(--bosluk-3); }
+html #tam-kartlar#tam-kartlar :is(.tanis, .soru-kart) { flex: none; max-height: none; padding: var(--bosluk-5); border: 0; border-radius: var(--kose-lg); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none; animation: none; }
+html #tam-kartlar#tam-kartlar .tanis { align-items: stretch; text-align: left; overflow: visible; }
+
+/* Tanışma kartı */
+html #tam-kartlar#tam-kartlar .durum-baslik { margin: 0 0 var(--bosluk-2); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.4; color: var(--renk-metin-ikincil); text-align: left; }
+html #tam-kartlar#tam-kartlar :is(.tanis .resim, .s-resim) { min-height: 0; margin: 0 0 var(--bosluk-2); font-size: 56px !important; line-height: 1.1; }
+html #tam-kartlar#tam-kartlar :is(.tanis .resim, .s-resim) .kelime-cizim { width: 84px; height: 84px; object-fit: contain; }
+html #tam-kartlar#tam-kartlar .tanis-kelime { justify-content: flex-start; gap: var(--bosluk-1); }
+html #tam-kartlar#tam-kartlar .tanis .kelime { font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .tanis .tur { align-self: flex-start; margin: 2px 0 0; padding: 0; background: none; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); font-style: normal; color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .tanis .anlam { margin-top: var(--bosluk-1); font-size: var(--yazi-xl); font-weight: var(--kalin-orta); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin-adacayi); }
+/* Örnek cümle: kartın içinde sakin adaçayı kutu */
+html #tam-kartlar#tam-kartlar .tanis .ornek { margin-top: var(--bosluk-4); padding: var(--bosluk-3) var(--bosluk-4); border: 0; border-radius: var(--kose-sm); background: var(--renk-zemin); box-shadow: none; font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: var(--satir-rahat); color: var(--renk-metin); text-align: left; }
+html #tam-kartlar#tam-kartlar .tanis .ornek i { margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .tanis .ornek .kucuk-ses { vertical-align: middle; margin: -12px 0; }
+/* Ses düğmeleri: 44'lük dokunma alanı, adaçayı ikon */
+html #tam-kartlar#tam-kartlar .kucuk-ses { min-width: var(--dokunma-min); min-height: var(--dokunma-min); display: inline-grid; place-items: center; padding: 0; border-radius: var(--kose-hap); background: transparent; color: var(--renk-metin-adacayi); box-shadow: none; }
+html #tam-kartlar#tam-kartlar .kucuk-ses .pati-ikon { width: 22px; height: 22px; }
+/* "Sen de söyle": ikinci düğme (adaçayı dolgu), küçük boy */
+html #tam-kartlar#tam-kartlar .tanis .soyle-dugme { align-self: flex-start; min-height: var(--dokunma-min); margin-top: var(--bosluk-3); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); box-shadow: none; }
+html #tam-kartlar#tam-kartlar .tanis .soyle-sonuc { margin-top: var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin) !important; }
+html #tam-kartlar#tam-kartlar .mikrofon-not { margin: var(--bosluk-2) 0 0; font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.45; color: var(--renk-metin-ikincil); text-align: left; }
+/* "Hata bildir": yazı düğmesi (altı çizili, adaçayı) */
+html #tam-kartlar#tam-kartlar .tanis .hata-bildir { align-self: flex-start; min-height: var(--dokunma-min); margin-top: var(--bosluk-1); padding: 0; background: none; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-adacayi); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+/* Soru kartı */
+html #tam-kartlar#tam-kartlar .soru-kart { text-align: center; }
+html #tam-kartlar#tam-kartlar .soru-kart .s-yon { font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .soru-kart .s-resim { margin: var(--bosluk-2) 0 0; }
+html #tam-kartlar#tam-kartlar .soru-kart .s-ana { margin-top: var(--bosluk-1); font-size: var(--yazi-3xl) !important; font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .soru-kart .s-ana .kucuk-ses { margin-left: var(--bosluk-1); vertical-align: middle; }
+html #tam-kartlar#tam-kartlar .soru-kart .soluk { margin-top: var(--bosluk-1); font-size: var(--yazi-md) !important; font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .soru-kart .beceri-ozet { margin-top: var(--bosluk-1); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+/* "Dinle" sorusundaki büyük ses düğmesi: ikinci düğme dili (adaçayı daire), gölgesiz */
+html #tam-kartlar#tam-kartlar .dinle-dugme { width: 88px; height: 88px; margin: var(--bosluk-3) auto var(--bosluk-1); border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); box-shadow: none; font-size: 36px; }
+
+/* ---------- Cevap seçenekleri: alt alta satırlar ---------- */
+html #tam-kartlar#tam-kartlar .k-siklar { display: grid; grid-template-columns: 1fr; gap: var(--bosluk-2); margin: 0; }
+html #tam-kartlar#tam-kartlar .k-sik {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
+  min-height: 52px; padding: var(--bosluk-3) var(--bosluk-4);
+  border: 1.5px solid var(--renk-cizgi); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none;
+  font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left; overflow-wrap: anywhere;
+  transition: transform var(--gecis); animation: none;
+}
+html #tam-kartlar#tam-kartlar .k-sik:active { transform: scale(.98); }
+/* Doğru/yanlış yalnız renkle değil yazıyla da söylenir (renk körleri için). JS düğme yazısını
+   textContent ile karşılaştırdığı için etiket ::after'da; düğmenin metnine karışmaz. */
+html #tam-kartlar#tam-kartlar .k-sik.dogru { border-color: var(--renk-dogru); background: var(--renk-dogru-zemin); color: var(--renk-dogru); }
+html #tam-kartlar#tam-kartlar .k-sik.yanlis { border-color: var(--renk-yanlis); background: var(--renk-yanlis-zemin); color: var(--renk-yanlis); }
+html #tam-kartlar#tam-kartlar .k-sik:is(.dogru, .yanlis)::after { flex: none; font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); }
+html #tam-kartlar#tam-kartlar .k-sik.dogru::after { content: "✓ Doğru"; }
+html #tam-kartlar#tam-kartlar .k-sik.yanlis::after { content: "✕ Yanlış"; }
+
+/* ---------- Harf dizme ---------- */
+html #tam-kartlar#tam-kartlar .harf-yuva { gap: var(--bosluk-2); margin: var(--bosluk-2) 0; }
+html #tam-kartlar#tam-kartlar .harf-yuva span { width: 34px; height: 44px; border: 0; border-bottom: 2px solid var(--renk-metin-ikincil); font-size: var(--yazi-2xl); font-weight: var(--kalin-kalin); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .harf-yuva.dogru span { border-color: var(--renk-dogru); color: var(--renk-dogru); }
+html #tam-kartlar#tam-kartlar .harf-yuva.yanlis span { border-color: var(--renk-yanlis); color: var(--renk-yanlis); }
+html #tam-kartlar#tam-kartlar .harf-havuz { gap: var(--bosluk-2); }
+html #tam-kartlar#tam-kartlar .harf-havuz .blok { min-width: var(--dokunma-min); min-height: var(--dokunma-min); padding: 0 var(--bosluk-3); border: 1.5px solid var(--renk-cizgi); border-radius: var(--kose-sm); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none; font-size: var(--yazi-xl); font-weight: var(--kalin-orta); }
+html #tam-kartlar#tam-kartlar .harf-eylem { gap: var(--bosluk-2); margin-top: var(--bosluk-3); }
+html #tam-kartlar#tam-kartlar .harf-eylem button { min-height: var(--dokunma-min); padding: 0 var(--bosluk-5); border: 0; border-radius: var(--kose-md); box-shadow: none; font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #tam-kartlar#tam-kartlar .harf-eylem .temizle { background: var(--renk-yuzey-adacayi); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .harf-eylem .onayla { background: var(--renk-dugme); color: var(--renk-dugme-metin); }
+html #tam-kartlar#tam-kartlar .harf-eylem .onayla:disabled { opacity: .35; }
+
+/* ---------- Sesli söyleme ---------- */
+/* Mikrofon: ikon emoji (rengi değişmez), koyu zeminde kayboluyordu; adaçayı daire. Dinlerken koyu halka. */
+html #tam-kartlar#tam-kartlar .mikrofon { width: 76px; height: 76px; margin: var(--bosluk-2) auto var(--bosluk-1); border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); box-shadow: none; font-size: 30px; }
+html #tam-kartlar#tam-kartlar .mikrofon.dinliyor { animation: none; box-shadow: 0 0 0 4px var(--renk-metin); }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .mikrofon { border: 2px solid #000; }
+html #tam-kartlar#tam-kartlar .konus-durum { font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .konus-gec { min-height: var(--dokunma-min); margin: var(--bosluk-1) auto 0; padding: 0 var(--bosluk-2); background: none; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-adacayi); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+/* ---------- Beceri soruları (yazma, dinleme, telaffuz) ---------- */
+html #tam-kartlar#tam-kartlar .k-alan > .menu-link,
+html #tam-kartlar#tam-kartlar .beceri-yazi .menu-link { min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); box-shadow: none; font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #tam-kartlar#tam-kartlar .beceri-yazi { gap: var(--bosluk-2); }
+html #tam-kartlar#tam-kartlar .beceri-yazi input { min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 1.5px solid var(--renk-cizgi); border-radius: var(--kose-sm); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none; font-size: var(--yazi-md); font-weight: var(--kalin-normal); }
+html #tam-kartlar#tam-kartlar .beceri-yazi input::placeholder { color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .k-alan > :is(.soluk, .konus-durum, .mikrofon-not) { margin: 0; text-align: center; color: var(--renk-metin-ikincil); }
+
+/* ---------- Koşu (antrenman) şeridi: sakin kart ---------- */
+html #tam-kartlar#tam-kartlar .antrenman { margin-bottom: var(--bosluk-3); border-radius: var(--kose-lg); background: var(--renk-yuzey); }
+html #tam-kartlar#tam-kartlar .antrenman b { font-size: var(--yazi-md); font-weight: var(--kalin-orta); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .antrenman-bilgi small { font-size: var(--yazi-xs); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #tam-kartlar#tam-kartlar .antrenman-cubuk { height: 6px; background: var(--renk-yuzey-adacayi); }
+html #tam-kartlar#tam-kartlar .antrenman-cubuk i { background: var(--renk-metin); }
+
+/* ---------- Ana düğme ("Tanıştık", "Devam"): ekrandaki en koyu şey ---------- */
+/* Ok dairesi CSS'te: JS düğmenin yazısını değiştirince silinmesin. */
+html #tam-kartlar#tam-kartlar .buyuk-dugme {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
+  width: 100%; min-height: var(--dugme-boy); padding: 8px var(--bosluk-5) 8px 22px;
+  border: 0; border-radius: var(--kose-md); box-shadow: none;
+  background: var(--renk-dugme) !important; color: var(--renk-dugme-metin) !important;
+  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left;
+  transition: transform var(--gecis), opacity var(--gecis);
+}
+html #tam-kartlar#tam-kartlar .buyuk-dugme::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: var(--kose-hap); display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
+html #tam-kartlar#tam-kartlar .buyuk-dugme:active { transform: scale(.98); }
+html #tam-kartlar#tam-kartlar .k-alt { margin-top: auto; padding-top: var(--bosluk-4); }
+
+/* ---------- Cevap paneli (alttan çıkar; yüzen parça olduğu için gölgeli) ---------- */
+html #tam-kartlar#tam-kartlar .geri-bildirim { padding: var(--bosluk-5) var(--kenar-genis) calc(var(--bosluk-5) + var(--alt-bosluk)); border-radius: var(--kose-lg) var(--kose-lg) 0 0; background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: var(--golge-yuzen); }
+html #tam-kartlar#tam-kartlar .geri-bildirim.dogru { background: var(--renk-dogru-zemin); }
+html #tam-kartlar#tam-kartlar .geri-bildirim.yanlis { background: var(--renk-yanlis-zemin); }
+/* Durum etiketi: renk + yazı + işaret (yalnız renge güvenme) */
+html #tam-kartlar#tam-kartlar .geri-bildirim::before { display: inline-flex; margin-bottom: var(--bosluk-2); padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); line-height: 1.3; }
+html #tam-kartlar#tam-kartlar .geri-bildirim.dogru::before { content: "✓ Doğru"; color: var(--renk-dogru); }
+html #tam-kartlar#tam-kartlar .geri-bildirim.yanlis::before { content: "✕ Yanlış"; color: var(--renk-yanlis); }
+html #tam-kartlar#tam-kartlar .geri-bildirim h3 { margin: 0 0 var(--bosluk-1); font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #tam-kartlar#tam-kartlar .geri-bildirim p { margin: 0 0 var(--bosluk-4); font-size: var(--yazi-md); font-weight: var(--kalin-normal); color: var(--renk-metin); }
+
+/* ---------- Tur sonu ve küçük ders sonucu penceresi ----------
+   Ortak açılır pencere (#pencere). Yalnız ders açıkken ya da ana ekranın/Takvim'in/Kedi'nin üstünde (başka tam ekran
+   yokken) giydirilir; diğer ekranlardaki pencereler eski görünümde kalır. */
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) .perde { background: rgba(31,42,38,.45); }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere {
+  padding: var(--bosluk-6) var(--bosluk-5) var(--bosluk-5); border: 0; border-radius: var(--kose-lg);
+  background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: var(--golge-yuzen); animation: none;
+  font-family: var(--font); text-align: center;
+}
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere :is(h3, p, button, summary, details) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere h3 { margin: var(--bosluk-4) 0 var(--bosluk-2); font-size: var(--yazi-2xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere p { margin: 0 0 var(--bosluk-4); font-size: var(--yazi-md); font-weight: var(--kalin-normal); line-height: var(--satir-rahat); color: var(--renk-metin-ikincil); }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .ozet-tekrar { font-size: var(--yazi-sm); }
+/* Küçük kemerli pencere (120): emoji/ikon yerine Pati'nin yer tutucusu. Resimli ikonlar (hediye, altın, balık) kalır. */
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .p-ikon:not(:has(img)) {
+  position: relative; overflow: hidden; width: 104px; height: var(--pencere-kucuk); margin: 0 auto;
+  font-size: 0; color: transparent;
+  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
+  border: 2px solid var(--renk-pencere-cerceve); border-radius: 52px 52px var(--kose-md) var(--kose-md);
+}
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .p-ikon:not(:has(img)) > * { display: none; }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .p-ikon:not(:has(img))::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 24%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 14px; border-top-right-radius: 50% 14px; }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .p-ikon:not(:has(img))::before {
+  content: ""; position: absolute; z-index: 1; left: 50%; bottom: 8%; translate: -50% 0; height: 66%; aspect-ratio: 200 / 220; background: var(--renk-pati-yer);
+  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='6' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
+}
+/* Pencerenin ana düğmesi + ok dairesi */
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .buyuk-dugme {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
+  width: 100%; min-height: var(--dugme-boy); padding: 8px var(--bosluk-5) 8px 22px;
+  border: 0; border-radius: var(--kose-md); box-shadow: none;
+  background: var(--renk-dugme) !important; color: var(--renk-dugme-metin) !important;
+  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left;
+}
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere .buyuk-dugme::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: var(--kose-hap); display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
+/* Ek seçenekler ("Bugünlük bitir", "İstersen ... cümlede kullan"): ikinci düğme */
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere > .menu-link { display: grid; place-items: center; width: 100%; min-height: var(--dugme-boy); margin-top: var(--bosluk-2); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); box-shadow: none; font-size: var(--yazi-lg); font-weight: var(--kalin-orta); }
+/* "Çalışma ayrıntıları": yazı düğmesi gibi */
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere details { margin-top: var(--bosluk-3); text-align: left; }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere summary { min-height: var(--dokunma-min); padding: var(--bosluk-3) 0; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-adacayi); text-align: center; text-decoration: underline; text-underline-offset: 4px; }
+:root:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere details p { font-size: var(--yazi-sm); }
+
+/* ---------- Yüksek kontrast: gölge/dolgu yerine siyah çerçeve ---------- */
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar :is(.tanis, .soru-kart, .antrenman) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar :is(.k-sik, .harf-havuz .blok, .beceri-yazi input) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar :is(.soyle-dugme, .harf-eylem .temizle, .dinle-dugme, .k-alan > .menu-link, .beceri-yazi .menu-link) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .tanis .ornek { border: 1px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .ilerleme .cubuk { box-shadow: inset 0 0 0 1px #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .ders-pencere::after { border-top: 2px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .geri-bildirim { border-top: 2px solid #000; }
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .geri-bildirim::before,
+:root[data-tema="kontrast"] #tam-kartlar#tam-kartlar .ders-pencere::before { box-shadow: 0 0 0 1.5px currentColor; }
+:root[data-tema="kontrast"]:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere { border: 2px solid #000; }
+:root[data-tema="kontrast"]:not(#yok):is(:has(:is(#tam-kartlar, #tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #tam-menu-alistirmalar, #tam-menu-kutular, #tam-cumle, #tam-esles, #tam-kur, #tam-av, #tam-savas, #tam-ayarlar, #tam-seviye, #tam-ozel).aktif), :has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif):not(:has(.tam.aktif))) #pencere > .menu-link { border: 2px solid #000; }
+
+/* Azaltılmış hareket (Ayarlar → Animasyonlar ya da telefonun ayarı): Pati zıplamaz. */
+:root[data-hareket="azalt"] #tam-kartlar#tam-kartlar .ders-kedi { animation: none; }
+@media (prefers-reduced-motion: reduce) { html #tam-kartlar#tam-kartlar .ders-kedi { animation: none; } }

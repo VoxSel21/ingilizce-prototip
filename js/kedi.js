@@ -264,7 +264,7 @@ document.querySelectorAll("#dolap-sekme button").forEach(b => b.onclick = () => 
 function sevgiCiz() {
   const bar = document.getElementById("sevgi-bar");
   bar.value = Math.round(Sevgi.deger(d.sevgi));
-  document.getElementById("sevgi-yazi").textContent = "💕 Sevgi · " + bar.value + "/100";
+  document.getElementById("sevgi-yazi").textContent = "Sevgi · " + bar.value + "/100";
 }
 function kediOksa() {
   const yeni = Sevgi.oksa(d.sevgi); if (yeni === d.sevgi) return;
@@ -331,9 +331,9 @@ function antrenmanCiz() {
   const govde = kediGuncelle(document.getElementById("antrenman-kedi"));
   if (govde && govde.dataset.hareket === "bekle") govde.dataset.hareket = "antrenman";
   const toplam = kO.sira.length;
-  document.getElementById("antrenman-yazi").textContent = `🏋️ ${kO.dogru} tekrar · ${kgYazi(d.kilo - kO.kiloBas)}`;
+  document.getElementById("antrenman-yazi").textContent = `${kO.dogru} tekrar · ${kgYazi(d.kilo - kO.kiloBas)}`;
   document.getElementById("antrenman-cubuk").style.width = Math.min(100, kO.dogru / toplam * 100) + "%";
-  document.getElementById("antrenman-kilo").textContent = `Başta ${kO.kiloBas.toFixed(2).replace(".", ",")} kg → şimdi ${d.kilo.toFixed(2).replace(".", ",")} kg (${kiloDurumu().ad})`;
+  document.getElementById("antrenman-kilo").textContent = `Başta ${kO.kiloBas.toFixed(2).replace(".", ",")} kg → şimdi ${d.kilo.toFixed(2).replace(".", ",")} kg (${kiloDurumu().ad.replace(/ \S+$/u, "")})`;
 }
 function antrenmanSevin() {
   const alan = document.getElementById("antrenman"), govde = document.querySelector("#antrenman-kedi .kedi-govde");
@@ -349,7 +349,7 @@ function antrenmanSevin() {
 // Antrenman sonucu: bitince ya da yarıda çıkınca. Yarıda kalan tur kayıtta açık durur; kazanım zaten kaydedildi.
 function antrenmanSonuc(o, bitti) {
   const oz = Antrenman.ozet(o.kiloBas, d.kilo, o.dogru, o.sira.length), gun = d.antrenman && d.antrenman.gun === bugunNo() ? d.antrenman : null;
-  const hal = oz.halBas !== oz.halSon ? ` ${KILO_HAL[oz.halBas].ad} → ${KILO_HAL[oz.halSon].ad}!` : "";
+  const hal = oz.halBas !== oz.halSon ? ` ${KILO_HAL[oz.halBas].ad.replace(/ \S+$/u, "")} → ${KILO_HAL[oz.halSon].ad.replace(/ \S+$/u, "")}!` : "";
   const yazi = `${oz.dogru} doğru, ${o.yanlis || 0} yanlış. ${d.kediAd}: ${o.kiloBas.toFixed(2).replace(".", ",")} → ${d.kilo.toFixed(2).replace(".", ",")} kg (${kgYazi(oz.fark)}).${hal}` +
     `${gun ? ` Bugün toplam ${gun.tekrar} tekrar, ${kgYazi(gun.kg)}.` : ""}${bitti ? "" : " Kaldığın yerden devam edebilirsin; yapılanlar ikinci kez sayılmaz."}`;
   if (bitti) turSonucu("🏋️", "Antrenman bitti!", yazi, hediyeHazirsaAc);

@@ -52,6 +52,15 @@ const SeviyeSinavi={
     const kanit=SINAV_SEVIYELER.filter(l=>{const c=s.cevaplar.filter(x=>x.seviye===l);return c.length>=4&&c.filter(x=>x.dogru).length/c.length>=.7;});
     return {seviye:kanit.at(-1)||'A1',guven:'sınırlı',konular,tamam:s.tamam,zaman:s.zaman};
   },
+  // Seviye elle seçilmez (Serhat, 2026-11-16): başlangıcı bu değerlendirme, sonrasını ilerleme belirler.
+  // İlk açılış: hiç çalışmamış ve değerlendirmeye hiç başlamamış kişiye sınav önerilir.
+  oneriGoster(d){return !!d&&!d.ilkDers&&!d.degerlendirme&&!d.seviyeSinav&&!Object.keys(d.kartlar||{}).length;},
+  // Bir seviyenin bütün kelimeleriyle tanışılınca bir üst seviyeye geçilir; tekrarlar eski seviyeden gelmeye devam eder.
+  sonrakiSeviye(seviye,kelimeler,kartlar){
+    const i=SINAV_SEVIYELER.indexOf(seviye);if(i<0||i>=SINAV_SEVIYELER.length-1)return null;
+    const bu=kelimeler.filter(k=>k[5]===seviye);
+    return bu.length&&bu.every(k=>kartlar&&kartlar[k[0]])?SINAV_SEVIYELER[i+1]:null;
+  },
   ortalama(profiller,uyeSayisi){
     const olculen=profiller.filter(p=>SINAV_SEVIYELER.includes(p?.seviye)),dagilim=Object.fromEntries(SINAV_SEVIYELER.map(s=>[s,olculen.filter(p=>p.seviye===s).length]));
     const etiket=olculen.length?SINAV_SEVIYELER[Math.round(olculen.reduce((n,p)=>n+SINAV_SEVIYELER.indexOf(p.seviye),0)/olculen.length)]:null;

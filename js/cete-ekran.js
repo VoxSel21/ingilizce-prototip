@@ -47,19 +47,19 @@ function dugmeEl(yazi, fn, sinif = "cete-dugme") { const b = ceteEl("button", si
 function ceteGirisKarti() {
   const k = ceteEl("div", "kart cete-gercek");
   if (!Bulut.kullanici) {
-    k.append(ceteEl("b", null, "👥 Gerçek çete"), ceteEl("p", "soluk", "Arkadaşlarınla gerçekten yazışmak için hesap aç ya da giriş yap. Hesapsız da aşağıdaki demo sohbeti deneyebilirsin."),
+    k.append(ceteEl("b", null, "Gerçek çete"), ceteEl("p", "soluk", "Arkadaşlarınla gerçekten yazışmak için hesap aç ya da giriş yap. Hesapsız da aşağıdaki demo sohbeti deneyebilirsin."),
       dugmeEl("Hesap aç / giriş yap", () => { ayarlarCiz(); tamAc("ayarlar"); }));
     return k;
   }
   if (CeteEkran.yukleniyor && !CeteEkran.cete) { k.append(ceteEl("p", "soluk", "Çete bilgisi yükleniyor…")); return k; }
   if (CeteEkran.hata) {
-    k.append(ceteEl("b", null, "👥 Gerçek çete"), ceteEl("p", "soluk", CeteEkran.hata === "baglanti" ? "📴 Çete bilgisi alınamadı: bağlantı yok gibi." : "Çete bilgisi alınamadı."),
+    k.append(ceteEl("b", null, "Gerçek çete"), ceteEl("p", "soluk", CeteEkran.hata === "baglanti" ? "📴 Çete bilgisi alınamadı: bağlantı yok gibi." : "Çete bilgisi alınamadı."),
       dugmeEl("Tekrar dene", ceteYenile));
     return k;
   }
   const sira = ceteEl("div", "cete-dugmeler");
   sira.append(dugmeEl("🐾 Çete kur", kurPenceresi), dugmeEl("🔑 Kodla katıl", () => katilPenceresi("")));
-  k.append(ceteEl("b", null, "👥 Gerçek çete"), ceteEl("p", "soluk", `Bir çete kur, kodunu arkadaşlarına gönder; en çok ${CETE.enCokUye} kişi. Ya da arkadaşının verdiği kodla katıl.`), sira);
+  k.append(ceteEl("b", null, "Gerçek çete"), ceteEl("p", "soluk", `Bir çete kur, kodunu arkadaşlarına gönder; en çok ${CETE.enCokUye} kişi. Ya da arkadaşının verdiği kodla katıl.`), sira);
   return k;
 }
 
@@ -67,7 +67,7 @@ function ceteGirisKarti() {
 function ceteYonetKarti(c) {
   const k = ceteEl("div", "kart cete-gercek"), kurucu = c.kurucu === CeteEkran.uid;
   const bas = ceteEl("div", "cete-bas-gercek");
-  bas.append(ceteEl("span", "c-ikon", "🐾"));
+  const cIkon = ceteEl("span", "c-ikon"); cIkon.innerHTML = '<svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#paw-print"></use></svg>'; bas.append(cIkon);
   const ad = ceteEl("div"); ad.append(ceteEl("b", null, c.ad), ceteEl("small", null, `${c.uyeler.length}/${CETE.enCokUye} üye · gerçek çete`));
   bas.append(ad); k.append(bas);
   if(typeof ceteSeviyeCiz==='function')ceteSeviyeCiz(k,c);
@@ -133,9 +133,9 @@ function ceteEkranCiz() {
   document.getElementById("sohbet-demo-not").hidden = !!c;
   document.getElementById("cete-demo-bas").hidden = !!c;
   document.getElementById("sosyal-demo-bant").innerHTML = c
-    ? "<b>🧪 Demo</b> Arkadaşlık, kişi başına görevler, üyeler, sohbet ve karşılıklı çete savaşı gerçek. Haftalık çete görevleri örnek."
-    : "<b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.";
-  if(Bulut.kullanici)document.getElementById("sosyal-demo-bant").innerHTML=c?"<b>🌐 Sosyal</b> Arkadaşlık, görevler, üyeler, sohbet ve karşılıklı savaş gerçek. Haftalık çete görevleri örnek.":"<b>🌐 Sosyal</b> Arkadaşlık ve kişi başına görevler gerçek. Sohbet ve savaş için çete kur veya katıl.";
+    ? "<b>Demo</b> Arkadaşlık, kişi başına görevler, üyeler, sohbet ve karşılıklı çete savaşı gerçek. Haftalık çete görevleri örnek."
+    : "<b>Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.";
+  if(Bulut.kullanici)document.getElementById("sosyal-demo-bant").innerHTML=c?"<b>Gerçek</b> Arkadaşlık, görevler, üyeler, sohbet ve karşılıklı savaş gerçek. Haftalık çete görevleri örnek.":"<b>Gerçek</b> Arkadaşlık ve kişi başına görevler gerçek. Sohbet ve savaş için çete kur veya katıl.";
   document.getElementById("sosyal-prototip-not").hidden = hesapVar;
   if (Bulut.kullanici && typeof arkadasGercekCiz === "function") arkadasGercekCiz();
   if(typeof SavasEkran!=="undefined")SavasEkran.bagla();
@@ -275,10 +275,10 @@ if (CeteEkran.kod) { const t = setInterval(() => { if (!CeteEkran.kod) clearInte
 function sohbetBaslik(gercek) {
   sohbetDilUyari();
   const t = document.getElementById("tam-sohbet");
-  t.querySelector(".ust .hap").textContent = gercek ? `💬 ${CeteEkran.cete.ad}` : "💬 Patiler Çetesi";
+  t.querySelector(".ust .hap").textContent = gercek ? CeteEkran.cete.ad : "Patiler Çetesi";
   t.querySelector(".sohbet-kural").innerHTML = gercek
-    ? `<b class="demo-rozet">👥 Gerçek</b> Mesajın çete üyelerine gider. Kural: İngilizce yaz, nazik ol. Mesajlar 30 gün saklanır; mesajları yanıtlayabilir veya bildirebilirsin.`
-    : `<b class="demo-rozet">🧪 Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı 🚩 ile gizle.`;
+    ? `<b class="demo-rozet">Gerçek</b> Mesajın çete üyelerine gider. Kural: İngilizce yaz, nazik ol. Mesajlar 30 gün saklanır; mesajları yanıtlayabilir veya bildirebilirsin.`
+    : `<b class="demo-rozet">Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı bayrakla gizle.`;
 }
 
 function gercekSohbetAc() {
@@ -337,7 +337,7 @@ function gercekDurumCiz() {
 
 function gercekMesajEl(m) {
   const ben = m.uid === CeteEkran.uid, e = ceteEl("div", "mesaj" + (ben ? " ben" : ""));
-  const ad = ceteEl("span", "kim", ben ? "Sen" : m.ad); if (!ben) ad.style.color = ceteRenk(m.uid); e.append(ad);
+  const ad = ceteEl("span", "kim", ben ? "Sen" : m.ad); e.append(ad);
   ad.setAttribute('role','button');ad.tabIndex=0;ad.onclick=()=>profilAc(m.uid);ad.onkeydown=e=>{if(e.key==='Enter')profilAc(m.uid);};
   if (m.yanitId) { const eski = CeteEkran.mesajlar.find(x => x.id === m.yanitId); e.append(ceteEl("blockquote", "mesaj-alinti", eski ? eski.ad + ": " + eski.metin : "Önceki mesaj artık görüntülenemiyor")); }
   const yazi = ceteEl("span");

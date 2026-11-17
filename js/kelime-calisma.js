@@ -46,14 +46,22 @@ function konusmaDinle(hedef,bitti){
   try{r.start();zaman=setTimeout(()=>{try{r.abort()}catch(e){}bitir({hata:'no-speech'})},12000)}catch(e){bitir({hata:'baslamadi'})}
 }
 const konusmaAcik=()=>KonusmaDestegi&&!((d.konusmaKapali||0)>Date.now());
+// Seviye ana ekranda elle seçilmez (Serhat, 2026-11-16); d.seviye'yi seviye değerlendirmesi (seviye-ekran.js) belirler.
 function seviyeCiz() {
-  document.getElementById("seviye-sec").innerHTML = SEVIYELER.map(([s, ad]) => {
-    return `<button class="${d.seviye === s ? "aktif" : ""}" aria-pressed="${d.seviye === s}" data-seviye="${s}">${s}<small>${ad}</small></button>`;
-  }).join("");
-  document.querySelectorAll("[data-seviye]").forEach(b => b.onclick = () => { if (d.seviye !== b.dataset.seviye) d.konu = ""; d.seviye = b.dataset.seviye; kaydet(); bildir(`Seviye: ${d.seviye} 📚 Aşağıdan konu da seçebilirsin`); herSeyiCiz(); });
   konuCiz();
 }
+// Seviyenin bütün kelimeleriyle tanışıldıysa bir üst seviyeye geçilir (Serhat, 2026-11-16).
+function seviyeIlerlet() {
+  const sonraki = SeviyeSinavi.sonrakiSeviye(d.seviye, KELIMELER, d.kartlar);
+  if (!sonraki) return;
+  const eski = d.seviye;
+  d.seviye = sonraki; d.konu = ""; kaydet();
+  const yazi = `${eski} seviyesindeki bütün kelimelerle tanıştın. Artık ${sonraki} kelimeleri gelecek; ${eski} kelimelerinin tekrarları sürüyor.`;
+  if (document.getElementById("perde").classList.contains("aktif")) bildir(`🎉 ${eski} bitti! Artık ${sonraki}`);
+  else setTimeout(() => pencere("🎉", `${eski} bitti!`, yazi, "Devam"), 300);
+}
 function anaCiz() {
+  seviyeIlerlet();
   seviyeCiz();
   const sr = seri(), say = d.bugun.sayi, bek = bekleyenler().length;
   document.getElementById("seri-hap").textContent = "🔥 " + sr;
@@ -64,7 +72,11 @@ function anaCiz() {
   document.getElementById("halka-yazi").textContent = Math.min(say, hedef) + "/" + hedef;
   // Hedef cevap sayısıyla dolar (doğru ya da yanlış); doğrular ayrıca yazılır (U04).
   const hediyeNotu = say >= hedef ? (d.bugun.hediye ? "Hediye alındı" : "Hediye hazır") : `Hediyeye ${hedef - say} cevap kaldı`;
-  document.getElementById("hedef-yazi").textContent = `${hediyeNotu} · ${d.bugun.dogru || 0} doğru`;
+  // C arayüzü: bilgi satırı solda hedef notu, sağda bugünkü doğru sayısı; halka ekran okuyucuya hedefi söyler.
+  document.getElementById("hedef-yazi").textContent = hediyeNotu;
+  document.getElementById("ana-dogru").textContent = `${d.bugun.dogru || 0} doğru`;
+  document.getElementById("halka").setAttribute("aria-label", `Günlük hedef: ${Math.min(say, hedef)}/${hedef} cevap`);
+  anaUstCiz();
   const pvBek = bekleyenler(PHRASAL).length, pvTanis = PHRASAL.filter(k => d.kartlar[k[0]]).length;
   document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${PHRASAL.length} · ${pvBek} bekliyor` : "Bugünlük bitti 🎉";
   const bd = document.getElementById("basla-dugme");
@@ -92,15 +104,14 @@ function anaCiz() {
   const sayac = [0, 0, 0, 0, 0];
   KELIMELER.forEach(k => { const c = d.kartlar[k[0]]; if (c) sayac[Math.min(c.kutu, 4)]++; });
   const yeniSayi = KELIMELER.filter(k => !d.kartlar[k[0]]).length;
-  const renk = ["var(--krem)", "var(--mercan-a)", "var(--gunes-a)", "var(--nane-a)", "var(--lavanta-a)"];
-  const ad = ["Yeni", "Çalışıldı", "Tekrar · 2", "Tekrar · 3", "Pekişti ⭐"];
+  const ad = ["Yeni", "Çalışıldı", "Tekrar 2", "Tekrar 3", "Pekişti"];
   const deger = [yeniSayi, sayac[1] + sayac[0], sayac[2], sayac[3], sayac[4]];
   const tanisSayi = KELIMELER.filter(k => d.kartlar[k[0]]).length;
   document.getElementById("hazne-dugme-yazi").textContent = tanisSayi ? `${tanisSayi} kelime · seviyeye ve alfabeye göre` : "Tanıştığın kelimeler burada birikir";
   // Dolu kutular gerçek düğme: klavyeyle de seçilip Enter/Boşluk ile açılır.
   document.getElementById("kutular").innerHTML = deger.map((v, i) => i && v
-    ? `<button class="kutu tikla" data-kutu="${i}" style="background:${renk[i]}" aria-label="${ad[i].replace(" ⭐", "")}: ${v} kelime, aç"><b>${v}</b><small>${ad[i]}</small></button>`
-    : `<div class="kutu" style="background:${renk[i]}"><b>${v}</b><small>${ad[i]}</small></div>`).join("");
+    ? `<button class="kutu tikla" data-kutu="${i}" aria-label="${ad[i]}: ${v} kelime, aç"><b>${v}</b><small>${ad[i]}</small></button>`
+    : `<div class="kutu${i ? "" : " yeni"}"><b>${v}</b><small>${ad[i]}</small></div>`).join("");
   document.querySelectorAll("[data-kutu]").forEach(b => b.onclick = () => kutuAc(+b.dataset.kutu));
   const zor = zorlandiklar();
   document.getElementById("zor-dugme").style.display = zor.length ? "" : "none";
@@ -131,7 +142,7 @@ function turBaslat(o, devam) {
 function kartlariAc(deste = KELIMELER, mini = false) {
   const tur = deste === PHRASAL ? "phrasal" : "kelime", acik = acikTur(tur);
   if (acik) return turBaslat(acik, true);
-  if (!bekleyenler(deste).length) { bildir(deste === PHRASAL ? "Bugünlük phrasal verb kalmadı 🎉" : "Bugünlük kelime kalmadı 🎉 Cümle kurmaya ne dersin?"); return; }
+  if (!bekleyenler(deste).length) { bildir(deste === PHRASAL ? "Bugünlük phrasal verb kalmadı 🎉" : "Bugünlük kelime kalmadı. Cümle kurmaya ne dersin?"); return; }
   const b = bugunNo(), tohum = Math.floor(Math.random() * 4294967296);
   const boy = mini ? kisaTurBoyu(deste) : turBoyu(deste);
   const durum = mini && deste === KELIMELER && !deste.some(k=>d.kartlar[k[0]]?.sira<=b) ? MiniDers.durum(d.kartlar,d.seviye,d.konu) : null;
@@ -162,7 +173,7 @@ function tanisCiz(k) {
       ${KonusmaDestegi ? `<button class="soyle-dugme" id="t-soyle" aria-describedby="t-mikrofon-not">Sen de söyle</button><div class="soyle-sonuc" id="t-soyle-sonuc" aria-live="polite"></div><p class="mikrofon-not" id="t-mikrofon-not">Bazen internet gerekir. Ses kaydı saklanmaz, telaffuz puanı verilmez.</p>` : ""}
       <button class="hata-bildir" id="t-hata" aria-label="Bu kartta hata bildir">Hata bildir</button>
     </div>
-    <div class="k-alt"><button class="buyuk-dugme" id="t-devam">Tanıştık ›</button></div>`;
+    <div class="k-alt"><button class="buyuk-dugme" id="t-devam">Tanıştık</button></div>`;
   seslendir(k[0], true);
   document.getElementById("t-ses").onclick = () => seslendir(k[0]);
   document.getElementById("t-ses2").onclick = () => seslendir(k[3]);

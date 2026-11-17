@@ -27,18 +27,18 @@ function ceteCiz() {
     const s = ceteDurum(g), alindi = d.ceteOdul[ceteAnahtar(g)];
     const uyeler = s.hepsi.map(u => `<span class="${g.herkes && u[1] >= g.hedef ? "tamam" : ""}">${Sohbet.kacis(u[0])} ${g.herkes ? u[1] + " gün" : "+" + u[1]}</span>`).join("");
     return `<div class="kart cete-gorev"><div class="g-ust"><span class="g-ikon">${g.ikon}</span><div><b>${g.ad}</b><small>${g.herkes ? s.deger + "/" + s.hedef + " kişi tamam" : s.deger + "/" + s.hedef}</small></div>
-      <button class="al" data-cete="${i}" ${!s.bitti || alindi ? "disabled" : ""}>${alindi ? "Alındı ✓" : "🪙 " + g.odul}</button></div>
+      <button class="al" data-cete="${i}" ${!s.bitti || alindi ? "disabled" : ""}>${alindi ? "Alındı" : g.odul + " altın"}</button></div>
       <div class="cete-cubuk"><i style="width:${s.deger / s.hedef * 100}%"></i></div><div class="cete-uyeler">${uyeler}</div></div>`;
-  }).join("") + `<div class="kart" style="background:var(--gunes-a);margin-bottom:10px;"><b style="font-weight:900;">🎁 Haftanın hepsi biterse</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">"Çete ruhu" başarımı (+5 🪙) ve yalnız çeteyle kazanılan 🧣 Çete bandanası (Kedi > Gardırop > Boyun).</p></div>`;
+  }).join("") + `<div class="kart cete-hafta-odul"><b>Haftanın hepsi biterse</b>
+      <p class="soluk">"Çete ruhu" başarımı (+5 altın) ve yalnız çeteyle kazanılan Çete bandanası (Kedi > Gardırop > Boyun).</p></div>`;
   document.querySelectorAll("[data-cete]").forEach(b => b.onclick = () => {
     const g = CETE_GOREVLER[+b.dataset.cete]; if (d.ceteOdul[ceteAnahtar(g)]) return;
     d.ceteOdul[ceteAnahtar(g)] = 1; Ekonomi.kazan(d, "cete:" + ceteAnahtar(g), g.odul, bugunNo()); kaydet(); Ses.altin(); konfeti(b, 8); bildir(`${g.ikon} Çete görevi bitti! +${g.odul} 🪙`); rozetKontrol(); herSeyiCiz();
   });
 }
 function arkadasCiz() {
-  const baslik=document.querySelector('#ekran-arkadaslar>.ust .hap');
-  baslik.textContent=sosyalBolum==='arkadas'?'👫 Arkadaşlar':'🐾 Çete';
+  const baslik=document.querySelector('#ekran-arkadaslar>.ust .sosyal-baslik');
+  baslik.textContent=sosyalBolum==='arkadas'?'Arkadaşlar':'Çete';
   document.querySelector('nav [data-sekme="arkadaslar"]').setAttribute('aria-label','Sosyal · '+(sosyalBolum==='arkadas'?'Çeteye geç':'Arkadaşlara geç'));
 
   document.querySelectorAll("[data-sosyal]").forEach(b => b.classList.toggle("aktif", b.dataset.sosyal === sosyalBolum));
@@ -53,19 +53,19 @@ function arkadasCiz() {
   document.getElementById("sohbet-son").textContent = `${sonMesaj.kim}: ${sonMesaj.metin}`;
   const sen = ["Sen", "#9F8BEA", seri(), d.bugun.sayi * 10 + d.cumleDogru * 15 + 80];
   const lig = ARKADASLAR.map(a => a.slice(0, 4)).concat([sen]).sort((a, b) => b[3] - a[3]);
-  document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${["🥇","🥈","🥉"][i] || i + 1}</span><div class="avatar" style="background:${a[1]};width:40px;height:40px;font-size:16px;">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}${a[0] === "Sen" ? "" : '<span class="ornek-etiket">örnek</span>'}</b><small>🔥 ${a[2]} gün</small></div><b>${a[3]} XP</b></div>`).join("");
+  document.getElementById("lig").innerHTML = lig.map((a, i) => `<div class="arkadas ${a[0] === "Sen" ? "sen" : ""}"><span class="sira">${i + 1}</span><div class="avatar">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}${a[0] === "Sen" ? "" : '<span class="ornek-etiket">örnek</span>'}</b><small>${a[2]} gün seri</small></div><b class="xp">${a[3]} XP</b></div>`).join("");
   const bugun = bugunNo(); d.miyav = d.miyav || {};
   document.getElementById("arkadas-listesi").innerHTML = ARKADASLAR.map((a, i) => `<div class="kart arkadas-kart">
-    <div class="arkadas"><div class="avatar" style="background:${a[1]}">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}<span class="ornek-etiket">örnek</span></b><small>${Sohbet.kacis(a[4])}</small></div></div>
+    <div class="arkadas"><div class="avatar">${a[0][0]}</div><div><b>${Sohbet.kacis(a[0])}<span class="ornek-etiket">örnek</span></b><small>${Sohbet.kacis(a[4])}</small></div></div>
     <div class="alt-satir">${["👏","🔥","💜"].map(t => `<button class="tepki ${tepkiler[i + t] ? "gonderildi" : ""}" data-t="${i}|${t}">${t}</button>`).join("")}
       <button class="miyav-dugme ${d.miyav[a[0]] === bugun ? "gonderildi" : ""}" data-miyav="${i}">${d.miyav[a[0]] === bugun ? "😺 Miyavlandı" : "🐱 Miyavla"}</button></div>
     ${(d.ikili || []).some(g => g.arkadas === a[0]) ? "" : `<button class="ikili-dugme" data-ikili="${i}">🤝 Birlikte görev</button>`}</div>`).join("");
   document.querySelectorAll("[data-ikili]").forEach(b => b.onclick = () => ikiliBaslat(+b.dataset.ikili));
   // Demo: Elif (örnek arkadaş) sana miyavlamış gibi gösterilir; etiketli.
   const elifeDondun = d.miyav["Elif"] === bugun;
-  document.getElementById("gelen-miyav").innerHTML = `<div class="kart gelen-miyav"><span class="g-ikon">😺</span>
-    <div><b>Elif<span class="ornek-etiket">örnek</span> sana miyavladı!</b><small>"Hadi kelime zamanı 🐾" · demo bildirimi</small></div>
-    <button class="miyav-dugme ${elifeDondun ? "gonderildi" : ""}" style="flex:none;padding:0 14px;" data-miyav="1">${elifeDondun ? "😺 Döndün" : "Geri miyavla"}</button></div>`;
+  document.getElementById("gelen-miyav").innerHTML = `<div class="kart gelen-miyav"><span class="g-ikon"><svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#paw-print"></use></svg></span>
+    <div><b>Elif<span class="ornek-etiket">örnek</span> sana miyavladı!</b><small>"Hadi kelime zamanı" · demo bildirimi</small></div>
+    <button class="miyav-dugme ${elifeDondun ? "gonderildi" : ""}" data-miyav="1">${elifeDondun ? "Döndün" : "Geri miyavla"}</button></div>`;
   document.querySelectorAll("[data-miyav]").forEach(b => b.onclick = () => miyavla(+b.dataset.miyav, b));
   document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
     const [i, t] = b.dataset.t.split("|");
@@ -157,14 +157,14 @@ function ikiliArkadasIlerleme(g, sablon) {
 function ikiliCiz() {
   d.ikili = d.ikili || [];
   const el = document.getElementById("ikili-gorevler");
-  if (!d.ikili.length) { el.innerHTML = `<div class="kart ikili-kart"><p class="soluk" style="font-size:14px;">Henüz birlikte görevin yok. Aşağıdan bir arkadaşının kartında "🤝 Birlikte görev"e dokun.</p></div>`; return; }
+  if (!d.ikili.length) { el.innerHTML = `<div class="kart ikili-kart ikili-bos"><p class="soluk">Henüz birlikte görevin yok. Arkadaşlar listesinde bir arkadaşına dokun, sonra "Birlikte görev"i seç.</p></div>`; return; }
   el.innerHTML = d.ikili.map((g, i) => {
     const sb = IKILI_SABLON.find(x => x.id === g.sablon), sen = Math.min(sb.hedef, sb.sen(g)), o = ikiliArkadasIlerleme(g, sb);
     const bitti = sen >= sb.hedef && o >= sb.hedef;
-    return `<div class="kart ikili-kart"><div class="g-ust"><span style="font-size:28px">${sb.ikon}</span><div><b>${Sohbet.kacis(g.arkadas)} ile: ${sb.ad}</b><small>Ödül: ikinize de ${sb.odul} 🪙</small></div></div>
+    return `<div class="kart ikili-kart"><div class="g-ust"><div><b>${Sohbet.kacis(g.arkadas)} ile: ${sb.ad}</b><small>Ödül: ikinize de ${sb.odul} altın</small></div></div>
       <div class="ikili-satir"><span>Sen</span><div class="cete-cubuk"><i style="width:${sen / sb.hedef * 100}%"></i></div>${sen}/${sb.hedef}</div>
       <div class="ikili-satir"><span>${Sohbet.kacis(g.arkadas)}</span><div class="cete-cubuk"><i style="width:${o / sb.hedef * 100}%"></i></div>${o}/${sb.hedef}</div>
-      ${bitti ? `<button class="ikili-dugme" data-ikili-al="${i}">🎉 Ödülü al (+${sb.odul} 🪙)</button>` : ""}</div>`;
+      ${bitti ? `<button class="ikili-dugme" data-ikili-al="${i}">Ödülü al (+${sb.odul} altın)</button>` : ""}</div>`;
   }).join("");
   document.querySelectorAll("[data-ikili-al]").forEach(b => b.onclick = () => {
     b.onclick = null; // çift dokunma başka görevin ödülünü almasın
@@ -178,8 +178,8 @@ function ikiliBaslat(i) {
   if ((d.ikili || []).some(g => g.arkadas === a[0])) { bildir(`${a[0]} ile zaten bir görevin var`); return; }
   const p = document.getElementById("pencere");
   p.innerHTML = `<div class="p-ikon">🤝</div><h3>${Sohbet.kacis(a[0])} ile ne yapalım?</h3><p>Görevi seç. ${Sohbet.kacis(a[0])} örnek bir arkadaş: davet gerçekten gitmez, görev hemen başlar. Senin ilerlemen gerçek, onunki örnek.</p>
-    <div class="sablon-sec">${IKILI_SABLON.map(sb => `<button data-sablon="${sb.id}"><span style="font-size:24px">${sb.ikon}</span><span>${sb.ad}<br><small class="soluk">İkinize de ${sb.odul} 🪙</small></span></button>`).join("")}</div>
-    <button class="buyuk-dugme" id="p-dugme" style="margin-top:12px;background:var(--krem);color:var(--murekkep);box-shadow:none;">Vazgeç</button>`;
+    <div class="sablon-sec">${IKILI_SABLON.map(sb => `<button data-sablon="${sb.id}"><span>${sb.ad}<br><small class="soluk">İkinize de ${sb.odul} altın</small></span></button>`).join("")}</div>
+    <button class="buyuk-dugme vazgec" id="p-dugme">Vazgeç</button>`;
   document.getElementById("perde").classList.add("aktif");
   document.getElementById("p-dugme").onclick = () => document.getElementById("perde").classList.remove("aktif");
   p.querySelectorAll("[data-sablon]").forEach(b => b.onclick = () => {

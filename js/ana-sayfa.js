@@ -23,6 +23,14 @@ function sahneCiz() {
 
 // ================= ANA SAYFA =================
 const SEVIYELER = [["A1", "Başlangıç"], ["A2", "Temel"], ["B1", "Orta"], ["B2", "İleri-orta"]];
+// C arayüzü üst satırı ve ders etiketi (2026-11-16): tarih, saate göre selam, "A1 · Konu".
+function anaUstCiz() {
+  const simdi = new Date(), saat = simdi.getHours();
+  document.getElementById("ana-tarih").textContent = `${simdi.toLocaleDateString("tr-TR", { weekday: "long" })}, ${simdi.toLocaleDateString("tr-TR", { day: "numeric", month: "long" })}`;
+  document.getElementById("ana-selam").textContent = saat >= 5 && saat < 12 ? "Günaydın" : saat >= 18 ? "İyi akşamlar" : "Merhaba";
+  const konu = KONULAR.concat([KONU_GENEL]).find(([kod]) => kod === d.konu)?.[1].replace(/^[^\p{L}]+/u, "");
+  document.getElementById("ana-etiket").textContent = `${d.seviye} · ${konu || "Tüm konular"}`;
+}
 // Konular (arkadaşın önerisi, 2026-10-21): seviyenin içinde istediğin konudan öğren.
 // Eski listede konu bilgisi yok; ayırma Violet'in (veri/konular.txt). Listede olmayan kelime "Temel kelimeler".
 const KONULAR = [

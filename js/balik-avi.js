@@ -147,8 +147,8 @@ function avCevap(b, dogru, k) {
     setTimeout(() => { balikci.classList.remove("dondu"); unlem.classList.remove("acik"); }, 700);
     if (olay.geriKac) {
       setTimeout(() => Ses.geri(), 150); avEfekt("🙀");
-      avUyari(`Balıkçı gördü! ${d.kediAd} geri kaçtı 🙀`);
-      setTimeout(() => { if (buOturum()) avUyari(Av.yetisir(oturum.s) ? null : "Bu turda yetişmek zor, pratik say 💪"); }, 1400);
+      avUyari(`Balıkçı gördü! ${d.kediAd} geri kaçtı`);
+      setTimeout(() => { if (buOturum()) avUyari(Av.yetisir(oturum.s) ? null : "Bu turda yetişmek zor, pratik say"); }, 1400);
     }
     document.querySelectorAll(".av-sik").forEach(x => { if (x.textContent === k[1]) x.classList.add("dogru"); });
     kediHareket(avKediGovde(), "uzgun", 900);
@@ -173,8 +173,8 @@ function avBitir() {
   if (ulasti && !s.pratik) kiloDegis(KILO.fark.balik); // balığı yedi
   if (!s.pratik) { if (!av.hak) Av.hakKullan(d, bugunNo()); d.avSonuc = `${s.dogru} doğru, ${s.yanlis} yanlış · ${ulasti ? "balığa ulaştın" : "yolun %" + yuzde + "'i"} · +${odul} 🪙.`; }
   if (!av.egitim) { gunIsaretle(); kaydet(); } avDugmeCiz();
-  if (ulasti) { kediHareket(avKediGovde(), "kutla"); avUyari("Kaptı! 🐟"); Ses.zafer(); }
-  else { kediHareket(avKediGovde(), "uzgun"); document.getElementById("av-balikci").classList.add("dondu"); avUyari(s.sonuc === "sure" ? "Süre bitti! ❗" : "Balıkçı fark etti! ❗"); }
+  if (ulasti) { kediHareket(avKediGovde(), "kutla"); avUyari("Kaptı!"); Ses.zafer(); }
+  else { kediHareket(avKediGovde(), "uzgun"); document.getElementById("av-balikci").classList.add("dondu"); avUyari(s.sonuc === "sure" ? "Süre bitti!" : "Balıkçı fark etti!"); }
   const oyun = av;
   setTimeout(() => {
     if (av !== oyun || !document.getElementById("tam-av").classList.contains("aktif")) return;

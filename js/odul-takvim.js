@@ -44,7 +44,9 @@ function konfeti(el, n) {
   }
 }
 let bildirimZaman;
-function bildir(m) { const b = document.getElementById("bildirim"); b.textContent = m; b.classList.add("acik"); clearTimeout(bildirimZaman); bildirimZaman = setTimeout(() => b.classList.remove("acik"), 2400); }
+// Bildirim şeridi emojisiz (C arayüzü, 2026-11-17): "+1 🪙" → "+1 altın", kalan emojiler düşer.
+function bildirimMetni(m) { return String(m).replace(/(\+?\d+)\s*🪙/gu, "$1 altın").replace(/[\p{Extended_Pictographic}\u{2691}\u{FE0F}\u{200D}]/gu, "").replace(/\s+([!?.,)])/g, "$1").replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").trim(); }
+function bildir(m) { const b = document.getElementById("bildirim"); b.textContent = bildirimMetni(m); b.classList.add("acik"); clearTimeout(bildirimZaman); bildirimZaman = setTimeout(() => b.classList.remove("acik"), 2400); }
 
 // ================= BAŞARIMLAR =================
 const ROZETLER = [
@@ -71,8 +73,16 @@ function rozetKontrol() {
   });
 }
 function odulCiz() {
-  document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) =>
-    `<div class="rozet ${d.rozet[id] ? "" : "kilitli"}"><div class="r-ikon">${ikon}</div><b>${ad}</b><small>${d.rozet[id] ? "Kazanıldı ✓" : acik + " · " + odul + " 🪙"}</small></div>`).join("");
+  // C görünümü (2026-11-16): ödül emoji yerine "N altın" yazısıyla; kazanılanda onay ikonu.
+  document.getElementById("rozetler").innerHTML = ROZETLER.map(([id, ikon, ad, acik, , odul]) => d.rozet[id]
+    ? `<div class="rozet"><div class="r-ikon" aria-hidden="true">${ikon}</div><b>${ad}</b><small class="r-durum">${patiIkon("check")}Kazanıldı</small></div>`
+    : `<div class="rozet kilitli"><div class="r-ikon" aria-hidden="true">${ikon}</div><b>${ad}</b><small>${acik}</small><span class="r-odul">${odul} altın</span></div>`).join("");
+  const acilan = ROZETLER.filter(r => d.rozet[r[0]]), kazanc = acilan.reduce((t, r) => t + r[5], 0);
+  const yaz = (i, v) => { const e = document.getElementById(i); if (e) e.textContent = v; };
+  yaz("odul-acilan", acilan.length); yaz("odul-toplam", ROZETLER.length);
+  yaz("odul-kazanc", kazanc ? `Başarımlardan ${kazanc} altın kazandın` : "İlk başarımın bir kart uzağında");
+  const cubuk = document.getElementById("odul-cubuk"); if (cubuk) cubuk.style.width = Math.round(acilan.length / ROZETLER.length * 100) + "%";
+  if (typeof kediGuncelle === "function") kediGuncelle(document.getElementById("odul-kedi"), KediCizici.gorunum());
 }
 function koruyucuSatisCiz() {
   document.getElementById("koruyucu-satis").innerHTML = `<div class="menu-koruyucu"><span>🧊</span><div><b>Seri koruyucu</b><small>Elinde ${d.koruyucu} · bir günü korur</small></div><button class="al" data-al="koruyucu" ${d.yildiz < EKONOMI.fiyat.koruyucu ? "disabled" : ""}>${EKONOMI.fiyat.koruyucu} 🪙</button></div>`;
@@ -86,6 +96,8 @@ const AY_EMOJI = ["❄️","⛄","🌱","🌷","🌸","☀️","🍉","🏖️",
 const GUN_RENK = [["#FF8A7A","#FFB38A"], ["#FFC94D","#FFDF8A"], ["#5CC9A7","#8FE0C4"], ["#6DB8EE","#9FD2F7"], ["#9F8BEA","#C3B4F5"]];
 function takvimCiz() {
   koruyucuSatisCiz();
+  // Hap eskiden yalnız anaCiz'de güncelleniyordu: Takvim'de koruyucu alınınca eski sayı kalıyordu.
+  document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
   const simdi = new Date(), ay = new Date(simdi.getFullYear(), simdi.getMonth(), 1);
   document.getElementById("ay-adi").textContent = AYLAR[ay.getMonth()] + " " + ay.getFullYear();
   document.getElementById("ay-emoji").textContent = AY_EMOJI[ay.getMonth()];
@@ -112,6 +124,9 @@ function takvimCiz() {
   const oz = seriOzet();
   document.getElementById("i-seri").textContent = oz.seri;
   document.getElementById("i-enuzun").textContent = oz.enUzun;
+  // Takvim'in üstündeki Pati penceresinin yanındaki seri (C görünümü, 2026-11-16)
+  document.getElementById("takvim-seri").textContent = oz.seri;
+  document.getElementById("takvim-enuzun").textContent = oz.enUzun;
   const kelimeSayisi = KELIMELER.filter(k => d.kartlar[k[0]] || d.calisilanlar?.[k[0]]).length;
   document.getElementById("i-ogrenilen").textContent = kelimeSayisi;
   document.getElementById("i-ogrenilen-not").textContent = `${kelimeSayisi} kelime çalışıldı · ${durumdaSay(KELIMELER, "calisiliyor")} tekrar edildi · ${durumdaSay(KELIMELER, "ogrenildi")} pekişti. Tekrarlarla ilerler.`;

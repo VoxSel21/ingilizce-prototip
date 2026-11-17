@@ -1,0 +1,247 @@
+/* =====================================================================
+   Sosyal ekranı · "C · Sakin ve şık" kural seti (2026-11-16)
+   #ekran-arkadaslar iki halde görünür (üstteki sekmeler gizli):
+   - Arkadaşlar (alt menüde Sosyal'e ilk dokunuş): başlık + Ekle, demo notu,
+     gelen miyav, arkadaş satırları, "Haftanın ligi" / "Birlikte görevler".
+   - Çete (ikinci dokunuş): çete sohbeti ekrana gömülür
+     (#tam-sohbet.sosyal-sohbet-gomulu, js/sosyal.js sosyalSohbetGoster).
+   Buradan açılan paneller (js/menu-paneller.js kurar): #tam-menu-lig,
+   -arkadas-gorev, -cete, -savas, -cete-gorev.
+   Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
+   En son yüklenir; eski kuralları (stil.css, menuler.css) ezmek için
+   "html #ekran-arkadaslar#ekran-arkadaslar" (çift kimlik).
+   Alt menü ve ortak pencere ana-ekran.css / ders-ekrani.css'teki listeyi
+   paylaşır (#ekran-arkadaslar ve Sosyal panelleri eklendi).
+   Savaş oyunları (#tam-savas) ve özel sohbet (#tam-ozel) eski görünümde.
+   ===================================================================== */
+
+/* ---------- Zemin: fotoğraflı sahne yerine düz kırık beyaz ---------- */
+:root:not(#yok):has(#ekran-arkadaslar.aktif) #uygulama { background: var(--renk-zemin); }
+:root:not(#yok):has(#ekran-arkadaslar.aktif) #uygulama > .sahne { display: none; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif) .telefon-bildirim:not(.acik) { box-shadow: none; }
+
+html #ekran-arkadaslar#ekran-arkadaslar.aktif {
+  display: flex; flex-direction: column; gap: var(--bosluk-3);
+  padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(112px + var(--alt-bosluk));
+  overflow: hidden; background: var(--renk-zemin); color: var(--renk-metin);
+  font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+}
+html #ekran-arkadaslar#ekran-arkadaslar :is(h1, h2, b, small, span, p, div, button, input, time) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+html #ekran-arkadaslar#ekran-arkadaslar :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+
+/* ---------- 1. Üst satır: başlık + Ekle ---------- */
+html #ekran-arkadaslar#ekran-arkadaslar > .ust { position: static; display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0; padding: var(--bosluk-2) var(--bosluk-1) 0; border: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-baslik { margin: 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #ekran-arkadaslar#ekran-arkadaslar #ekle-dugme { min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); }
+html #ekran-arkadaslar#ekran-arkadaslar #ekle-dugme[hidden] { display: none; }
+
+/* ---------- 2. Demo / gerçek notu: küçük sakin bant ---------- */
+html #ekran-arkadaslar#ekran-arkadaslar .demo-bant { margin: 0; padding: var(--bosluk-2) var(--bosluk-3); border-radius: var(--kose-sm); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.4; }
+html #ekran-arkadaslar#ekran-arkadaslar .demo-bant b { margin-right: 4px; font-weight: var(--kalin-kalin); }
+
+/* ---------- 3. Arkadaşlar bölümü (kendi içinde kayar) ---------- */
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas.menu-sosyal { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: var(--bosluk-2); overflow-y: auto; overscroll-behavior: contain; }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas > * { flex: none; margin: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar #arkadas-listesi::before { content: "Arkadaşların"; display: block; margin: var(--bosluk-2) var(--bosluk-1) var(--bosluk-2); font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #ekran-arkadaslar#ekran-arkadaslar :is(#arkadas-listesi, #gelen-miyav, #cete-gercek-arkadas) { display: grid; gap: var(--bosluk-2); }
+html #ekran-arkadaslar#ekran-arkadaslar :is(#gelen-miyav, #cete-gercek-arkadas):empty { display: none; }
+html #ekran-arkadaslar#ekran-arkadaslar :is(.kart, .arkadas-satir) { margin: 0; border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas h2 { margin: var(--bosluk-2) var(--bosluk-1) 0; font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); color: var(--renk-metin); }
+
+/* Gelen miyav: beyaz kart, adaçayı daire içinde pati ikonu; "Geri miyavla" ekranın tek koyu düğmesi. */
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav { display: flex; align-items: center; gap: var(--bosluk-3); padding: var(--bosluk-3) var(--bosluk-3) var(--bosluk-3) var(--bosluk-4); }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav .g-ikon { flex: none; width: var(--avatar); height: var(--avatar); display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: 0; animation: none; }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav .g-ikon .pati-ikon { width: 20px; height: 20px; }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav > div { flex: 1; min-width: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav small { display: block; margin-top: 2px; font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav .miyav-dugme { flex: none; height: auto; min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-dugme); color: var(--renk-dugme-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); white-space: nowrap; }
+html #ekran-arkadaslar#ekran-arkadaslar .gelen-miyav .miyav-dugme.gonderildi { background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); }
+
+/* Arkadaş satırı: düz beyaz kart, kedi adaçayı karede. */
+html #ekran-arkadaslar#ekran-arkadaslar .demo-arkadas { margin: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .arkadas-satir { display: flex; align-items: center; gap: var(--bosluk-3); width: 100%; min-height: 72px; padding: var(--bosluk-2) var(--bosluk-4) var(--bosluk-2) var(--bosluk-2); text-align: left; }
+html #ekran-arkadaslar#ekran-arkadaslar .arkadas-kedi { flex: 0 0 56px; width: 56px; height: 56px; border-radius: var(--kose-md); background: var(--renk-yuzey-adacayi); overflow: hidden; }
+html #ekran-arkadaslar#ekran-arkadaslar .arkadas-bilgi b { font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; color: var(--renk-metin); }
+html #ekran-arkadaslar#ekran-arkadaslar .arkadas-bilgi small { margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .arkadas-satir > span:last-child:not(.arkadas-bilgi) { flex: none; font-size: 22px; font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar #arkadas-listesi > p { margin: 0 var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+/* Giriş yapılmışken "Kodla arkadaş ekle" düğmesi: ikinci düğme. */
+html #ekran-arkadaslar#ekran-arkadaslar #arkadas-listesi > .cete-dugme { width: 100%; min-height: var(--dugme-boy); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); white-space: normal; }
+
+/* Lig ve birlikte görevler: iki beyaz kart, sağ altta küçük ok dairesi. */
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas > .menu-links { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bosluk-2); margin-top: var(--bosluk-2); }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas .menu-link { position: relative; display: flex; align-items: flex-start; justify-content: flex-start; height: auto; min-height: 84px; padding: var(--bosluk-4) var(--bosluk-4) 44px; border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left; }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-arkadas .menu-link::after { content: "→"; position: absolute; right: var(--bosluk-3); bottom: var(--bosluk-3); width: var(--ok-daire); height: var(--ok-daire); display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: 15px; font-weight: var(--kalin-kalin); line-height: 1; }
+
+/* Demo arkadaşın etiketleri ve giriş yapılmış haldeki çete üyeleri */
+html #ekran-arkadaslar#ekran-arkadaslar .ornek-etiket,
+html :is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev, #pencere) .ornek-etiket { margin-left: 6px; padding: 1px 6px; border: 0; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: 11px; font-weight: var(--kalin-orta); vertical-align: 1px; }
+html #ekran-arkadaslar#ekran-arkadaslar .cete-uye-liste { display: grid; gap: var(--bosluk-2); margin: 0; padding: var(--bosluk-4); }
+
+/* ---------- 4. Çete bölümü (giriş yapılmış, çetesiz): sohbet karosu + bağlantılar ---------- */
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-cete.menu-sosyal { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: var(--bosluk-2); overflow-y: auto; overscroll-behavior: contain; }
+html #ekran-arkadaslar#ekran-arkadaslar:not(.cete-sohbet-acik) #sosyal-cete > .menu-karo { flex: none; display: flex; align-items: center; gap: var(--bosluk-3); min-height: 84px; max-height: none; padding: var(--bosluk-4) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-dugme); color: var(--renk-dugme-metin); text-align: left; }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-cete > .menu-karo > span { display: none; }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-cete > .menu-karo b { font-size: var(--yazi-lg); font-weight: var(--kalin-orta); color: inherit; }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-cete > .menu-karo small { margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: inherit; opacity: .8; }
+html #ekran-arkadaslar#ekran-arkadaslar:not(.cete-sohbet-acik) #sosyal-cete > .menu-link { flex: none; display: flex; align-items: center; justify-content: space-between; min-height: var(--dugme-boy); padding: 0 var(--bosluk-4) 0 var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #ekran-arkadaslar#ekran-arkadaslar #sosyal-cete > .menu-link::after { content: "›"; font-size: 22px; font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+
+/* ---------- 5. Gömülü çete sohbeti ---------- */
+html #ekran-arkadaslar#ekran-arkadaslar.cete-sohbet-acik #sosyal-cete > :is(.menu-karo, .menu-link) { display: none; }
+html #ekran-arkadaslar#ekran-arkadaslar.cete-sohbet-acik #sosyal-cete { gap: 0; overflow: hidden; }
+html #ekran-arkadaslar#ekran-arkadaslar #tam-sohbet.sosyal-sohbet-gomulu { flex: 1; min-height: 0; gap: var(--bosluk-2); padding: 0 0 var(--klavye, 0px); background: transparent; color: var(--renk-metin); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu > .ust { justify-content: space-between; gap: var(--bosluk-2); min-height: 0; padding: 0 var(--bosluk-1); border: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu > .ust .hap { min-width: 0; padding: 0; border: 0; box-shadow: none; background: transparent; color: var(--renk-metin); font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu > .ust .hap.sohbet-dil { flex: none; padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); }
+/* Üyeler · Savaş · Görevler: üç sakin düğme */
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-araclar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--bosluk-2); padding: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-araclar .menu-link { min-height: var(--dokunma-min); padding: 0 var(--bosluk-2); border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-kural { margin: 0; padding: var(--bosluk-2) var(--bosluk-3); border-radius: var(--kose-sm); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.4; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-kural .demo-rozet { margin-right: 4px; font-weight: var(--kalin-kalin); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-liste { gap: var(--bosluk-2); padding: var(--bosluk-1) 0 var(--bosluk-2); }
+/* Balonlar: düz beyaz (gölge yok); kendi mesajın adaçayı. */
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj { max-width: 86%; padding: var(--bosluk-2) 36px var(--bosluk-2) var(--bosluk-3); border: 0; border-radius: var(--kose-md) var(--kose-md) var(--kose-md) 6px; box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-normal); line-height: 1.4; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj.ben { padding-right: var(--bosluk-3); border-radius: var(--kose-md) var(--kose-md) 6px var(--kose-md); background: var(--renk-yuzey-adacayi); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj .kim { margin-bottom: 2px; font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); color: var(--renk-metin-adacayi); filter: none; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj .bildir { top: 4px; right: 4px; width: 28px; height: 28px; border-radius: var(--kose-hap); background: transparent; color: var(--renk-metin-ikincil); font-size: 14px; opacity: 1; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj :is(.mesaj-saati, .ogrendi) { font-size: 11px; font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj mark { padding: 0 3px; border-radius: 4px; background: var(--renk-dogru-zemin); color: var(--renk-dogru); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yeni { padding: var(--bosluk-2) var(--bosluk-4); border-radius: var(--kose-hap); box-shadow: var(--golge-yuzen); background: var(--renk-dugme); color: var(--renk-dugme-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu :is(.sohbet-durum, .sohbet-dil-uyari) { font-size: var(--yazi-xs); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-dil-uyari:not([hidden]) { padding: var(--bosluk-2) var(--bosluk-3); border-radius: var(--kose-sm); background: var(--renk-uyari-zemin); color: var(--renk-uyari); }
+/* Öneri çipleri ve yazma satırı */
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-oneri { gap: var(--bosluk-2); padding: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-oneri button { min-height: 36px; padding: 0 var(--bosluk-3); border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz { gap: var(--bosluk-2); padding: 0; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz input { min-height: 48px; padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-hap); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-normal); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz input::placeholder { color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz button { flex: 0 0 48px; width: 48px; height: 48px; display: grid; place-items: center; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-dugme); color: var(--renk-dugme-ok); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz button .pati-ikon { width: 20px; height: 20px; }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yaz button:disabled { opacity: .45; }
+/* Gerçek çete: yanıtlanan mesaj alıntısı */
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .mesaj-alinti { border-left: 3px solid var(--renk-metin-adacayi); color: var(--renk-metin-ikincil); }
+html #ekran-arkadaslar#ekran-arkadaslar .sosyal-sohbet-gomulu .sohbet-yanit { border-radius: var(--kose-sm); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); }
+
+/* =====================================================================
+   Sosyal panelleri (tam ekran; İstatistik paneliyle aynı dil)
+   ===================================================================== */
+html :is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev):is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) {
+  padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(var(--bosluk-4) + var(--alt-bosluk));
+  background: var(--renk-zemin); color: var(--renk-metin);
+  font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+}
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(h2, h3, b, p, span, small, button, div, input) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) > .ust { display: flex; justify-content: flex-start; align-items: center; gap: var(--bosluk-2); min-height: 52px; margin: 0 0 var(--bosluk-3); padding: 0; border: 0; }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) > .ust .kapat { flex: 0 0 var(--dokunma-min); width: var(--dokunma-min); height: var(--dokunma-min); min-height: 0; margin-left: calc(-1 * var(--bosluk-2)); display: grid; place-items: center; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: transparent; color: var(--renk-metin); font-size: 20px; font-weight: var(--kalin-orta); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) > .ust h2 { margin: 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .menu-panel-ic { padding: 0 0 var(--bosluk-4); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .menu-panel-ic > * { margin: 0 0 var(--bosluk-3); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .menu-panel-ic > p.soluk { margin: 0 var(--bosluk-1) var(--bosluk-3); font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .kart { margin: 0 0 var(--bosluk-3); padding: var(--bosluk-4) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .kart b { font-weight: var(--kalin-orta); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(small, .soluk) { font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+/* İnce çubuk: metin renginde dolar, iz adaçayı (Ödüller ve Takvim ile aynı). */
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.cete-cubuk, .savas-cubuk) { height: 6px; margin: var(--bosluk-3) 0 0; border-radius: var(--kose-hap); overflow: hidden; background: var(--renk-yuzey-adacayi); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.cete-cubuk, .savas-cubuk) i { border-radius: var(--kose-hap); background: var(--renk-metin); }
+/* Avatar: adaçayı daire, harf sakin yeşil. */
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .avatar { width: var(--avatar); height: var(--avatar); flex: none; display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi) !important; color: var(--renk-metin-adacayi); font-size: var(--yazi-md); font-weight: var(--kalin-kalin); }
+/* Ödül/eylem düğmeleri: ikinci düğme; ekrandaki tek ana düğme koyu. */
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.cete-dugme, .ikili-dugme, .al) { min-height: var(--dokunma-min); height: auto; padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); white-space: nowrap; }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.ikili-dugme, .al):not(:disabled) { background: var(--renk-dugme); color: var(--renk-dugme-metin); }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.cete-dugme, .ikili-dugme, .al):disabled { opacity: .55; }
+html .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) .cete-dugme.kucuk { min-height: 36px; padding: 0 var(--bosluk-3); font-size: var(--yazi-xs); }
+
+/* ---------- Lig ---------- */
+html #tam-menu-lig#tam-menu-lig .lig { padding: var(--bosluk-2) var(--bosluk-4); }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas { display: flex; align-items: center; gap: var(--bosluk-3); margin: 0; padding: var(--bosluk-3) var(--bosluk-1); border: 0; border-bottom: 1px solid var(--renk-cizgi); border-radius: 0; background: transparent; }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas:last-child { border-bottom: 0; }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas.sen { margin: 0 calc(-1 * var(--bosluk-2)); padding: var(--bosluk-3); border-radius: var(--kose-md); border-bottom-color: transparent; background: var(--renk-yuzey-adacayi); }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas.sen .avatar { background: var(--renk-yuzey) !important; }
+html #tam-menu-lig#tam-menu-lig .lig .sira { width: 18px; flex: none; text-align: center; font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); color: var(--renk-metin-ikincil); }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas > div:not(.avatar) { flex: 1; min-width: 0; }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas b { font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #tam-menu-lig#tam-menu-lig .lig .arkadas small { display: block; font-size: var(--yazi-xs); }
+html #tam-menu-lig#tam-menu-lig .lig .xp { flex: none; font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); color: var(--renk-metin); }
+html #tam-menu-lig#tam-menu-lig .lig > p { margin: var(--bosluk-2) 0; font-size: var(--yazi-sm); }
+
+/* ---------- Birlikte görevler ve haftalık ortak görevler ---------- */
+html .menu-panel:is(#tam-menu-arkadas-gorev, #tam-menu-cete-gorev) :is(.g-ust) { display: flex; align-items: center; gap: var(--bosluk-3); }
+html .menu-panel:is(#tam-menu-arkadas-gorev, #tam-menu-cete-gorev) .g-ust > div { flex: 1; min-width: 0; }
+html .menu-panel:is(#tam-menu-arkadas-gorev, #tam-menu-cete-gorev) .g-ust b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; }
+html .menu-panel:is(#tam-menu-arkadas-gorev, #tam-menu-cete-gorev) .g-ust small { display: block; margin-top: 2px; font-size: var(--yazi-sm); }
+html .menu-panel:is(#tam-menu-arkadas-gorev, #tam-menu-cete-gorev) .g-ikon { display: none; } /* emoji yok: başlık ve sayı yeter */
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .ikili-satir { display: flex; align-items: center; gap: var(--bosluk-3); margin-top: var(--bosluk-3); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin); }
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .ikili-satir span { width: 56px; flex: none; font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .ikili-satir .cete-cubuk { flex: 1; margin: 0; }
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .ikili-dugme { width: 100%; margin-top: var(--bosluk-4); min-height: var(--dugme-boy); font-size: var(--yazi-lg); }
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .ikili-bos p { margin: 0; font-size: var(--yazi-md); line-height: var(--satir-rahat); }
+html #tam-menu-arkadas-gorev#tam-menu-arkadas-gorev .kart > p { margin: var(--bosluk-1) 0 0; font-size: var(--yazi-sm); color: var(--renk-metin); }
+html #tam-menu-cete-gorev#tam-menu-cete-gorev .cete-uyeler { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--bosluk-3); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #tam-menu-cete-gorev#tam-menu-cete-gorev .cete-uyeler span { padding: 3px 10px; border-radius: var(--kose-hap); background: var(--renk-zemin); }
+html #tam-menu-cete-gorev#tam-menu-cete-gorev .cete-uyeler span.tamam { background: var(--renk-dogru-zemin); color: var(--renk-dogru); }
+html #tam-menu-cete-gorev#tam-menu-cete-gorev .cete-hafta-odul { background: var(--renk-yuzey-adacayi); }
+html #tam-menu-cete-gorev#tam-menu-cete-gorev .cete-hafta-odul p { margin: var(--bosluk-1) 0 0; font-size: var(--yazi-sm); line-height: 1.4; color: var(--renk-metin-adacayi); }
+
+/* ---------- Çete ve üyeler ---------- */
+html #tam-menu-cete#tam-menu-cete :is(.cete-bas, .cete-bas-gercek) { display: flex; align-items: center; gap: var(--bosluk-3); }
+html #tam-menu-cete#tam-menu-cete .cete-bas { background: var(--renk-yuzey); }
+html #tam-menu-cete#tam-menu-cete .c-ikon { flex: none; width: var(--avatar); height: var(--avatar); display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: 0; }
+html #tam-menu-cete#tam-menu-cete .c-ikon .pati-ikon { width: 20px; height: 20px; }
+html #tam-menu-cete#tam-menu-cete :is(.cete-bas, .cete-bas-gercek) b { display: block; font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); }
+html #tam-menu-cete#tam-menu-cete :is(.cete-bas, .cete-bas-gercek) small { display: block; font-size: var(--yazi-sm); }
+html #tam-menu-cete#tam-menu-cete .cete-gercek > b { display: block; font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); }
+html #tam-menu-cete#tam-menu-cete .cete-gercek p.soluk { margin: var(--bosluk-1) 0 0; font-size: var(--yazi-sm); line-height: 1.45; }
+/* Kartın ana eylemi (Hesap aç, Çete kur, Davet et): koyu; ikincisi adaçayı. */
+html #tam-menu-cete#tam-menu-cete .cete-gercek > .cete-dugme,
+html #tam-menu-cete#tam-menu-cete .cete-dugmeler > .cete-dugme:first-child { width: 100%; min-height: var(--dugme-boy); margin-top: var(--bosluk-4); background: var(--renk-dugme); color: var(--renk-dugme-metin); font-size: var(--yazi-md); }
+html #tam-menu-cete#tam-menu-cete .cete-dugmeler { display: flex; flex-wrap: wrap; gap: var(--bosluk-2); }
+html #tam-menu-cete#tam-menu-cete .cete-dugmeler > .cete-dugme { flex: 1; min-height: var(--dugme-boy); margin-top: var(--bosluk-4); font-size: var(--yazi-md); }
+html #tam-menu-cete#tam-menu-cete .cete-uye-liste { display: grid; gap: var(--bosluk-2); margin-top: var(--bosluk-4); }
+html #tam-menu-cete#tam-menu-cete .cete-uye { display: flex; align-items: center; gap: var(--bosluk-3); }
+html #tam-menu-cete#tam-menu-cete .cete-uye-ad { flex: 1; min-width: 0; font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+html #tam-menu-cete#tam-menu-cete .cete-kod { display: flex; align-items: center; justify-content: space-between; margin-top: var(--bosluk-4); padding: var(--bosluk-3) var(--bosluk-4); border-radius: var(--kose-md); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); }
+html #tam-menu-cete#tam-menu-cete .cete-kod b { color: var(--renk-metin); font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: 3px; }
+html #tam-menu-cete#tam-menu-cete .cete-not { margin-top: var(--bosluk-3); font-size: var(--yazi-xs); line-height: 1.45; }
+
+/* ---------- Çete savaşı ---------- */
+html #tam-menu-savas#tam-menu-savas .savas-skor { display: flex; align-items: center; gap: var(--bosluk-3); }
+html #tam-menu-savas#tam-menu-savas .savas-skor .taraf { flex: 1; text-align: center; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #tam-menu-savas#tam-menu-savas .savas-skor .taraf b { display: block; margin-top: 2px; font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #tam-menu-savas#tam-menu-savas .savas-skor > span { font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); color: var(--renk-metin-ikincil); }
+html #tam-menu-savas#tam-menu-savas .savas-cubuk { display: flex; height: 6px; margin: var(--bosluk-4) 0 var(--bosluk-2); background: var(--renk-yuzey-adacayi); }
+html #tam-menu-savas#tam-menu-savas .savas-durum { margin: 0; text-align: center; font-size: var(--yazi-sm); line-height: 1.4; }
+html #tam-menu-savas#tam-menu-savas .savas-not { margin: var(--bosluk-3) 0 0; font-size: var(--yazi-xs); line-height: 1.45; }
+html #tam-menu-savas#tam-menu-savas .savas-modlar { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bosluk-2); margin-top: var(--bosluk-4); }
+html #tam-menu-savas#tam-menu-savas .savas-modlar button { min-height: 84px; padding: var(--bosluk-3) var(--bosluk-4); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-zemin); color: var(--renk-metin); text-align: left; }
+html #tam-menu-savas#tam-menu-savas .savas-modlar .m-ikon { display: none; }
+html #tam-menu-savas#tam-menu-savas .savas-modlar b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; }
+html #tam-menu-savas#tam-menu-savas .savas-modlar small { display: block; margin-top: 2px; font-size: var(--yazi-xs); line-height: 1.4; }
+
+/* =====================================================================
+   Sosyal'de açılan ortak pencere (ders-ekrani.css'in C penceresinin üstüne)
+   Arkadaş menüsü, birlikte görev seçimi, ekle/kur/katıl. Emoji ikon
+   Pati'nin yeri değil: bu pencerelerde ikon gösterilmez.
+   ===================================================================== */
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .p-ikon:not(:has(img)) { display: none; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere h3 { margin-top: 0; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere :is(.arkadas-menu, .sablon-sec) { display: grid; gap: var(--bosluk-2); margin: 0 0 var(--bosluk-4); text-align: left; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere :is(.arkadas-menu, .sablon-sec) button { display: flex; align-items: center; justify-content: center; gap: var(--bosluk-2); width: 100%; min-height: var(--dokunma-min); padding: var(--bosluk-2) var(--bosluk-4); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-family: var(--font); font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.35; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .sablon-sec button { justify-content: flex-start; min-height: 64px; text-align: left; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .sablon-sec small { font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-adacayi); }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .arkadas-menu .alt-satir { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--bosluk-2); }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .arkadas-menu .alt-satir .miyav-dugme { grid-column: 1 / -1; height: auto; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere .arkadas-menu .gonderildi { background: var(--renk-dogru-zemin); color: var(--renk-dogru); }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere :is(.hesap-girdi) { width: 100%; min-height: 48px; margin: 0 0 var(--bosluk-2); padding: 0 var(--bosluk-4); border: 1px solid var(--renk-cizgi); border-radius: var(--kose-md); background: var(--renk-zemin); color: var(--renk-metin); font-family: var(--font); font-size: var(--yazi-md); }
+/* Menülü/seçimli pencerede "Kapat/Vazgeç" ikinci düğme (seçenekler asıl eylem). */
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere:has(.arkadas-menu, .sablon-sec) .buyuk-dugme.vazgec { background: transparent !important; color: var(--renk-metin) !important; justify-content: center; text-decoration: underline; text-underline-offset: 4px; }
+:root:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere:has(.arkadas-menu, .sablon-sec) .buyuk-dugme.vazgec::after { display: none; }
+
+/* ---------- Yüksek kontrast: dolgu yerine siyah çerçeve ---------- */
+:root[data-tema="kontrast"] #ekran-arkadaslar#ekran-arkadaslar :is(.kart, .arkadas-satir, #ekle-dugme, .demo-bant, .menu-link, .menu-karo, .mesaj, .sohbet-kural, .sohbet-yaz input, .sohbet-oneri button) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-arkadaslar#ekran-arkadaslar :is(.arkadas-kedi, .g-ikon) { box-shadow: inset 0 0 0 1px #000; }
+:root[data-tema="kontrast"] .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev):is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.kart, .savas-modlar button, .cete-kod, .cete-dugme, .al) { border: 2px solid #000; }
+:root[data-tema="kontrast"] .menu-panel:is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev):is(#tam-menu-lig, #tam-menu-arkadas-gorev, #tam-menu-cete, #tam-menu-savas, #tam-menu-cete-gorev) :is(.cete-cubuk, .savas-cubuk) { box-shadow: inset 0 0 0 1px #000; }
+:root[data-tema="kontrast"]:not(#yok):has(#ekran-arkadaslar.aktif):not(:has(.tam.aktif:not(.menu-panel))) #pencere#pencere :is(.arkadas-menu, .sablon-sec) button { border: 2px solid #000; }

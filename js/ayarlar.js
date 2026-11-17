@@ -1,6 +1,6 @@
 // ================= AYARLAR =================
 // Ayarlar d.ayar içinde kalıcı (kayit.js izinli değerleri denetler). Yedek ve kaynaklar Ödüller'den buraya taşındı.
-const UYGULAMA_SURUM = "0.10.9-dev.10";
+const UYGULAMA_SURUM = "0.10.9-dev.11";
 const AYAR_SATIRLARI = [
   { baslik: "Günlük hedef", aciklama: "Her cevap hedefe sayılır.", tur: "secim", alan: "hedef",
     secenek: [[5, "5"], [10, "10"], [15, "15"], [20, "20"]] },
@@ -140,7 +140,7 @@ document.getElementById("yedek-kontrol").onclick = () => {
   const r = yedekCoz(document.getElementById("yedek-giris").value);
   yedekAday = r.veri || null; onay.hidden = !yedekAday;
   const satir = t => { const p = document.createElement("p"); p.textContent = t; return p; };
-  if (!yedekAday) { on.replaceChildren(satir("😿 " + r.hata + " Mevcut ilerlemen değişmedi.")); on.className = "yedek-onizleme hata"; return; }
+  if (!yedekAday) { on.replaceChildren(satir(r.hata + " Mevcut ilerlemen değişmedi.")); on.className = "yedek-onizleme hata"; return; }
   const v = yedekAday, tarih = v.yedekZamani ? new Date(v.yedekZamani).toLocaleString("tr-TR") : "bilinmiyor (eski biçim)";
   on.className = "yedek-onizleme";
   on.replaceChildren(satir(`Yedek tarihi: ${tarih}`), satir(`Kelime: ${Object.keys(v.kartlar).length} · Altın: ${Math.floor(v.yildiz)} · Eşya: ${(v.esyalar || []).length}`),

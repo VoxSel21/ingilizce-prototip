@@ -1,0 +1,168 @@
+/* =====================================================================
+   Pati · arayüz kural seti · "C · Sakin ve şık" (2026-11-16)
+   Kaynak: outputs/kural-seti-2026-11-16/degiskenler.css (Serhat onayladı).
+   Tema seçimi uygulamadaki düzenle aynı: <html data-tema="pastel|koyu|kontrast">.
+   "pastel" (varsayılan) = açık tema. Adlar uygulamanın eski değişkenleriyle
+   (--yuzey, --murekkep...) çakışmasın diye --renk-, --yazi-, --bosluk-, --kose-
+   ön ekleriyle başlar; ekran ekran geçişte eski ve yeni değişkenler yan yana yaşar.
+   ===================================================================== */
+
+:root {
+  /* ---------- Renk: açık tema (varsayılan) ---------- */
+  --renk-zemin:          #F3F4F1;  /* kırık beyaz: tüm ekranların zemini */
+  --renk-yuzey:          #FFFFFF;  /* kart, alt menü, açılır pencere */
+  --renk-yuzey-adacayi:  #DDE3DC;  /* sakin dolgu: avatar, halka izi, ikincil düğme */
+  --renk-cizgi:          #E3E7E1;  /* ince ayırıcı çizgi */
+
+  --renk-metin:          #1F2A26;  /* ana metin (zeminde 13,4:1) */
+  --renk-metin-ikincil:  #626D66;  /* açıklama, tarih, küçük etiket (zeminde 4,9:1) */
+  --renk-metin-adacayi:  #3E5A4E;  /* sakin yeşil metin: hap, avatar harfi */
+  --renk-ikon-pasif:     #85908A;  /* seçili olmayan menü ikonu (beyazda 3,3:1) */
+
+  --renk-dugme:          #1F2A26;  /* ana düğme zemini: ekrandaki en koyu şey */
+  --renk-dugme-metin:    #F3F4F1;
+  --renk-dugme-ok:       #C8E37A;  /* düğmedeki ok dairesi */
+  --renk-dugme-ok-metin: #1F2A26;
+  --renk-vurgu:          #C8E37A;  /* misket limonu: yalnız küçük işaretler */
+  --renk-odak:           #1F2A26;  /* klavye/erişilebilirlik odak halkası */
+
+  /* Pati'nin penceresi (kemer) */
+  --renk-pencere-ust:    #D7E2D9;
+  --renk-pencere-orta:   #E9EEE6;
+  --renk-pencere-alt:    #F0F2EC;
+  --renk-pencere-tepe:   #E1E8DF;  /* pencerenin dibindeki yumuşak tepe */
+  --renk-pencere-cerceve: transparent; /* yalnız kontrast temada görünür */
+  --renk-pati-yer:       #9DB1A3;  /* yer tutucu silüet (asıl kedi gelince kalkar) */
+  --renk-hap-cam:        rgba(255,255,255,.75);
+
+  /* Durum renkleri (ders ekranları için; ana ekranda yok) */
+  --renk-dogru:          #2A714A;
+  --renk-dogru-zemin:    #E6F0E6;
+  --renk-yanlis:         #B4492F;
+  --renk-yanlis-zemin:   #F8E9E3;
+  --renk-uyari:          #6B5A1E;
+  --renk-uyari-zemin:    #F6EED2;
+
+  --golge-yuzen: 0 8px 24px rgba(31,42,38,.08);  /* yalnız yüzen parçalar */
+
+  /* ---------- Yazı ---------- */
+  --font: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --yazi-xs:  12px;  /* etiket, seviye · konu satırı */
+  --yazi-sm:  13px;  /* yardımcı bilgi, tarih, satır */
+  --yazi-md:  15px;  /* gövde metni, soru, açıklama */
+  --yazi-lg:  16px;  /* düğme yazısı */
+  --yazi-xl:  20px;  /* selam, bölüm başlığı */
+  --yazi-2xl: 22px;  /* ders adı, kart başlığı */
+  --yazi-3xl: 28px;  /* büyük an: ders bitti, seri */
+  --kalin-normal: 500;
+  --kalin-orta:   600;
+  --kalin-kalin:  700;
+  --satir-sik:    1.2;   /* başlıklar */
+  --satir-rahat:  1.45;  /* gövde */
+  --harf-baslik:  -.02em; /* 20 px ve üstü */
+
+  /* ---------- Boşluk (4'ün katları) ---------- */
+  --bosluk-1:  4px;
+  --bosluk-2:  8px;
+  --bosluk-3: 12px;
+  --bosluk-4: 16px;
+  --bosluk-5: 20px;  /* geniş parçaların kenar payı: pencere, alt menü */
+  --bosluk-6: 24px;  /* içeriğin kenar payı: yazı, düğme, satır */
+  --bosluk-8: 32px;
+  --kenar-genis:  var(--bosluk-5);
+  --kenar-icerik: var(--bosluk-6);
+
+  /* ---------- Köşe ---------- */
+  --kose-sm:   12px;  /* menüde seçili kutu, küçük rozet */
+  --kose-md:   18px;  /* düğme */
+  --kose-lg:   22px;  /* kart, alt menü */
+  --kose-xl:   28px;  /* pencerenin alt köşeleri */
+  --kose-hap:  999px; /* hap, avatar, ok dairesi */
+
+  /* ---------- Ölçüler ---------- */
+  --dugme-boy:     56px;
+  --dokunma-min:   44px;
+  --ok-daire:      30px;
+  --avatar:        38px;
+  --pencere-buyuk: 360px;  /* ana ekran */
+  --pencere-orta:  200px;  /* ders/alıştırma ekranı (öneri) */
+  --pencere-kucuk: 120px;  /* sonuç, bildirim (öneri) */
+
+  --gecis: 180ms cubic-bezier(.2,.7,.3,1);
+}
+
+/* ---------- Koyu tema ---------- */
+:root[data-tema="koyu"] {
+  --renk-zemin:          #141A17;
+  --renk-yuzey:          #1D2420;
+  --renk-yuzey-adacayi:  #26302B;
+  --renk-cizgi:          #2E3833;
+
+  --renk-metin:          #E6EBE5;
+  --renk-metin-ikincil:  #9AA59E;
+  --renk-metin-adacayi:  #A9C4B4;
+  --renk-ikon-pasif:     #8A958E;
+
+  --renk-dugme:          #E6EBE5;  /* koyuda en zıt renk açık olan */
+  --renk-dugme-metin:    #141A17;
+  --renk-dugme-ok:       #1F2A26;
+  --renk-dugme-ok-metin: #C8E37A;
+  --renk-vurgu:          #C8E37A;
+  --renk-odak:           #C8E37A;
+
+  --renk-pencere-ust:    #2A3830;
+  --renk-pencere-orta:   #212B25;
+  --renk-pencere-alt:    #1B2320;
+  --renk-pencere-tepe:   #24302A;
+  --renk-pati-yer:       #6F8878;
+  --renk-hap-cam:        rgba(20,26,23,.6);
+
+  --renk-dogru:          #8FD3A8;
+  --renk-dogru-zemin:    #1F3328;
+  --renk-yanlis:         #F29A80;
+  --renk-yanlis-zemin:   #3A2620;
+  --renk-uyari:          #E0C46A;
+  --renk-uyari-zemin:    #332D17;
+
+  --golge-yuzen: 0 8px 24px rgba(0,0,0,.35);
+}
+
+/* ---------- Yüksek kontrast (2026-11-16, ana ekran geçişinde eklendi) ----------
+   Ayarlar'daki "Yüksek kontrast" seçeneği: siyah yazı, beyaz zemin, belirgin
+   çerçeve. Kural setinin düzeni aynı kalır; yalnız renkler en zıt hale gelir.
+   Gölge yerine 2 px siyah çerçeve (eski kontrast temasıyla aynı dil). */
+:root[data-tema="kontrast"] {
+  --renk-zemin:          #FFFFFF;
+  --renk-yuzey:          #FFFFFF;
+  --renk-yuzey-adacayi:  #E8E8E8;
+  --renk-cizgi:          #000000;
+
+  --renk-metin:          #000000;
+  --renk-metin-ikincil:  #262626;  /* beyazda 15:1 */
+  --renk-metin-adacayi:  #000000;
+  --renk-ikon-pasif:     #4D4D4D;  /* beyazda 8,5:1 */
+
+  --renk-dugme:          #000000;
+  --renk-dugme-metin:    #FFFFFF;
+  --renk-dugme-ok:       #C8E37A;  /* siyah üstünde limon: 14:1 */
+  --renk-dugme-ok-metin: #000000;
+  --renk-vurgu:          #C8E37A;
+  --renk-odak:           #000000;
+
+  --renk-pencere-ust:    #FFFFFF;
+  --renk-pencere-orta:   #FFFFFF;
+  --renk-pencere-alt:    #FFFFFF;
+  --renk-pencere-tepe:   #E8E8E8;
+  --renk-pencere-cerceve: #000000;
+  --renk-pati-yer:       #000000;
+  --renk-hap-cam:        #FFFFFF;
+
+  --renk-dogru:          #0B5A40;
+  --renk-dogru-zemin:    #E3F7EF;
+  --renk-yanlis:         #9E2A12;
+  --renk-yanlis-zemin:   #FFE9E5;
+  --renk-uyari:          #4D3F00;
+  --renk-uyari-zemin:    #FFF4D6;
+
+  --golge-yuzen: 0 0 0 2px #000;
+}

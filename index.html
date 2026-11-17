@@ -12,10 +12,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>Pati · Küçük İngilizce dünyası</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/stil.css?v=0.10.9-dev.10">
-<link rel="stylesheet" href="css/menuler.css?v=0.10.9-dev.10">
-<link rel="stylesheet" href="css/pati-dunya.css?v=0.10.9-dev.10">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/degiskenler.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/stil.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/menuler.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/pati-dunya.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/ana-ekran.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/ders-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/takvim-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/kedi-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/oduller-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/sosyal-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/alistirma-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/oyun-ekrani.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/kucuk-ekranlar.css?v=0.10.9-dev.11">
 </head>
 <body>
 <div id="uygulama">
@@ -23,56 +33,79 @@
   <div class="sahne" id="sahne"></div>
 
   <!-- ========== ANA SAYFA ========== -->
+  <!-- C · Sakin ve şık (2026-11-16): ilk ekranda yalnız 6 parça (üst satır, Pati penceresi, ders satırı,
+       tek ana düğme, bilgi satırı, alt menü). Seviye, konu ve alıştırmalar kaydırınca altta.
+       Görünüş: css/degiskenler.css + css/ana-ekran.css. Eski kimlikler (id) JS için korunur. -->
   <section class="ekran aktif" id="ekran-ana">
-    <div class="ust">
-      <span class="hap" id="seri-hap">🔥 0</span>
-      <div class="ust-sag"><button class="hap ses-dugme" aria-label="Sesi aç/kapat">🔊</button><span class="hap" id="yildiz-hap">🪙 0</span><button class="hap" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button></div>
+    <div class="ana-ust">
+      <div class="ana-selam"><span id="ana-tarih"></span><b id="ana-selam">Merhaba</b></div>
+      <div class="ana-araclar">
+        <span class="ana-hap" id="yildiz-hap">🪙 0</span>
+        <button class="ana-ikon-dugme ses-dugme" aria-label="Sesi aç/kapat">🔊</button>
+        <button class="ana-ikon-dugme" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button>
+      </div>
     </div>
-    <div class="menu-primary">
-      <div class="ders-sahne" id="ders-sahne">
-        <div class="ders-sahne-metni">
-          <h1 id="mini-ders-baslik">Pati ile masanın başında</h1>
-          <p id="mini-ders-not">3 kelime · yaklaşık 2 dk</p>
-        </div>
+
+    <div class="ana-pencere-kap">
+      <div class="ana-pencere" id="ders-sahne">
+        <span class="ana-hap cam" id="seri-hap">🔥 0</span>
+        <!-- Kedi tasarımı tasarımcıda: kesik çizgili yer tutucu çizilir (CSS), eski kedi çizimi gizli. -->
         <button class="ana-kedi" id="ana-kedi" aria-label="Kedine git"></button>
       </div>
-      <button class="buyuk-dugme" id="basla-dugme">İlk mini dersine başla</button>
-      <div class="hedef">
-        <div class="halka" id="halka"><span id="halka-yazi">0/10</span></div>
-        <div>
-          <b>Günlük hedef</b>
-          <p class="soluk" id="hedef-yazi">Hediyeye 10 cevap kaldı · 0 doğru</p>
-        </div>
+    </div>
+
+    <div class="ana-ders-satir">
+      <div class="ana-ders-metin">
+        <small id="ana-etiket">A1 · Tüm konular</small>
+        <h1 id="mini-ders-baslik">Pati ile masanın başında</h1>
+        <p id="mini-ders-not">3 kelime · yaklaşık 2 dk</p>
       </div>
-    </div>
-    <button class="menu-link" id="calisma-turu-sec">Çalışma türünü seç</button>
-    <div class="seviye-sec" id="seviye-sec"></div>
-    <div class="konu-ara"><input id="konu-ara" type="search" placeholder="Konu ara (ör. yemek, doğa)" aria-label="Konu ara" autocomplete="off"><button id="konu-ara-temizle" aria-label="Aramayı temizle" hidden>✕</button></div>
-    <div class="konu-sec" id="konu-sec"></div>
-    <p class="soluk konu-yok" id="konu-yok" hidden>Bu aramayla konu bulunamadı.</p>
-
-
-    <h2>Alıştırmalar</h2>
-    <div class="gorevler">
-      <button class="gorev" style="background:var(--gunes-a)" data-ac="pv"><span class="ikon">🔗</span><b>Phrasal verbs</b><small id="pv-yazi">get up, give up...</small></button>
-      <button class="gorev" style="background:var(--lavanta-a)" data-ac="cumle"><span class="ikon">🧩</span><b>Cümle kur</b><small>Blokları sıraya diz</small></button>
-      <button class="gorev" style="background:var(--mercan-a)" data-ac="kur"><span class="ikon">🔤</span><b>Kelime Kur</b><small id="kur-yazi">Harfleri dizip kelimeyi yaz</small></button>
-      <button class="gorev" style="background:var(--nane-a)" data-ac="esles"><span class="ikon">🐾</span><b>Pati Çabukluğu</b><small id="esles-yazi">Eşleştir, süreye karşı</small></button>
+      <div class="ana-halka" id="halka" role="img" aria-label="Günlük hedef"><span id="halka-yazi" aria-hidden="true">0/10</span></div>
     </div>
 
-    <h2>Kelime kutuların</h2>
-    <div class="kart">
-      <div class="kutular" id="kutular"></div>
-      <p class="soluk" style="font-size:13px;margin-top:10px;">Çalıştığın kelimeler tekrarlarla pekişir.</p><details class="kutu-yardim"><summary>Kutular nasıl çalışır?</summary><p>Çalışıldı: soru cevapladın. Tekrar: hatırlamayı yeniden deniyorsun. Pekişti: 4. kutuya ulaştı; kesin ustalık ölçümü değildir. Yanlış cevaplanan kart başa döner. Bir kutuya dokun, içindekileri gör.</p></details><p hidden></p>
+    <button class="dugme-ana" id="basla-dugme">İlk mini dersine başla</button>
+
+    <div class="ana-bilgi"><span id="hedef-yazi">Hediyeye 10 cevap kaldı</span><b id="ana-dogru">0 doğru</b></div>
+
+    <!-- Kaydırınca: daha az kullanılan seçimler -->
+    <div class="ana-alt">
+      <!-- Seviye elle seçilmez (Serhat, 2026-11-16): seviyeyi Ayarlar'daki seviye değerlendirmesi belirler. -->
+      <h2>Konu</h2>
+      <div class="konu-ara"><input id="konu-ara" type="search" placeholder="Konu ara (ör. yemek, doğa)" aria-label="Konu ara" autocomplete="off"><button id="konu-ara-temizle" aria-label="Aramayı temizle" hidden>✕</button></div>
+      <div class="konu-sec" id="konu-sec"></div>
+      <p class="konu-yok" id="konu-yok" hidden>Bu aramayla konu bulunamadı.</p>
+
+      <button class="ana-satir" id="calisma-turu-sec"><div><b>Çalışma türünü seç</b><small>Uzun tur ve diğer çalışma türleri</small></div><span class="ok" aria-hidden="true">›</span></button>
+
+      <!-- Aşağıdakileri js/menu-paneller.js açılışta ayrı panellere taşır (Alıştırmalar, Kelime kutuları);
+           panellerin C görünümü css/alistirma-ekrani.css'te. Ana ekranda yalnız iki bağlantı kalır. -->
+      <h2>Alıştırmalar</h2>
+      <div class="gorevler">
+        <button class="gorev" data-ac="pv"><b>Phrasal verbs</b><small id="pv-yazi">get up, give up...</small></button>
+        <button class="gorev" data-ac="cumle"><b>Cümle kur</b><small>Blokları sıraya diz</small></button>
+        <button class="gorev" data-ac="kur"><b>Kelime Kur</b><small id="kur-yazi">Harfleri dizip kelimeyi yaz</small></button>
+        <button class="gorev" data-ac="esles"><b>Pati Çabukluğu</b><small id="esles-yazi">Eşleştir, süreye karşı</small></button>
+      </div>
+
+      <h2>Kelime kutuların</h2>
+      <div class="kart">
+        <div class="kutular" id="kutular"></div>
+        <p class="soluk kutu-aciklama">Çalıştığın kelimeler tekrarlarla pekişir.</p><details class="kutu-yardim"><summary>Kutular nasıl çalışır?</summary><p>Çalışıldı: soru cevapladın. Tekrar: hatırlamayı yeniden deniyorsun. Pekişti: 4. kutuya ulaştı; kesin ustalık ölçümü değildir. Yanlış cevaplanan kart başa döner. Bir kutuya dokun, içindekileri gör.</p></details><p hidden></p>
+      </div>
+      <button class="kart zor-dugme" id="zor-dugme"><div><b>Zorlandıkların</b><small id="zor-yazi"></small></div><span class="ok" aria-hidden="true">›</span></button>
+      <button class="kart hazne-dugme" id="hazne-dugme"><div><b>Kelime haznesi</b><small id="hazne-dugme-yazi">Tanıştığın kelimeler burada birikir</small></div><span class="ok" aria-hidden="true">›</span></button>
+      <p class="prototip-not">Misafir ilerlemesi bu cihazda saklanır. Hesapla eşitleme ve ilerleme yedeği Ayarlar’da.</p>
     </div>
-    <button class="kart zor-dugme" id="zor-dugme"><span class="h-ikon">🔥</span><div><b>Zorlandıkların</b><small id="zor-yazi"></small></div><span class="ok">›</span></button>
-    <button class="kart hazne-dugme" id="hazne-dugme"><span class="h-ikon">📚</span><div><b>Kelime haznesi</b><small id="hazne-dugme-yazi">Tanıştığın kelimeler burada birikir</small></div><span class="ok">›</span></button>
-    <p class="prototip-not">Misafir ilerlemesi bu cihazda saklanır. Hesapla eşitleme ve ilerleme yedeği Ayarlar’da.</p>
   </section>
 
   <!-- ========== TAKVİM ========== -->
   <section class="ekran" id="ekran-takvim">
-    <div class="ust"><span class="hap">📅 Takvim</span><span class="hap" id="koruyucu-hap">🧊 0</span></div>
+    <div class="ust"><h1 class="takvim-baslik">Takvim</h1><span class="hap" id="koruyucu-hap">🧊 0</span></div>
+    <!-- Pati penceresi + seri (görsel süs; aynı bilgi istatistik panelinde de var) -->
+    <div class="takvim-seri">
+      <div class="takvim-pencere" aria-hidden="true"><i class="takvim-kedi"></i></div>
+      <div class="takvim-seri-metin"><small>Günlük seri</small><b><span id="takvim-seri">0</span> gün</b><small>En uzun: <span id="takvim-enuzun">0</span> gün</small></div>
+    </div>
     <div class="takvim-kart">
       <div class="ay-bas">
         <span class="ay-emoji" id="ay-emoji">🍂</span>
@@ -81,27 +114,27 @@
       <div class="ay-cubuk"><i id="ay-cubuk"></i></div>
       <div class="gunler" id="gunler"></div>
       <div class="lejant">
-        <span><i style="background:linear-gradient(135deg,#FF8A7A,#FFC94D)"></i> Çalıştın</span>
-        <span><i style="background:#DDEFFD">🧊</i> Koruyucu</span>
-        <span><i style="background:#fff;outline:3px solid #9F8BEA">🐱</i> Bugün</span>
+        <span><i class="lej-calisti"></i> Çalıştın</span>
+        <span><i class="lej-korundu">🧊</i> Koruyucu</span>
+        <span><i class="lej-bugun"></i> Bugün</span>
       </div>
     </div>
     <h2>Senin istatistiklerin</h2>
     <div class="istat">
-      <div class="kart" style="background:var(--mercan-a)"><span class="i-ikon">🔥</span><b id="i-seri">0</b><span class="soluk">günlük seri</span></div>
-      <div class="kart" style="background:var(--gunes-a)"><span class="i-ikon">🏆</span><b id="i-enuzun">0</b><span class="soluk">en uzun seri</span></div>
-      <div class="kart" style="background:var(--nane-a)"><span class="i-ikon">📚</span><b id="i-ogrenilen">0</b><span class="soluk" id="i-ogrenilen-not">çalışılan kelime · tekrarlarla pekişir</span></div>
-      <div class="kart" style="background:var(--lavanta-a)"><span class="i-ikon">📅</span><b id="i-gun">0</b><span class="soluk">toplam çalışılan gün</span></div>
+      <div class="kart"><span class="i-ikon">🔥</span><b id="i-seri">0</b><span class="soluk">günlük seri</span></div>
+      <div class="kart"><span class="i-ikon">🏆</span><b id="i-enuzun">0</b><span class="soluk">en uzun seri</span></div>
+      <div class="kart"><span class="i-ikon">📚</span><b id="i-ogrenilen">0</b><span class="soluk" id="i-ogrenilen-not">çalışılan kelime · tekrarlarla pekişir</span></div>
+      <div class="kart"><span class="i-ikon">📅</span><b id="i-gun">0</b><span class="soluk">toplam çalışılan gün</span></div>
     </div>
-    <div class="kart" style="margin-top:12px;background:var(--gok-a);">
-      <b style="font-weight:900;">🧊 Seri koruyucu nedir?</b>
-      <p class="soluk" style="font-size:14px;margin-top:4px;">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden 3 🪙 karşılığında alabilirsin.</p>
+    <div class="kart koruyucu-not">
+      <b>🧊 Seri koruyucu nedir?</b>
+      <p class="soluk">Bir gün çalışamazsan elindeki koruyucu otomatik kullanılır ve serin bozulmaz. Ödüller sekmesinden 3 🪙 karşılığında alabilirsin.</p>
     </div>
   </section>
 
   <!-- ========== ÖDÜLLER ========== -->
   <section class="ekran" id="ekran-oduller">
-    <div class="ust"><span class="hap">🏆 Ödüller</span><span class="hap" id="yildiz-hap2">🪙 0</span></div>
+    <div class="ust"><h1 class="oduller-baslik">Ödüller</h1><span class="hap" id="yildiz-hap2">🪙 0</span></div>
     <h2 style="margin-top:60px;">Başarımlar</h2>
     <div class="rozetler" id="rozetler"></div>
     <h2>Dükkân</h2>
@@ -160,7 +193,7 @@
       <div class="panel-ic"><div class="magaza" id="sahneler"></div></div>
     </div>
     <div class="alt-panel kedi-panel" id="panel-durum" role="dialog" aria-label="Durum ve antrenman" aria-hidden="true">
-      <div class="panel-ust"><b>💪 Durum</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ust"><b>Durum</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
       <div class="panel-ic">
         <p class="soluk">Pati’nin oyun biçimi bedenine göre değişir. Hepsinde balığa ulaşmak mümkün.</p><div class="kilo-kutu">
           <div class="kilo-ust"><span id="kilo-durum2">Pofuduk</span><span id="kilo-kg2">4.0 kg</span></div>
@@ -168,29 +201,29 @@
           <div class="kilo-etiket"><span>Fit</span><span>Pofuduk</span><span>Tombiş</span><span>Mega Chonk</span></div>
         </div>
         <button class="kart av-kart" id="av-kart">
-          <span class="av-kart-ikon">🎣</span>
+          <span class="av-kart-ikon"><svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#fish"></use></svg></span>
           <div><b>Günün balık avı</b><small id="av-kart-yazi">30 saniye, 10 kelime. Balığa ulaşırsan 1 🪙</small></div>
           <span class="ok">›</span>
         </button>
-        <button class="kart av-kart" id="spor-kart" style="background:var(--mercan-a);">
-          <span class="av-kart-ikon">🏋️</span>
+        <button class="kart av-kart" id="spor-kart">
+          <span class="av-kart-ikon"><svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#barbell"></use></svg></span>
           <div><b>Kedi spor salonu</b><small>Pati ile hareket et, eski kelimeleri hatırla</small></div>
           <span class="ok">›</span>
         </button>
-        <div class="kart" style="background:var(--gunes-a);">
-          <b style="font-weight:900;">🪙 Altın nasıl kazanılır?</b>
-          <p class="soluk" style="font-size:14px;margin-top:4px;">Günlük hedefi bitir: 2–3 🪙 · Günün avında balığa ulaş: 1 🪙 · Cümle turunda 3 doğru: 1 🪙 · Başarımlar: 1–10 🪙</p>
+        <div class="kart altin-not">
+          <b>Altın nasıl kazanılır?</b>
+          <p class="soluk">Günlük hedefi bitir: 2–3 altın · Günün avında balığa ulaş: 1 altın · Cümle turunda 3 doğru: 1 altın · Başarımlar: 1–10 altın</p>
         </div>
       </div>
     </div>
 
   <!-- ========== ARKADAŞLAR ========== -->
   <section class="ekran" id="ekran-arkadaslar">
-    <div class="ust"><span class="hap">🐾 Sosyal</span><button class="hap" id="ekle-dugme">＋ Ekle</button></div>
+    <div class="ust"><h1 class="sosyal-baslik">Arkadaşlar</h1><button class="hap" id="ekle-dugme">+ Ekle</button></div>
     <div class="dolap-sekme sosyal-sekme" id="sosyal-sekme" style="margin-top:60px;">
       <button data-sosyal="arkadas" class="aktif">👫 Arkadaşlar</button><button data-sosyal="cete">🐾 Çete</button><button data-sosyal="sohbet">⚔️ Çete Savaşı</button>
     </div>
-    <div class="demo-bant" id="sosyal-demo-bant" role="note"><b>🧪 Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.</div>
+    <div class="demo-bant" id="sosyal-demo-bant" role="note"><b>Demo</b> Arkadaşlar, çete üyeleri, mesajları ve puanları örnek; gerçek kişiler değil. Senin ilerlemen ve altının gerçek.</div>
     <div id="sosyal-arkadas">
       <div id="cete-gercek-arkadas"></div>
       <h2>Birlikte görevler</h2>
@@ -204,7 +237,7 @@
     </div>
     <div id="sosyal-cete" style="display:none;">
       <div id="cete-gercek-yonet"></div>
-      <div class="kart cete-bas"><span class="c-ikon">🐾</span><div><b>Patiler Çetesi</b><small id="cete-uye-yazi">5 üye · kod KUZU-4821</small></div></div>
+      <div class="kart cete-bas"><span class="c-ikon"><svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#paw-print"></use></svg></span><div><b>Patiler Çetesi</b><small id="cete-uye-yazi">5 üye · kod KUZU-4821</small></div></div>
       <h2>⚔️ Çete savaşı</h2>
       <div id="savas-kart"></div>
       <h2>Haftalık ortak görevler</h2>
@@ -226,6 +259,8 @@
     <div class="antrenman" id="antrenman" hidden><div class="antrenman-kedi" id="antrenman-kedi"></div><div class="antrenman-bant"></div>
       <div class="antrenman-bilgi"><b id="antrenman-yazi"></b><div class="antrenman-cubuk"><i id="antrenman-cubuk"></i></div><small id="antrenman-kilo"></small></div></div>
     <div class="hedef-serit" aria-live="polite"></div>
+    <!-- C · Sakin ve şık (2026-11-16): Pati orta boy kemerli pencerede (css/ders-ekrani.css); asıl kedi gelene kadar yer tutucu. -->
+    <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <div class="k-alan" id="k-alan"></div>
     <div class="geri-bildirim" id="k-gb">
       <h3 id="k-gb-baslik"></h3>
@@ -236,31 +271,33 @@
 
   <!-- ========== KELİME HAZNESİ: seviye sırası (A1→B2), her seviyede alfabetik (arkadaşın önerisi, 2026-10-19) ========== -->
   <section class="tam" id="tam-hazne">
-    <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap">📚 Kelime haznesi</span><span></span></div>
+    <div class="ust"><button class="kapat" data-kapat>✕</button><h2 class="tam-baslik">Kelime haznesi</h2></div>
     <p class="hazne-ozet" id="hazne-ozet"></p>
     <div id="hazne-liste"></div>
   </section>
 
   <!-- ========== KUTU İÇERİĞİ: dokununca dönen kartlar ========== -->
   <section class="tam" id="tam-kutu">
-    <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap" id="kutu-baslik">1. kutu</span><span></span></div>
+    <div class="ust"><button class="kapat" data-kapat>✕</button><h2 class="tam-baslik" id="kutu-baslik">1. kutu</h2></div>
     <p class="hazne-ozet" id="kutu-ozet"></p>
     <div class="cevir-liste" id="kutu-liste"></div>
   </section>
 
   <!-- ========== PATİ ÇABUKLUĞU: eşleştirme (arkadaşın önerisi, 2026-10-19) ========== -->
   <section class="tam" id="tam-esles">
-    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="e-cubuk" style="background:var(--nane)"></i></div><b id="e-sure">0.0</b></div>
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="e-cubuk"></i></div><b id="e-sure">0.0</b></div>
+    <!-- C · Sakin ve şık (2026-11-17): Pati küçük kemerli pencerede (css/alistirma-ekrani.css). -->
+    <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <p class="soru">Eşleri bul! Bir İngilizce, bir Türkçe kart seç.</p>
     <div class="esles" id="esles"></div>
     <p id="e-geribildirim" class="soluk" role="status" aria-live="polite"></p>
-    <p class="soluk" id="e-not" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Yanlış eşleştirme +2 saniye ekler.</p>
+    <p class="soluk e-not" id="e-not">Yanlış eşleştirme +2 saniye ekler.</p>
   </section>
 
   <!-- ========== ÇETE SOHBETİ (örnek; gerçek mesajlaşma sunucu ve moderasyon ister) ========== -->
   <section class="tam" id="tam-sohbet">
-    <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap">💬 Patiler Çetesi</span><span class="hap" style="font-size:13px;">🇬🇧 English only</span></div>
-    <div class="sohbet-kural"><b class="demo-rozet">🧪 Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı 🚩 ile gizle.</div>
+    <div class="ust"><button class="kapat" data-kapat>✕</button><span class="hap">Patiler Çetesi</span><span class="hap sohbet-dil">English only</span></div>
+    <div class="sohbet-kural"><b class="demo-rozet">Demo</b> Üyeler ve cevaplar örnek; mesajın kimseye gitmez. Kural: İngilizce yaz, nazik ol. İstemediğin mesajı bayrakla gizle.</div>
     <div class="sohbet-govde">
       <div class="sohbet-liste" id="sohbet-liste" role="log" aria-live="polite" aria-label="Sohbet mesajları" tabindex="0"></div>
       <button class="sohbet-yeni" id="sohbet-yeni" hidden>↓ En alta in</button>
@@ -268,35 +305,39 @@
     <div class="sohbet-durum" id="sohbet-durum" aria-live="polite" hidden></div>
     <div class="sohbet-oneri" id="sohbet-oneri"></div>
     <div id="sohbet-dil-uyari" class="sohbet-dil-uyari" role="status" hidden></div>
-    <div class="sohbet-yaz"><input id="sohbet-girdi" placeholder="Write in English..." autocomplete="off" maxlength="160" enterkeyhint="send" aria-label="Mesajın (İngilizce)"><button id="sohbet-gonder" aria-label="Gönder">➤</button></div>
+    <div class="sohbet-yaz"><input id="sohbet-girdi" placeholder="Write in English..." autocomplete="off" maxlength="160" enterkeyhint="send" aria-label="Mesajın (İngilizce)"><button id="sohbet-gonder" aria-label="Gönder"><svg class="pati-ikon" aria-hidden="true"><use href="resim/pati-ikonlar.svg#arrow-right"></use></svg></button></div>
   </section>
 
   <!-- ========== ÇETE SAVAŞI: hızlı modlar (kelime yarışı, kulak kabart) ========== -->
   <section class="tam" id="tam-savas">
     <div class="sure"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="sv-cubuk"></i></div><b id="sv-sure">45</b></div>
-    <div class="kart av-soru"><div class="soluk" style="font-size:14px;" id="sv-yon"></div><div class="s-kelime" id="sv-soru"></div></div>
+    <div class="kart av-soru"><div class="soluk av-yon" id="sv-yon"></div><div class="s-kelime" id="sv-soru"></div></div>
     <div class="av-siklar" id="sv-siklar"></div>
-    <p class="soluk" id="sv-puan" style="text-align:center;font-weight:900;font-size:18px;margin-top:auto;padding-top:10px;">⚔️ 0 puan</p>
+    <p class="soluk sv-puan" id="sv-puan">0 puan</p>
   </section>
 
   <!-- ========== KELİME KUR: öğrenilen kelimeleri harflerden kurma (arkadaşın önerisi, 2026-10-21) ========== -->
   <section class="tam" id="tam-kur">
-    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="kur-cubuk" style="background:var(--mercan)"></i></div><b id="kur-sayac">0/8</b></div>
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="kur-cubuk"></i></div><b id="kur-sayac">0/8</b></div>
     <div class="hedef-serit" aria-live="polite"></div>
+    <!-- C · Sakin ve şık (2026-11-17): Pati küçük kemerli pencerede (css/alistirma-ekrani.css). -->
+    <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <div class="k-alan" id="kur-alan"></div>
     <div class="geri-bildirim" id="kur-gb"><h3 id="kur-gb-baslik"></h3><p id="kur-gb-yazi"></p><button class="buyuk-dugme" id="kur-gb-devam">Devam</button></div>
   </section>
 
   <!-- ========== CÜMLE (tam ekran) ========== -->
   <section class="tam" id="tam-cumle">
-    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="c-cubuk" style="background:var(--lavanta)"></i></div><b id="c-sayac">0/5</b></div>
+    <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="c-cubuk"></i></div><b id="c-sayac">0/5</b></div>
     <div class="hedef-serit" aria-live="polite"></div>
+    <!-- C · Sakin ve şık (2026-11-16): Pati küçük kemerli pencerede (css/alistirma-ekrani.css); asıl kedi gelene kadar yer tutucu. -->
+    <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <p class="soru">Bu cümleyi İngilizceye çevir:</p>
     <p class="tr-cumle" id="c-tr"></p>
     <p class="c-ipucu" id="c-ipucu"></p>
     <div class="dizi" id="dizi"></div>
     <div class="havuz" id="havuz"></div>
-    <div style="margin-top:auto;"><button class="buyuk-dugme mor" id="kontrol" disabled>Kontrol et</button></div>
+    <div class="c-alt"><button class="buyuk-dugme mor" id="kontrol" disabled>Kontrol et</button></div>
     <div class="geri-bildirim" id="geri-bildirim">
       <h3 id="gb-baslik"></h3>
       <p id="gb-yazi"></p>
@@ -305,6 +346,7 @@
   </section>
 
   <!-- ========== GÜNLÜK BALIK AVI (tam ekran) ========== -->
+  <!-- C · Sakin ve şık (2026-11-17): görünüm css/oyun-ekrani.css; kedi çizimi (KediCizici) ve pist ölçüleri korunur. -->
   <section class="tam" id="tam-av">
     <div class="sure"><button class="kapat" id="av-kapat">✕</button><div class="cubuk"><i id="av-sure-cubuk"></i></div><b id="av-sure" aria-label="Kalan saniye">30</b><b id="av-mod" hidden>Alıştırma · süresiz</b></div>
     <div class="pist" id="pist">
@@ -312,13 +354,13 @@
       <div class="iskele"></div>
       <div class="hedef-balik">🐟</div>
       <div class="balikci" id="av-balikci"><svg viewBox="0 0 90 110" role="img" aria-label="İskelede balık tutan balıkçı"><path d="M54 52L80 15L86 66" fill="none" stroke="#5A443A" stroke-width="3"/><path d="M45 78L39 100M56 78L62 100" stroke="#435264" stroke-width="12" stroke-linecap="round"/><path d="M31 101H45M58 101H71" stroke="#493E39" stroke-width="7" stroke-linecap="round"/><path d="M34 43Q48 35 63 45L63 79H34Z" fill="#76A990" stroke="#435C51" stroke-width="3"/><path d="M58 48L65 58L76 47" fill="none" stroke="#E8B78D" stroke-width="8" stroke-linecap="round"/><circle cx="48" cy="25" r="17" fill="#E8B78D"/><path d="M32 27Q48 50 65 27L60 40H39Z" fill="#795744"/><path d="M28 15H69M35 15L39 3H57L63 15" fill="#C2A16B" stroke="#725C3E" stroke-width="4" stroke-linejoin="round"/><circle cx="58" cy="23" r="2" fill="#493E39"/></svg></div>
-      <div class="unlem" id="av-unlem">❗</div>
+      <div class="unlem" id="av-unlem">!</div>
       <div class="kedi" id="av-kedi"></div>
       <b class="av-adim" id="av-adim"></b><b class="av-pratik" id="av-pratik" hidden>Pratik · ödülsüz</b>
     </div>
-    <div class="kart av-soru"><div class="soluk" style="font-size:14px;">Türkçesi ne?</div><div class="s-kelime" id="av-kelime"></div></div>
+    <div class="kart av-soru"><div class="soluk av-yon">Türkçesi ne?</div><div class="s-kelime" id="av-kelime"></div></div>
     <div class="av-siklar" id="av-siklar"></div>
-    <p class="soluk" style="text-align:center;font-size:13px;margin-top:auto;padding-top:10px;">Doğru = kedi atılır 💨 · Yanlış = balıkçı fark eder ❗ · Üst üste 2 yanlış = kedi geri kaçar · Kilolu kedi daha kısa atılır</p>
+    <p class="soluk av-kural">Doğru cevap Pati’yi balığa atar · Yanlışta balıkçı bakar · Üst üste 2 yanlışta Pati geri kaçar · Kilolu kedi daha kısa atılır</p>
     <div class="geri-sayim" id="geri-sayim"></div>
   </section>
 
@@ -327,7 +369,7 @@
     <div class="ilerleme"><button class="kapat" data-kapat aria-label="Ayarları kapat">✕</button><h2 class="tam-baslik">Ayarlar</h2></div>
     <div class="k-alan ayar-liste" id="ayar-liste"></div>
     <div class="alt-panel" id="panel-yedek" role="dialog" aria-label="İlerleme yedeği" aria-hidden="true">
-      <div class="panel-ust"><b>💾 İlerleme yedeği</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ust"><b>İlerleme yedeği</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
       <div class="panel-ic">
         <p class="soluk">Bu kod ilerlemenin tamamıdır (altın, kelimeler, eşyalar). Kimseyle paylaşma.</p>
         <textarea id="yedek-cikis" readonly rows="3" aria-label="Yedek kodu"></textarea>
@@ -337,11 +379,11 @@
         <textarea id="yedek-giris" rows="3" placeholder="PATI1:..." aria-label="Yüklenecek yedek kodu"></textarea>
         <div class="yedek-dugmeler"><label class="al dosya-sec">Dosya seç<input type="file" id="yedek-dosya" accept=".txt,text/plain" hidden></label><button class="al" id="yedek-kontrol">Kontrol et</button></div>
         <div class="yedek-onizleme" id="yedek-onizleme" role="status" aria-live="polite"></div>
-        <button class="buyuk-dugme" id="yedek-yukle-onay" hidden>Bu yedeği yükle</button>
+        <button class="buyuk-dugme k-ana" id="yedek-yukle-onay" hidden>Bu yedeği yükle</button>
       </div>
     </div>
     <div class="alt-panel" id="panel-kaynak" role="dialog" aria-label="Kaynaklar ve lisanslar" aria-hidden="true">
-      <div class="panel-ust"><b>📚 Kaynaklar ve lisanslar</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
+      <div class="panel-ust"><b>Kaynaklar ve lisanslar</b><button class="kapat" data-panel-kapat aria-label="Kapat">✕</button></div>
       <div class="panel-ic">
         <p>Yeni kelimelerin seviyeleri: <a href="https://www.cefr-j.org/download.html">The CEFR-J Wordlist Version 1.6</a>, Yukio Tono / Tono Laboratory, Tokyo University of Foreign Studies. Önceki listenin temeli sürüm 1.5'tir.</p>
         <p>Yeni Türkçe karşılıklar: <a href="https://www.wikdict.com/page/download">WikDict / DBnary / Wiktionary contributors</a>. Yeni türetilmiş kelime verisi <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> ile sunulur; karşılık seçimi ve birkaç yazım düzeltmesi yapılmıştır.</p>
@@ -369,73 +411,73 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.10.9-dev.10"></script>
-<script src="veri/kelimeler.js?v=0.10.9-dev.10"></script>
-<script src="veri/phrasal.js?v=0.10.9-dev.10"></script>
-<script src="veri/cumleler.js?v=0.10.9-dev.10"></script>
-<script src="js/yardimci.js?v=0.10.9-dev.10"></script>
-<script src="vendor/ts-fsrs-5.4.2.js?v=0.10.9-dev.10"></script>
-<script src="js/beceri-kural.js?v=0.10.9-dev.10"></script>
-<script src="js/kayit.js?v=0.10.9-dev.10"></script>
-<script src="js/ekonomi.js?v=0.10.9-dev.10"></script>
-<script src="js/ilerleme.js?v=0.10.9-dev.10"></script>
-<script src="js/ogrenme.js?v=0.10.9-dev.10"></script>
-<script src="js/oyun.js?v=0.10.9-dev.10"></script>
-<script src="js/durum-modeli.js?v=0.10.9-dev.10"></script>
-<script src="js/ilerleme-sozlesmesi.js?v=0.10.9-dev.10"></script>
-<script src="js/esitleme.js?v=0.10.9-dev.10"></script>
-<script src="js/yerel-kayit.js?v=0.10.9-dev.10"></script>
-<script src="js/oturumlar.js?v=0.10.9-dev.10"></script>
-<script src="js/durum.js?v=0.10.9-dev.10"></script>
-<script src="js/firebase-ayar.js?v=0.10.9-dev.10"></script>
-<script src="js/bulut-veri.js?v=0.10.9-dev.10"></script>
-<script src="js/bulut.js?v=0.10.9-dev.10"></script>
-<script src="js/ana-sayfa.js?v=0.10.9-dev.10"></script>
-<script src="js/calisma-islemi.js?v=0.10.9-dev.10"></script>
-<script src="js/konusma-kural.js?v=0.10.9-dev.10"></script>
-<script src="js/mini-ders.js?v=0.10.9-dev.10"></script>
-<script src="js/pati-gorunum.js?v=0.10.9-dev.10"></script>
-<script src="js/kelime-calisma.js?v=0.10.9-dev.10"></script>
-<script src="veri/sesler.js?v=0.10.9-dev.10"></script>
-<script src="js/ses.js?v=0.10.9-dev.10"></script>
-<script src="js/cihaz.js?v=0.10.9-dev.10"></script>
-<script src="js/alistirmalar.js?v=0.10.9-dev.10"></script>
-<script src="js/odul-takvim.js?v=0.10.9-dev.10"></script>
-<script src="js/hazne.js?v=0.10.9-dev.10"></script>
-<script src="js/sohbet.js?v=0.10.9-dev.10"></script>
-<script src="js/cete-veri.js?v=0.10.9-dev.10"></script>
-<script src="js/cete.js?v=0.10.9-dev.10"></script>
-<script src="js/cete-baglanti.js?v=0.10.9-dev.10"></script>
-<script src="js/sosyal.js?v=0.10.9-dev.10"></script>
-<script src="js/demo-sohbet.js?v=0.10.9-dev.10"></script>
-<script src="js/savas-puan.js?v=0.10.9-dev.10"></script>
-<script src="js/savas-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/cete-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/gezinme.js?v=0.10.9-dev.10"></script>
-<script src="js/sevgi.js?v=0.10.9-dev.10"></script>
-<script src="js/kedi.js?v=0.10.9-dev.10"></script>
-<script src="js/kedi-cizim.js?v=0.10.9-dev.10"></script>
-<script src="js/av-gorunum.js?v=0.10.9-dev.10"></script>
-<script src="js/balik-avi.js?v=0.10.9-dev.10"></script>
-<script src="js/ayarlar.js?v=0.10.9-dev.10"></script>
-<script src="js/cete-yenilikler.js?v=0.10.9-dev.10"></script>
-<script src="js/arkadas.js?v=0.10.9-dev.10"></script>
-<script src="js/arkadas-veri.js?v=0.10.9-dev.10"></script>
-<script src="js/arkadas-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/savas-kural.js?v=0.10.9-dev.10"></script>
-<script src="js/savas-veri.js?v=0.10.9-dev.10"></script>
-<script src="js/savas-gercek-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/menu-paneller.js?v=0.10.9-dev.10"></script>
-<script src="js/seviye-sinavi.js?v=0.10.9-dev.10"></script>
-<script src="js/seviye-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/ozel-veri.js?v=0.10.9-dev.10"></script>
-<script src="js/ozel-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/kupa-eslesme.js?v=0.10.9-dev.10"></script>
-<script src="js/kupa-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/ozellestirme.js?v=0.10.9-dev.10"></script>
-<script src="js/telaffuz.js?v=0.10.9-dev.10"></script>
-<script src="js/beceri-ekran.js?v=0.10.9-dev.10"></script>
-<script src="js/baslat.js?v=0.10.9-dev.10"></script>
+<script src="vendor/capacitor.js?v=0.10.9-dev.11"></script>
+<script src="veri/kelimeler.js?v=0.10.9-dev.11"></script>
+<script src="veri/phrasal.js?v=0.10.9-dev.11"></script>
+<script src="veri/cumleler.js?v=0.10.9-dev.11"></script>
+<script src="js/yardimci.js?v=0.10.9-dev.11"></script>
+<script src="vendor/ts-fsrs-5.4.2.js?v=0.10.9-dev.11"></script>
+<script src="js/beceri-kural.js?v=0.10.9-dev.11"></script>
+<script src="js/kayit.js?v=0.10.9-dev.11"></script>
+<script src="js/ekonomi.js?v=0.10.9-dev.11"></script>
+<script src="js/ilerleme.js?v=0.10.9-dev.11"></script>
+<script src="js/ogrenme.js?v=0.10.9-dev.11"></script>
+<script src="js/oyun.js?v=0.10.9-dev.11"></script>
+<script src="js/durum-modeli.js?v=0.10.9-dev.11"></script>
+<script src="js/ilerleme-sozlesmesi.js?v=0.10.9-dev.11"></script>
+<script src="js/esitleme.js?v=0.10.9-dev.11"></script>
+<script src="js/yerel-kayit.js?v=0.10.9-dev.11"></script>
+<script src="js/oturumlar.js?v=0.10.9-dev.11"></script>
+<script src="js/durum.js?v=0.10.9-dev.11"></script>
+<script src="js/firebase-ayar.js?v=0.10.9-dev.11"></script>
+<script src="js/bulut-veri.js?v=0.10.9-dev.11"></script>
+<script src="js/bulut.js?v=0.10.9-dev.11"></script>
+<script src="js/ana-sayfa.js?v=0.10.9-dev.11"></script>
+<script src="js/calisma-islemi.js?v=0.10.9-dev.11"></script>
+<script src="js/konusma-kural.js?v=0.10.9-dev.11"></script>
+<script src="js/mini-ders.js?v=0.10.9-dev.11"></script>
+<script src="js/pati-gorunum.js?v=0.10.9-dev.11"></script>
+<script src="js/kelime-calisma.js?v=0.10.9-dev.11"></script>
+<script src="veri/sesler.js?v=0.10.9-dev.11"></script>
+<script src="js/ses.js?v=0.10.9-dev.11"></script>
+<script src="js/cihaz.js?v=0.10.9-dev.11"></script>
+<script src="js/alistirmalar.js?v=0.10.9-dev.11"></script>
+<script src="js/odul-takvim.js?v=0.10.9-dev.11"></script>
+<script src="js/hazne.js?v=0.10.9-dev.11"></script>
+<script src="js/sohbet.js?v=0.10.9-dev.11"></script>
+<script src="js/cete-veri.js?v=0.10.9-dev.11"></script>
+<script src="js/cete.js?v=0.10.9-dev.11"></script>
+<script src="js/cete-baglanti.js?v=0.10.9-dev.11"></script>
+<script src="js/sosyal.js?v=0.10.9-dev.11"></script>
+<script src="js/demo-sohbet.js?v=0.10.9-dev.11"></script>
+<script src="js/savas-puan.js?v=0.10.9-dev.11"></script>
+<script src="js/savas-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/cete-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/gezinme.js?v=0.10.9-dev.11"></script>
+<script src="js/sevgi.js?v=0.10.9-dev.11"></script>
+<script src="js/kedi.js?v=0.10.9-dev.11"></script>
+<script src="js/kedi-cizim.js?v=0.10.9-dev.11"></script>
+<script src="js/av-gorunum.js?v=0.10.9-dev.11"></script>
+<script src="js/balik-avi.js?v=0.10.9-dev.11"></script>
+<script src="js/ayarlar.js?v=0.10.9-dev.11"></script>
+<script src="js/cete-yenilikler.js?v=0.10.9-dev.11"></script>
+<script src="js/arkadas.js?v=0.10.9-dev.11"></script>
+<script src="js/arkadas-veri.js?v=0.10.9-dev.11"></script>
+<script src="js/arkadas-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/savas-kural.js?v=0.10.9-dev.11"></script>
+<script src="js/savas-veri.js?v=0.10.9-dev.11"></script>
+<script src="js/savas-gercek-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/menu-paneller.js?v=0.10.9-dev.11"></script>
+<script src="js/seviye-sinavi.js?v=0.10.9-dev.11"></script>
+<script src="js/seviye-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/ozel-veri.js?v=0.10.9-dev.11"></script>
+<script src="js/ozel-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/kupa-eslesme.js?v=0.10.9-dev.11"></script>
+<script src="js/kupa-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/ozellestirme.js?v=0.10.9-dev.11"></script>
+<script src="js/telaffuz.js?v=0.10.9-dev.11"></script>
+<script src="js/beceri-ekran.js?v=0.10.9-dev.11"></script>
+<script src="js/baslat.js?v=0.10.9-dev.11"></script>
 
 </body>
 </html>

@@ -1,0 +1,90 @@
+/* =====================================================================
+   Ödüller ekranı · "C · Sakin ve şık" kural seti (2026-11-16)
+   #ekran-oduller: üst satır (başlık + altın), özet (Pati'nin küçük
+   penceresi + açılan başarım sayısı, js/menu-paneller.js kurar,
+   js/odul-takvim.js odulCiz doldurur), başarım listesi (#rozetler,
+   kendi içinde kayar) ve "Seri koruyucu artık Takvim'de" notu.
+   Dükkân bu ekranda artık yok (menu-paneller.js #magaza'yı kaldırır;
+   alışveriş Özelleştirme ve Takvim'de).
+   Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
+   En son yüklenir. Eski kuralları (stil.css, menuler.css) ezmek için
+   seçiciler "html #ekran-oduller#ekran-oduller" ile başlar (çift kimlik).
+   Alt menü ve ortak açılır pencere ana ekranın kurallarını paylaşır
+   (ana-ekran.css ve ders-ekrani.css'te koşula #ekran-oduller eklendi).
+   Pati: eski kedi çizimi düz pencerede (Kedi ekranı kararı, 2026-11-16).
+   Eski dosyalardaki ödül kuralları, tüm ekranlar geçince silinecek.
+   ===================================================================== */
+
+/* ---------- Zemin: fotoğraflı sahne yerine düz kırık beyaz ---------- */
+:root:not(#yok):has(#ekran-oduller.aktif) #uygulama { background: var(--renk-zemin); }
+:root:not(#yok):has(#ekran-oduller.aktif) #uygulama > .sahne { display: none; }
+:root:not(#yok):has(#ekran-oduller.aktif) .telefon-bildirim:not(.acik) { box-shadow: none; }
+
+/* Sıra: üst satır · özet · "Başarımlar" · liste (kalan yeri doldurur, içinde kayar) · not. */
+html #ekran-oduller#ekran-oduller.aktif {
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto minmax(0, 1fr) auto; gap: var(--bosluk-3);
+  padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(112px + var(--alt-bosluk));
+  overflow: hidden;
+  background: var(--renk-zemin); color: var(--renk-metin);
+  font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+}
+html #ekran-oduller#ekran-oduller :is(h1, h2, b, small, span, p, div) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
+html #ekran-oduller#ekran-oduller :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+
+/* ---------- 1. Üst satır: başlık + altın hapı ---------- */
+html #ekran-oduller#ekran-oduller > .ust { position: static; display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0; padding: var(--bosluk-2) var(--bosluk-1) 0; border: 0; }
+html #ekran-oduller#ekran-oduller .oduller-baslik { margin: 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+/* Altın: JS yalnız sayıyı yazar; " altın" CSS'ten gelir (Kedi ekranıyla aynı). */
+html #ekran-oduller#ekran-oduller #yildiz-hap2 { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 6px 12px; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; white-space: nowrap; }
+html #ekran-oduller#ekran-oduller #yildiz-hap2 .pati-ikon { width: 16px; height: 16px; }
+html #ekran-oduller#ekran-oduller #yildiz-hap2::after { content: "altın"; } /* boşluğu hapın aralığı verir */
+
+/* ---------- 2. Özet: Pati'nin küçük penceresi (120) + açılan başarım ---------- */
+html #ekran-oduller#ekran-oduller .odul-ozet { display: flex; align-items: center; gap: var(--bosluk-5); padding: 0 var(--bosluk-1); }
+html #ekran-oduller#ekran-oduller .odul-pencere {
+  position: relative; overflow: hidden; flex: none; width: 104px; height: var(--pencere-kucuk);
+  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
+  border: 2px solid var(--renk-pencere-cerceve); border-radius: 52px 52px var(--kose-md) var(--kose-md);
+}
+html #ekran-oduller#ekran-oduller .odul-pencere::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 24%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 14px; border-top-right-radius: 50% 14px; }
+/* Eski kedi çizimi (giydirilen eşya ve renk görünür); asıl Pati tasarımcıdan gelince değişir. */
+html #ekran-oduller#ekran-oduller .odul-kedi { position: absolute; z-index: 1; left: 50%; bottom: 6%; translate: -50% 0; width: 78px; height: 78px; pointer-events: none; }
+html #ekran-oduller#ekran-oduller .odul-ozet-metin { flex: 1; min-width: 0; }
+html #ekran-oduller#ekran-oduller .odul-ozet-metin small { display: block; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html #ekran-oduller#ekran-oduller .odul-ozet-metin b { display: block; margin: 2px 0 var(--bosluk-2); font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+/* İnce çubuk: metin renginde dolar, iz adaçayı (Takvim ve sevgi çubuğuyla aynı dil). */
+html #ekran-oduller#ekran-oduller .odul-cubuk { height: 6px; margin: 0 0 var(--bosluk-2); border-radius: var(--kose-hap); overflow: hidden; background: var(--renk-yuzey-adacayi); }
+html #ekran-oduller#ekran-oduller .odul-cubuk i { display: block; width: 0; height: 100%; border-radius: var(--kose-hap); background: var(--renk-metin); transition: width var(--gecis); }
+
+/* ---------- 3. Bölüm başlığı ---------- */
+html #ekran-oduller#ekran-oduller > h2 { margin: var(--bosluk-2) var(--bosluk-1) 0; font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); line-height: var(--satir-sik); color: var(--renk-metin); }
+
+/* ---------- 4. Başarım listesi: iki sütun düz beyaz kart (çerçeve ve gölge yok) ---------- */
+html #ekran-oduller#ekran-oduller .rozetler {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: var(--bosluk-2);
+  min-height: 0; margin: 0; padding: 0 0 var(--bosluk-3); overflow-y: auto; overscroll-behavior: contain; border-radius: var(--kose-lg);
+}
+html #ekran-oduller#ekran-oduller .rozet {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0;
+  padding: var(--bosluk-4); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); text-align: left;
+}
+/* İkon: adaçayı dairede renkli; kilitliyse daire kırık beyaz, ikon soluk ve gri. */
+html #ekran-oduller#ekran-oduller .rozet .r-ikon { width: var(--dokunma-min); height: var(--dokunma-min); margin: 0 0 var(--bosluk-2); display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); font-size: 22px; line-height: 1; filter: none; opacity: 1; }
+html #ekran-oduller#ekran-oduller .rozet b { display: block; margin: 0; font-size: var(--yazi-md); font-weight: var(--kalin-orta); line-height: 1.3; color: var(--renk-metin); }
+html #ekran-oduller#ekran-oduller .rozet small { display: block; margin: 0; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+/* Kazanıldı: onay ikonu + yazı, sakin yeşil. */
+html #ekran-oduller#ekran-oduller .rozet .r-durum { display: inline-flex; align-items: center; gap: 4px; font-weight: var(--kalin-orta); color: var(--renk-metin-adacayi); }
+html #ekran-oduller#ekran-oduller .rozet .r-durum .pati-ikon { width: 14px; height: 14px; }
+/* Kilitli: ödül küçük hap (12 · 600) kartın dibinde. */
+html #ekran-oduller#ekran-oduller .rozet.kilitli .r-ikon { background: var(--renk-zemin); filter: grayscale(1); opacity: .45; }
+html #ekran-oduller#ekran-oduller .rozet.kilitli b { color: var(--renk-metin); }
+html #ekran-oduller#ekran-oduller .rozet .r-odul { margin-top: auto; padding-top: var(--bosluk-2); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; color: var(--renk-metin-adacayi); }
+
+/* ---------- 5. Not: koruyucunun yeri değişti ---------- */
+html #ekran-oduller#ekran-oduller > .menu-small { margin: 0; padding: 0 var(--bosluk-1); font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
+
+/* ---------- Yüksek kontrast: gölge/dolgu yerine siyah çerçeve ---------- */
+:root[data-tema="kontrast"] #ekran-oduller#ekran-oduller :is(#yildiz-hap2, .rozet) { border: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-oduller#ekran-oduller .odul-pencere::after { border-top: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-oduller#ekran-oduller .odul-cubuk { box-shadow: inset 0 0 0 1px #000; }
+:root[data-tema="kontrast"] #ekran-oduller#ekran-oduller .rozet.kilitli .r-ikon { opacity: .6; box-shadow: inset 0 0 0 2px #000; }

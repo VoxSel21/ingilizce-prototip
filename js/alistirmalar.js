@@ -4,15 +4,15 @@
 const kutudaMi = (c, i) => i === 1 ? c.kutu <= 1 : i === 4 ? c.kutu >= 4 : c.kutu === i;
 function kutuAc(i) {
   const liste = KELIMELER.filter(k => d.kartlar[k[0]] && kutudaMi(d.kartlar[k[0]], i));
-  document.getElementById("kutu-baslik").textContent = i === 4 ? "⭐ Pekişti · 4. kutu" : `${i}. kutu · ${i === 1 ? "Çalışıldı" : "Tekrar edildi"}`;
-  document.getElementById("kutu-ozet").textContent = `${liste.length} kelime · karta dokun, arkasını gör · 🔊 ile dinle`;
+  document.getElementById("kutu-baslik").textContent = i === 4 ? "Pekişti · 4. kutu" : `${i}. kutu · ${i === 1 ? "Çalışıldı" : "Tekrar edildi"}`;
+  document.getElementById("kutu-ozet").textContent = `${liste.length} kelime · karta dokun, arkasını gör`;
   kartlariListele(liste);
   tamAc("kutu"); document.getElementById("tam-kutu").scrollTop = 0;
 }
 function kartlariListele(liste) {
   const el = document.getElementById("kutu-liste");
   el.innerHTML = liste.map((k, n) => `<div class="cevir" data-n="${n}"><div class="cevir-ic">
-    <div class="on"><button class="kucuk-ses" data-oku="${k[0]}">🔊</button><span>${k[2]}</span><b>${k[0]}</b></div>
+    <div class="on"><button class="kucuk-ses" data-oku="${k[0]}" aria-label="${k[0]} sesli oku">${patiIkon("speaker-high")}</button><span>${k[2]}</span><b>${k[0]}</b></div>
     <div class="arka"><b>${k[1]}</b><small>${k[3]}</small></div></div></div>`).join("");
   el.querySelectorAll(".cevir").forEach(c => c.onclick = () => { c.classList.toggle("dondu"); Ses.pop(); });
   el.querySelectorAll("[data-oku]").forEach(b => b.onclick = e => { e.stopPropagation(); seslendir(b.dataset.oku); });
@@ -136,7 +136,7 @@ function kurAdim() {
   document.getElementById("kur-cubuk").style.width = (kur.i / kur.liste.length * 100) + "%";
   hedefSeritCiz();
   const alan = document.getElementById("kur-alan");
-  alan.innerHTML = `<div class="soru-kart"><div class="s-yon">Harfleri sırayla dizip kelimeyi kur</div><div class="s-resim" style="font-size:56px">${kelimeGorseli(k)}</div><div class="soluk" style="font-size:14px;font-weight:800;">${k[0].length} harf · ${k[7]}</div></div>`;
+  alan.innerHTML = `<div class="soru-kart"><div class="s-yon">Harfleri sırayla dizip kelimeyi kur</div><div class="s-resim">${kelimeGorseli(k)}</div><div class="soluk k-bilgi">${k[0].length} harf · ${k[7]}</div></div>`;
   harfDizme(alan, k[0], (dogru, yuva) => {
     Ilerleme.kelimeIsaretle(d, k[0]);
     const c = d.kartlar[k[0]] || { kutu: 1, sira: bugunNo() };
@@ -146,8 +146,8 @@ function kurAdim() {
     sonucSesi(dogru); setTimeout(() => seslendir(k[0], true), 450);
     const gb = document.getElementById("kur-gb");
     gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("kur-gb-devam");
-    document.getElementById("kur-gb-baslik").textContent = dogru ? ["Harika! 🎉", "Aynen öyle! 😸", "Süpersin! ✨"][Math.floor(Math.random() * 3)] : "Neredeyse! 💪";
-    document.getElementById("kur-gb-yazi").textContent = `${k[2]} ${k[0]} = ${k[1]}${dogru ? "" : " · Doğrusu: " + k[0]}`;
+    document.getElementById("kur-gb-baslik").textContent = dogru ? ["Harika!", "Aynen öyle!", "Süpersin!"][Math.floor(Math.random() * 3)] : "Neredeyse!";
+    document.getElementById("kur-gb-yazi").textContent = `${k[0]} = ${k[1]}${dogru ? "" : " · Doğrusu: " + k[0]}`;
   });
 }
 document.getElementById("kur-gb-devam").onclick = () => {
@@ -187,7 +187,7 @@ function cumleGoster() {
   hedefSeritCiz();
   const ipucu = document.getElementById("c-ipucu");
   const kaynak = c[4] && (KELIMELER.find(k => k[0] === c[4]) || PHRASAL.find(k => k[0] === c[4]));
-  ipucu.innerHTML = kaynak ? `🔑 Çalıştığın: <b>${kaynak[0]}</b> = ${kaynak[1]}` : "";
+  ipucu.innerHTML = kaynak ? `Çalıştığın: <b>${kaynak[0]}</b> = ${kaynak[1]}` : "";
   ipucu.style.display = kaynak ? "" : "none";
   document.getElementById("c-sayac").textContent = `${cIndex}/${cDeste.length}`;
   document.getElementById("c-cubuk").style.width = (cIndex / cDeste.length * 100) + "%";
@@ -219,7 +219,7 @@ document.getElementById("kontrol").onclick = () => {
   if(cSavas)cSavasSayi++;
   const gb = document.getElementById("geri-bildirim");
   gb.className = "geri-bildirim acik " + (dogru ? "dogru" : "yanlis"); devamaOdak("gb-devam");
-  document.getElementById("gb-baslik").textContent = dogru ? "Harika! 🎉" : "Neredeyse! 💪";
+  document.getElementById("gb-baslik").textContent = dogru ? "Harika!" : "Neredeyse!";
   document.getElementById("gb-yazi").textContent = dogru ? c[1] : "Doğrusu: " + c[1];
   if (dogru) { if (!cSavas) d.cumleDogru++; cTurDogru++; konfeti(document.getElementById("kontrol"), 10); }
   if (!cSavas) soruCevaplandi(dogru);

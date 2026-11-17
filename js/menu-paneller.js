@@ -43,6 +43,10 @@ const MenuPaneller = (() => {
 
   const oduller = bul('ekran-oduller'), rozetler = bul('rozetler');
   const odulUst = oduller.querySelector('.ust'); oduller.replaceChildren(odulUst);
+  // Özet (C görünümü, 2026-11-16): Pati'nin küçük penceresi + açılan başarım sayısı; odulCiz doldurur.
+  const odulOzet = document.createElement('div'); odulOzet.className = 'odul-ozet';
+  odulOzet.innerHTML = '<div class="odul-pencere" aria-hidden="true"><div class="odul-kedi" id="odul-kedi"></div></div><div class="odul-ozet-metin"><small>Açılan başarım</small><b><span id="odul-acilan">0</span> / <span id="odul-toplam">0</span></b><div class="odul-cubuk"><i id="odul-cubuk"></i></div><small id="odul-kazanc"></small></div>';
+  oduller.append(odulOzet);
   const odulBaslik = document.createElement('h2'); odulBaslik.id = 'basarim-baslik'; odulBaslik.textContent = 'Başarımlar';
   rozetler.tabIndex = 0; rozetler.setAttribute('role', 'region'); rozetler.setAttribute('aria-labelledby', odulBaslik.id);
   oduller.append(odulBaslik, rozetler);
@@ -54,7 +58,7 @@ const MenuPaneller = (() => {
   panel('arkadaslar', 'Arkadaşların bugün', [bul('cete-gercek-arkadas'), bul('gelen-miyav'), bul('arkadas-listesi')]);
   panel('lig', 'Bu haftanın ligi', [bul('lig')]);
   const arkLinks = document.createElement('div'); arkLinks.className='menu-links';
-  arkLinks.append(dugme('🏅 Lig', 'lig'),dugme('🤝 Görevler', 'arkadas-gorev'));
+  arkLinks.append(dugme('Haftanın ligi', 'lig'),dugme('Birlikte görevler', 'arkadas-gorev'));
   ark.replaceChildren(bul('cete-gercek-arkadas'),bul('gelen-miyav'),bul('arkadas-listesi'),arkLinks);
   const ceteBas = cete.querySelector('.cete-bas'); ceteBas.id = 'cete-demo-bas';
   panel('cete', 'Çeten ve üyeler', [bul('cete-gercek-yonet'), ceteBas]);
@@ -62,11 +66,11 @@ const MenuPaneller = (() => {
   const ceteGorev = bul('cete-gorevler'), aciklama = ceteGorev.previousElementSibling;
   panel('cete-gorev', 'Haftalık ortak görevler', [aciklama, ceteGorev]);
   const sohbetAraclar = document.createElement('div'); sohbetAraclar.className = 'menu-links sohbet-araclar';
-  sohbetAraclar.append(dugme('🐾 Çete', 'cete'),dugme('⚔️ Savaş', 'savas'), dugme('📅 Görevler', 'cete-gorev'));
+  sohbetAraclar.append(dugme('Üyeler', 'cete'),dugme('Savaş', 'savas'), dugme('Görevler', 'cete-gorev'));
   bul('tam-sohbet').querySelector('.ust').after(sohbetAraclar);
   cete.replaceChildren();
   panel('sohbet', 'Çete sohbeti', [bul('cete-gercek-sohbet'), bul('sohbet-ac'), bul('sohbet-demo-not'), bul('sosyal-prototip-not')]);
   const chat = karo('💬', 'Çete sohbeti', 'Sohbeti aç', 'sohbet');
-  chat.onclick = ceteSohbetAc; cete.append(chat,dugme('🐾 Çete ve üyeler','cete'),dugme('⚔️ Çete savaşı','savas'),dugme('📅 Haftalık görevler','cete-gorev')); sohbet.replaceChildren(karo('⚔️', 'Çete savaşı', 'Oyun modları ve katkıların', 'savas'));
+  chat.onclick = ceteSohbetAc; cete.append(chat,dugme('Çete ve üyeler','cete'),dugme('Çete savaşı','savas'),dugme('Haftalık görevler','cete-gorev')); sohbet.replaceChildren(karo('⚔️', 'Çete savaşı', 'Oyun modları ve katkıların', 'savas'));
   return { guncelle() { bul('calisilan-sayi').textContent = Ilerleme.calisilanSayisi(d); } };
 })();

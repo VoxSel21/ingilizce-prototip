@@ -21,11 +21,11 @@ function savasCiz() {
   if(Bulut.kullanici && typeof SavasEkran!=="undefined"){SavasEkran.ciz();return;}
   const s = savasDurum(), oran = s.biz / (s.biz + s.rakip) * 100;
   document.getElementById("savas-kart").innerHTML = `<div class="kart">
-    <div class="savas-skor"><div class="taraf">🐾 Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">🦊 Tilkiler <small class="ornek-etiket">örnek</small><b>${s.rakip}</b></div></div>
+    <div class="savas-skor"><div class="taraf">Patiler<b>${s.biz}</b></div><span>VS</span><div class="taraf">Tilkiler <small class="ornek-etiket">örnek</small><b>${s.rakip}</b></div></div>
     <div class="savas-cubuk"><i style="width:${oran}%"></i></div>
-    <p class="soluk" style="font-size:13px;text-align:center;">${s.biz >= s.rakip ? "Öndeyiz! 🎉" : `${s.rakip - s.biz} puan gerideyiz`} · ${s.kalan > 0 ? `${s.kalan} gün kaldı` : "son gün!"} · Senin katkın: ${s.benim}</p>
+    <p class="soluk savas-durum">${s.biz >= s.rakip ? "Öndeyiz! 🎉" : `${s.rakip - s.biz} puan gerideyiz`} · ${s.kalan > 0 ? `${s.kalan} gün kaldı` : "son gün!"} · Senin katkın: ${s.benim}</p>
     <div class="savas-modlar">${SAVAS_MODLAR.map((m, i) => `<button data-mod="${i}"><span class="m-ikon">${m.ikon}</span><b>${m.ad}</b><small>${d.savas.en[m.id] ? "En iyin: " + d.savas.en[m.id] : m.acik}</small></button>`).join("")}</div>
-    <p class="soluk" style="font-size:12px;margin-top:8px;">Her modda en iyi puanın çetene yazılır. Hafta sonunda kazanan çeteye ödül.</p></div>`;
+    <p class="soluk savas-not">Her modda en iyi puanın çetene yazılır. Hafta sonunda kazanan çeteye ödül.</p></div>`;
   document.querySelectorAll("[data-mod]").forEach(b => b.onclick = () => SAVAS_MODLAR[+b.dataset.mod].ac());
 }
 function savasSonuc(mod, puan, ozet = "") {
@@ -53,7 +53,7 @@ function savasHizliAc(mod) {
   if (mod === "dinle") sv.kelimeler = sv.kelimeler.slice(0, 8);
   document.getElementById("sv-yon").textContent = mod === "hiz" ? "Türkçesi ne? (her doğru 10)" : "Dinle ve yaz (her doğru 15)";
   if(surum>=2)document.getElementById('sv-yon').textContent+=mod==='hiz'?' · yanlış −3':' · yanlış −4,5';
-  tamAc("savas"); savasSoru();
+  tamAc("savas"); document.getElementById("sv-puan").textContent = "0 puan"; savasSoru();
   const oyun = sv;
   const t = setInterval(() => {
     if (sv !== oyun || sv.bitti) return clearInterval(t);
@@ -72,7 +72,7 @@ function savasSoru() {
     document.getElementById("sv-soru").textContent = k[0];
     dogru = k[1]; siklar = [k[1], ...karistir(KELIMELER.filter(x => x[1] !== k[1])).slice(0, 3).map(x => x[1])];
   } else {
-    document.getElementById("sv-soru").innerHTML = `<button class="dinle-dugme" id="sv-ses" style="margin:4px auto 0;">🔊</button>`;
+    document.getElementById("sv-soru").innerHTML = `<button class="dinle-dugme" id="sv-ses" aria-label="Kelimeyi yeniden dinle">${patiIkon("speaker-high")}</button>`;
     const oyun=sv;
     sv.sesBekliyor=true;sv.kilit=true;
     const alan=document.getElementById('sv-siklar'); alan.replaceChildren();
@@ -98,8 +98,8 @@ function savasSoru() {
       const ok=SavasPuan.yazim(g.value)===SavasPuan.yazim(k[0]);
       if(ok){sv.dogru++;Ses.dogru()}else{sv.yanlis++;Ses.yanlis()}
       sv.puan=SavasPuan.net('dinle',sv.dogru,sv.yanlis,sv.surum);
-      g.disabled=true;kontrol.disabled=true;const bilgi=document.createElement('p');bilgi.textContent=ok?'Doğru!':'Doğrusu: '+k[0];form.append(bilgi);
-      document.getElementById('sv-puan').textContent='⚔️ '+sv.puan+' puan';kaydet();
+      g.disabled=true;kontrol.disabled=true;const bilgi=document.createElement('p');bilgi.className=ok?'sv-dogru':'sv-yanlis';bilgi.textContent=ok?'Doğru!':'Doğrusu: '+k[0];form.append(bilgi);
+      document.getElementById('sv-puan').textContent=sv.puan+' puan';kaydet();
       const oyun=sv;setTimeout(()=>{if(sv!==oyun||oyun.bitti)return;sv.i++;savasSoru()},ok?250:1000);
     };g.focus();return;
   }
@@ -112,7 +112,7 @@ function savasSoru() {
     if (!ok) document.querySelectorAll("#sv-siklar .av-sik").forEach(x => { if (x.textContent === dogru) x.classList.add("dogru"); });
     if (ok) { sv.dogru++; Ses.dogru(); } else { sv.yanlis++; Ses.yanlis(); }
     sv.puan=SavasPuan.net(sv.mod,sv.dogru,sv.yanlis,sv.surum);
-    document.getElementById("sv-puan").textContent = `⚔️ ${sv.puan} puan`;
+    document.getElementById("sv-puan").textContent = `${sv.puan} puan`;
     kaydet();
     const oyun = sv; setTimeout(() => { if (sv !== oyun || oyun.bitti) return; sv.i++; savasSoru(); }, ok ? 250 : 1000);
   });

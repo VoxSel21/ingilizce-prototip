@@ -24,7 +24,7 @@ const AvGorunum = {
         if (simdi !== saniye) { saniye = simdi; sure.textContent = metinler[simdi]; }
         if (az !== (kalan < 8)) { az = kalan < 8; cubuk.classList.toggle('az', az); }
       },
-      sayac(dogru, hedef) { adim.textContent = `🐾 ${dogru}/${hedef} doğru`; },
+      sayac(dogru, hedef) { adim.textContent = `${dogru}/${hedef} doğru`; },
       kapat() { if (gozlem) gozlem.disconnect(); if (hareket) hareket.cancel(); if (zaman) zaman.cancel(); },
     };
   },

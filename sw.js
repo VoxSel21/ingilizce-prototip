@@ -1,7 +1,7 @@
 // Ana ekrana eklenen uygulama için çevrimdışı destek.
 // Ağ önce: internet varken her zaman sunucudaki en yeni sürüm gelir (eski sürüm takılı kalmasın);
 // internet yoksa en son kaydedilen kopya açılır.
-const ONBELLEK = "pati-v40-kurallar";
+const ONBELLEK = "pati-v52-dev11";
 // Seviye ve özel sohbet modülleri de çevrimdışı kabukta bulunur.
 // Uygulama artık parçalı: stil, veri ve kod dosyaları da çevrimdışı açılış için önbelleğe alınır.
 const KOD = ["css/stil.css", "vendor/capacitor.js", "veri/kelimeler.js", "veri/phrasal.js", "veri/cumleler.js", "js/yardimci.js", "vendor/ts-fsrs-5.4.2.js", "js/beceri-kural.js", "js/beceri-ekran.js", "js/telaffuz.js", "js/kayit.js", "js/ekonomi.js", "js/ilerleme.js", "js/ogrenme.js", "js/oyun.js", "js/esitleme.js", "js/durum.js", "js/firebase-ayar.js", "js/bulut.js", "js/ana-sayfa.js",
@@ -22,6 +22,7 @@ KOD.push("ses/apple.ogg","ses/eat.ogg","ses/book.ogg","ses/bird.ogg","ses/hot.og
 
 KOD.push("js/mini-ders.js","js/pati-gorunum.js","css/pati-dunya.css","resim/pati-ikonlar.svg","resim/PHOSPHOR-LICENSE.txt","veri/pati-gorsel-kaynaklar.html","resim/nesne-apple.svg","resim/nesne-bread.svg","resim/nesne-milk.svg","resim/nesne-tea.svg","resim/nesne-egg.svg","resim/nesne-coffee.svg","resim/nesne-cup.svg","resim/nesne-sugar.svg","resim/nesne-tomato.svg");
 KOD.push("resim/nesne-fish.svg","resim/nesne-gift.svg","resim/nesne-coin.svg");
+KOD.push("css/degiskenler.css", "css/ana-ekran.css", "css/ders-ekrani.css", "css/takvim-ekrani.css", "css/kedi-ekrani.css", "css/oduller-ekrani.css", "css/sosyal-ekrani.css", "css/alistirma-ekrani.css", "css/oyun-ekrani.css", "css/kucuk-ekranlar.css"); // C · Sakin ve şık arayüzü (2026-11-16)
 KOD.push("resim/bg_bahce.jpg", "resim/bg_bahce-ana.jpg", "veri/bahce-kaynaklari.json");
 const TEMEL = ["./", "index.html", ...KOD, "manifest.json", "resim/ikon-192.png",
   "resim/kedi_fit.png", "resim/kedi_pofuduk.png", "resim/kedi_tombis.png", "resim/kedi_mega.png", "resim/bg_cayir.jpg"];

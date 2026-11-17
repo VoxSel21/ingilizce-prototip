@@ -17,15 +17,15 @@ const OzelSohbet={oturum:null,profilZaman:null,sonProfil:null,
     this.kapat();const id=[uid,hedef].sort().join('--');
     const s={uid,id,hedef,ad,kapat:[],mesajlar:[],eski:[],yanit:null,ilk:true,gonderiyor:false};this.oturum=s;
     const panel=document.getElementById('tam-ozel'),ic=document.getElementById('ozel-ic');ic.replaceChildren();
-    document.getElementById('ozel-baslik').textContent='💬 '+ad;
-    const arac=ceteEl('div','menu-links');arac.append(dugmeEl('👤 Profil',()=>profilAc(hedef)),dugmeEl('Önceki mesajlar',()=>this.eski(s)));ic.append(arac);
+    document.getElementById('ozel-baslik').textContent=ad;
+    const arac=ceteEl('div','menu-links');arac.append(dugmeEl('Profil',()=>profilAc(hedef)),dugmeEl('Önceki mesajlar',()=>this.eski(s)));ic.append(arac);
     s.liste=ceteEl('div','sohbet-liste');s.liste.setAttribute('role','log');s.liste.setAttribute('aria-live','polite');s.liste.setAttribute('aria-label','Özel mesajlar');s.liste.tabIndex=0;
     s.govde=ceteEl('div','sohbet-govde');s.govde.append(s.liste);s.yeni=dugmeEl('↓ Yeni mesaj',()=>{s.liste.scrollTop=s.liste.scrollHeight;s.yeni.hidden=true;},'sohbet-yeni');s.yeni.hidden=true;s.govde.append(s.yeni);ic.append(s.govde);
     s.durum=ceteEl('p','sohbet-durum','Mesajlar yükleniyor…');s.durum.setAttribute('role','status');ic.append(s.durum);
     s.alinti=ceteEl('div','sohbet-yanit');s.alinti.hidden=true;ic.append(s.alinti);
     const yaz=ceteEl('form','sohbet-yaz');s.g=document.createElement('input');s.g.maxLength=160;s.g.setAttribute('aria-label','Özel mesajın');s.g.placeholder='Mesajını yaz…';s.g.autocomplete='off';
     try{s.g.value=localStorage.getItem(this.taslakAnahtar(s))||'';}catch(e){}
-    s.g.addEventListener('input',()=>this.taslakYaz(s));const gonder=ceteEl('button',null,'➤');gonder.type='submit';gonder.setAttribute('aria-label','Gönder');
+    s.g.addEventListener('input',()=>this.taslakYaz(s));const gonder=ceteEl('button');gonder.innerHTML=patiIkon('arrow-right');gonder.type='submit';gonder.setAttribute('aria-label','Gönder');
     gonder.addEventListener('pointerdown',e=>{if(document.activeElement===s.g)e.preventDefault();});yaz.onsubmit=e=>{e.preventDefault();this.gonder(s);};yaz.append(s.g,gonder);ic.append(yaz);
     s.izin=ceteEl('p','soluk','Yalnız iki katılımcı okuyabilir. Arkadaşlık kaldırılır veya biri engellerse yeni mesaj kapanır; eski geçmiş korunur. Otomatik silme yok.');ic.append(s.izin);
     tamAc('ozel');
@@ -53,7 +53,7 @@ const OzelSohbet={oturum:null,profilZaman:null,sonProfil:null,
     for(const mesaj of m){
       const el=ceteEl('div','mesaj'+(mesaj.uid===s.uid?' ben':''));el.append(ceteEl('span','kim',mesaj.uid===s.uid?'Sen':s.ad));
       if(mesaj.yanitId){const eski=m.find(x=>x.id===mesaj.yanitId);el.append(ceteEl('blockquote','mesaj-alinti',eski?eski.metin:'Önceki mesajı görüntülemek için geçmişi yükle.'));}
-      el.append(ceteEl('span',null,mesaj.metin),ceteEl('time','mesaj-saati',Sohbet.saat(mesaj.zaman)),dugmeEl('↩',()=>this.yanit(s,mesaj),'mesaj-secenek'),dugmeEl('🚩',()=>this.bildir(s,mesaj),'mesaj-secenek'));
+      el.append(ceteEl('span',null,mesaj.metin),ceteEl('time','mesaj-saati',Sohbet.saat(mesaj.zaman)),dugmeEl('Yanıtla',()=>this.yanit(s,mesaj),'mesaj-secenek'),dugmeEl('Bildir',()=>this.bildir(s,mesaj),'mesaj-secenek'));
       ceteMesajHareketi(el,mesaj,()=>this.yanit(s,mesaj),()=>this.yanit(s,mesaj));l.append(el);
     }
     const son=m.at(-1);s.sonId=son?.id;
@@ -86,7 +86,7 @@ async function profilAc(uid){
     if(p.ceteAd||p.ceteId)govde.push(ceteEl('p',null,'Çete: '+(p.ceteAd||'Çeteye üye')));
     const butonlar=[];
     if(uid!==ben){
-      if(iliski?.durum==='kabul')butonlar.push(['💬 Özel sohbet',()=>setTimeout(()=>OzelSohbet.ac(uid,p.ad),0)]);
+      if(iliski?.durum==='kabul')butonlar.push(['Özel sohbet',()=>setTimeout(()=>OzelSohbet.ac(uid,p.ad),0)]);
       else if(iliski?.hedef===ben)butonlar.push(['Kabul et',()=>ArkadasVeri.kabul(ceteC(),id)]);
       else if(iliski)govde.push(ceteEl('p',null,'İstek gönderildi.'));
       else if(p.kod)butonlar.push(['Arkadaş ekle',async()=>{await ArkadasVeri.istek(ceteC(),ben,p.kod);bildir('İstek gönderildi.');}]);

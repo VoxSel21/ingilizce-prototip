@@ -6,27 +6,27 @@ nav button.yeni-mesaj-var{position:relative}nav button.yeni-mesaj-var::before{co
 .menu-panel .ust{flex:none;}.menu-panel .ust h2{margin:0;font-size:19px;}
 .menu-panel-ic{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 2px 16px;}.menu-panel-ic>*{margin-bottom:12px;}.menu-panel-ic .kart{margin-top:0!important;}
 .menu-links{display:grid;grid-template-columns:1fr 1fr;}.menu-link{padding:11px 8px;min-height:44px;border:1px solid var(--cizgi);border-radius:14px;background:var(--yuzey);color:var(--murekkep);font-size:14px;}
-.menu-count{padding:2px 4px;}
+
 .menu-karo{display:flex;align-items:center;gap:16px;width:100%;padding:20px;text-align:left;border-radius:20px;background:var(--yuzey);box-shadow:var(--golge);min-height:78px;}.menu-karo>span{font-size:34px;}.menu-karo b{font-size:17px;display:block;}.menu-karo small{font-size:14px;display:block;color:var(--soluk);margin-top:3px;line-height:1.4;}
 
 /* Gövde ve 600×500 giydirme katmanı aynı kare kedi alanından ölçeklenir. */
 #ekran-ana .hedef{height:100%;padding:clamp(10px,1.4dvh,16px);gap:14px;}
 #ekran-ana .halka{width:clamp(64px,10dvh,96px);height:clamp(64px,10dvh,96px);min-width:clamp(64px,10dvh,96px);flex-shrink:0;}#ekran-ana .hedef b{font-size:18px!important;}#ekran-ana .hedef p{font-size:14px!important;line-height:1.4;}
 .seviye-sec{margin:0;gap:6px;}.seviye-sec button{font-size:15px;padding:6px 2px;}.seviye-sec small{font-size:10px;}
-.menu-konu{min-width:0;}.menu-konu .konu-yok{margin:0;}
+.menu-konu{min-width:0;}
 #ekran-ana.aktif{overflow-y:auto;}.menu-links .menu-link{height:100%;}
 
 #ekran-oduller .rozetler{flex:1;}
 .sosyal-sekme{margin-top:0!important;}.sosyal-sekme button{padding:8px 4px;font-size:12px;}.menu-sosyal{flex-direction:column;flex:1;gap:12px;justify-content:space-evenly;}.menu-sosyal>.menu-karo{flex:1;max-height:210px;}
-@media(max-height:760px){#ekran-ana.aktif,#ekran-takvim.aktif{gap:7px;padding:12px 14px calc(82px + var(--alt-bosluk));padding-top:calc(12px + var(--ust-bosluk));}#ekran-ana .hedef p{font-size:13px!important;}#ekran-takvim .takvim-kart{padding:10px;}}
-@media(max-height:700px){#ekran-ana .halka{width:56px;height:56px;min-width:56px;}#ekran-ana .hedef{padding:8px;}#ekran-takvim.aktif{grid-template-rows:44px minmax(0,1fr) 44px 72px;gap:6px;}#ekran-takvim .gun{font-size:13px;}#ekran-takvim .ay-bas{min-height:38px;}.menu-koruyucu{padding:10px;}}
+@media(max-height:760px){#ekran-ana .hedef p{font-size:13px!important;}}
+@media(max-height:700px){#ekran-ana .halka{width:56px;height:56px;min-width:56px;}#ekran-ana .hedef{padding:8px;}}
 
 .pist .balikci{width:70px;height:86px;top:calc(58% - 83px);right:4px;font-size:0;pointer-events:none}.pist .balikci svg{display:block;width:100%;height:100%}
 
 .sohbet-araclar{flex:none;padding:0 0 10px;gap:8px}.sohbet-araclar .menu-link{padding:8px}.mesaj{touch-action:pan-y;transition:transform .12s ease}
 .mesaj{flex-shrink:0}#tam-ayarlar>.menu-link{flex:none;margin-top:12px}
 .sohbet-dil-uyari{padding:7px 12px;font-size:12px;background:var(--gunes-a);line-height:1.35}
-#ozel-ic{display:flex;flex:1;min-height:0;flex-direction:column;}#ozel-ic>.soluk{flex:none}.profil-kedi{margin:auto;position:relative}[role=button].kim,.cete-uye-ad[role=button]{cursor:pointer}
+#ozel-ic{display:flex;flex:1;min-height:0;flex-direction:column;}#ozel-ic>.soluk{flex:none}.profil-kedi{position:relative}[role=button].kim,.cete-uye-ad[role=button]{cursor:pointer}
 .oz-ekran.aktif{display:block;overflow-y:auto;overscroll-behavior:contain}#oz-kedi{position:absolute;left:50%;transform:translateX(-50%)}#oz-renkler{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));}.oz-renk{aspect-ratio:1;}.oz-katalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}.oz-urun{display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:pre-line}.oz-urun img{max-width:100%;object-fit:contain}.oz-temalar{grid-template-columns:repeat(2,minmax(0,1fr))}.oz-temalar img{object-fit:cover;}.oz-aksiyon button{flex:1;}
 
 /* 2026-10-25: yedi sütun içeriğin doğal genişliği yüzünden büyüyemez. */

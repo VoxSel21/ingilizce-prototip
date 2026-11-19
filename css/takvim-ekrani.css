@@ -1,9 +1,14 @@
 /* =====================================================================
-   Takvim ekranı · "C · Sakin ve şık" kural seti (2026-11-16)
-   #ekran-takvim (üst satır, Pati penceresi + seri, ay kartı, istatistik
+   Takvim ekranı · "B · Canlı ve oyunsu" kural seti (2026-11-18)
+   (C · Sakin ve şık, 2026-11-16 sürümünün yerine; seçiciler aynı.)
+   #ekran-takvim (üst satır, Pati'nin sahnesi + seri, ay kartı, istatistik
    bağlantısı, koruyucu satışı) ve oradan açılan istatistik paneli
    (#tam-menu-istatistik, js/menu-paneller.js kurar).
    Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
+   B kuralı: kenar (2 px lacivert) + sert gölge yalnız dokunulan parçada
+   (istatistik bağlantısı, koruyucu "al" düğmesi); bilgi kartları ve
+   satırları kenarsız beyaz. Parlak sarı yalnız Pati'nin sahnesinde.
+   Oyun rengi ikiden az: nane (çalışılan gün, çubuk) + lila (korunan gün).
    En son yüklenir. Eski kuralları (stil.css, menuler.css, pati-dunya.css)
    ezmek için seçiciler "html #ekran-takvim#ekran-takvim" ile başlar (çift
    kimlik = daha güçlü seçici). Çalışılan günlerin renkli zeminini JS satır
@@ -13,14 +18,16 @@
    Eski dosyalardaki takvim kuralları, tüm ekranlar geçince silinecek.
    ===================================================================== */
 
-/* ---------- Zemin: fotoğraflı sahne yerine düz kırık beyaz ---------- */
+/* ---------- Zemin: fotoğraflı sahne yerine düz krem ---------- */
 :root:not(#yok):has(#ekran-takvim.aktif) #uygulama { background: var(--renk-zemin); }
 :root:not(#yok):has(#ekran-takvim.aktif) #uygulama > .sahne { display: none; }
 :root:not(#yok):has(#ekran-takvim.aktif) .telefon-bildirim:not(.acik) { box-shadow: none; }
 
 /* Sıra: üst satır · Pati + seri · ay kartı (kalan yeri doldurur) · istatistik · koruyucu.
-   Kısa telefonda yalnız ay kartı küçülür; ekran yine kaydırılabilir kalır. */
+   Kısa telefonda (375×667) her şey sığmaz: menuler.css aktif ekranın kaydırmasını
+   kapatıyor, koruyucu satırı alt menünün arkasında kalıyordu; burada kaydırma açılır. */
 html #ekran-takvim#ekran-takvim.aktif {
+  overflow-x: hidden; overflow-y: auto; scrollbar-width: none;
   display: grid; grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(300px, 1fr) auto auto; gap: var(--bosluk-3);
   padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(112px + var(--alt-bosluk));
@@ -32,82 +39,94 @@ html #ekran-takvim#ekran-takvim :focus-visible { outline: 2px solid var(--renk-o
 
 /* ---------- 1. Üst satır: başlık + koruyucu hapı ---------- */
 html #ekran-takvim#ekran-takvim > .ust { display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0; padding: var(--bosluk-2) var(--bosluk-1) 0; border: 0; }
-html #ekran-takvim#ekran-takvim .takvim-baslik { margin: 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
-/* Hap: JS yalnız "🧊 2" yazar; açıklama CSS'ten gelir. */
-html #ekran-takvim#ekran-takvim #koruyucu-hap { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 6px 12px; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; white-space: nowrap; }
-html #ekran-takvim#ekran-takvim #koruyucu-hap::after { content: " koruyucu"; }
+html #ekran-takvim#ekran-takvim .takvim-baslik { margin: 0; font-size: var(--yazi-2xl); font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+/* Hap bilgi gösterir, dokunulmaz: düz beyaz, kenarsız. JS yalnız "🧊 2" yazar; açıklama CSS'ten gelir. */
+html #ekran-takvim#ekran-takvim #koruyucu-hap { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 6px 12px; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); line-height: 1.3; white-space: nowrap; }
+html #ekran-takvim#ekran-takvim #koruyucu-hap::after { content: " koruyucu"; font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
 
-/* ---------- 2. Pati'nin küçük penceresi (120) + seri ---------- */
-html #ekran-takvim#ekran-takvim .takvim-seri { display: flex; align-items: center; gap: var(--bosluk-5); padding: 0 var(--bosluk-1); }
-html #ekran-takvim#ekran-takvim .takvim-pencere {
-  position: relative; overflow: hidden; flex: none; width: 104px; height: var(--pencere-kucuk);
-  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
-  border: 2px solid var(--renk-pencere-cerceve); border-radius: 52px 52px var(--kose-md) var(--kose-md);
+/* ---------- 2. Pati'nin sahnesi: parlak sarı şerit + küçük çember (96) + seri ---------- */
+/* Şerit ekranın iki kenarına taşar (ana ve ders ekranındaki sahne gibi); dokunulmadığı için çizgisiz. */
+html #ekran-takvim#ekran-takvim .takvim-seri {
+  display: flex; align-items: center; gap: var(--bosluk-4);
+  margin: 0 calc(-1 * var(--kenar-genis)); padding: 10px var(--kenar-genis);
+  background: var(--renk-sahne);
 }
-html #ekran-takvim#ekran-takvim .takvim-pencere::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 24%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 14px; border-top-right-radius: 50% 14px; }
+/* Çember: satın alınan arka plan içini kaplar (--ders-resmi, ana-sayfa.js sahneCiz); resim yoksa gökyüzü + tepe. */
+html #ekran-takvim#ekran-takvim .takvim-pencere {
+  position: relative; overflow: hidden; flex: none; width: var(--cember-kucuk); height: var(--cember-kucuk);
+  border: var(--kenar); border-color: var(--renk-pencere-cerceve); border-radius: 50%;
+  background: var(--ders-resmi, none) center / cover no-repeat,
+    radial-gradient(circle at 50% 85%, var(--renk-pencere-tepe) 0 32%, transparent 33%),
+    linear-gradient(180deg, var(--renk-pencere-ust), var(--renk-pencere-orta) 60%, var(--renk-pencere-alt));
+}
+html #ekran-takvim#ekran-takvim .takvim-pencere::after { content: none; display: none; }
 /* Pati: kesik çizgili yer tutucu (ana ekrandakiyle aynı çizim; asıl kedi tasarımcıdan gelince değişir). */
 html #ekran-takvim#ekran-takvim .takvim-kedi {
-  position: absolute; z-index: 1; left: 50%; bottom: 8%; translate: -50% 0; height: 66%; aspect-ratio: 200 / 220; background: var(--renk-pati-yer);
+  position: absolute; z-index: 1; left: 50%; bottom: 10%; translate: -50% 0; height: 70%; aspect-ratio: 200 / 220; background: var(--renk-pati-yer);
   --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='6' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
   -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
 }
-html #ekran-takvim#ekran-takvim .takvim-seri-metin { min-width: 0; }
-html #ekran-takvim#ekran-takvim .takvim-seri-metin small { display: block; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-takvim#ekran-takvim .takvim-seri-metin b { display: block; margin: 2px 0; font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+/* Seri yazısı sarı şeridin üstünde: hep lacivert (sarıda 12:1'in üstü). */
+html #ekran-takvim#ekran-takvim .takvim-seri-metin { min-width: 0; color: var(--renk-metin); }
+html #ekran-takvim#ekran-takvim .takvim-seri-metin small { display: block; font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); color: var(--renk-metin); }
+html #ekran-takvim#ekran-takvim .takvim-seri-metin small:last-child { font-weight: var(--kalin-orta); }
+html #ekran-takvim#ekran-takvim .takvim-seri-metin b { display: block; margin: 2px 0; font-size: var(--yazi-3xl); font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
 
-/* ---------- 3. Ay kartı ---------- */
-/* Kart: beyaz, köşe 22, çerçeve ve gölge yok. */
+/* ---------- 3. Ay kartı: beyaz, kenarsız (bilgi) ---------- */
 html #ekran-takvim#ekran-takvim .takvim-kart { display: flex; flex-direction: column; min-height: 0; margin: 0; padding: var(--bosluk-4) var(--bosluk-4) var(--bosluk-3); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); }
 html #ekran-takvim#ekran-takvim .ay-bas { flex: none; display: block; min-height: 0; margin: 0 0 var(--bosluk-3); padding: 0 var(--bosluk-1); }
-html #ekran-takvim#ekran-takvim .ay-emoji { display: none; } /* mevsim emojisi: sakin görünümde yok */
-html #ekran-takvim#ekran-takvim .ay-bas b { display: block; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
-html #ekran-takvim#ekran-takvim .ay-bas small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-/* İnce çubuk: metin renginde, iz adaçayı (ana ekrandaki halka ve ders çubuğuyla aynı dil). */
-html #ekran-takvim#ekran-takvim .ay-cubuk { flex: none; height: 6px; margin: 0 var(--bosluk-1) var(--bosluk-3); border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); }
-html #ekran-takvim#ekran-takvim .ay-cubuk i { background: var(--renk-metin); border-radius: var(--kose-hap); }
+html #ekran-takvim#ekran-takvim .ay-emoji { display: none; } /* mevsim emojisi yok: başlık ve sayı yeter */
+html #ekran-takvim#ekran-takvim .ay-bas b { display: block; font-size: var(--yazi-xl); font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #ekran-takvim#ekran-takvim .ay-bas small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+/* Kalın nane çubuk (ders ekranındaki ilerleme çubuğuyla aynı dil). */
+html #ekran-takvim#ekran-takvim .ay-cubuk { flex: none; height: 10px; margin: 0 var(--bosluk-1) var(--bosluk-3); border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); overflow: hidden; }
+html #ekran-takvim#ekran-takvim .ay-cubuk i { background: var(--renk-dugme); border-radius: var(--kose-hap); }
 
 html #ekran-takvim#ekran-takvim .gunler {
   flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-template-rows: 20px repeat(var(--takvim-hafta, 5), minmax(0, 1fr)); gap: var(--bosluk-1);
   padding: 0; border-radius: 0; background: none;
 }
-html #ekran-takvim#ekran-takvim .gunler .bas { align-self: center; padding: 0; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #ekran-takvim#ekran-takvim .gunler .bas { align-self: center; padding: 0; font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); color: var(--renk-metin-ikincil); }
 html #ekran-takvim#ekran-takvim .gunler .bas.hafta-sonu { color: var(--renk-metin-ikincil); }
-/* Gün: daire, en çok 40 px; satır kısalınca küçülür. */
+/* Gün: daire, en çok 40 px; satır kısalınca küçülür. Günlere dokunulmaz: kenar/gölge yok. */
 html #ekran-takvim#ekran-takvim .gun {
   justify-self: center; align-self: center; width: auto; height: min(100%, 40px); max-height: none; min-height: 0; aspect-ratio: 1;
   display: grid; place-items: center; border-radius: var(--kose-hap); outline: 0; box-shadow: none; animation: none;
-  background: transparent; color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-orta);
+  background: transparent; color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-kalin);
 }
-html #ekran-takvim#ekran-takvim .gun.gecti { color: var(--renk-metin-ikincil); background: transparent; }
+html #ekran-takvim#ekran-takvim .gun.gecti { color: var(--renk-metin-ikincil); font-weight: var(--kalin-orta); background: transparent; }
 html #ekran-takvim#ekran-takvim .gun.gelecek { color: var(--renk-metin-ikincil); font-weight: var(--kalin-normal); background: transparent; }
-/* Çalışılan gün: ekrandaki en koyu şey (ana düğme rengi). JS satır içi renkli zemin verir. */
-html #ekran-takvim#ekran-takvim .gun.calisti { background: var(--renk-dugme) !important; color: var(--renk-dugme-metin); }
-/* Koruyucuyla kurtarılan gün: adaçayı daire, kesik kenar (yazıyla da anlatılır: alttaki açıklama). */
-html #ekran-takvim#ekran-takvim .gun.korundu { background: var(--renk-yuzey-adacayi); box-shadow: inset 0 0 0 1.5px var(--renk-metin-adacayi); font-size: var(--yazi-xs); }
-/* Bugün: halka; çalışıldıysa koyu dairenin dışında misket limonu halka. */
-html #ekran-takvim#ekran-takvim .gun.bugun { outline: 2px solid var(--renk-metin); outline-offset: 2px; color: var(--renk-metin); font-weight: var(--kalin-kalin); }
+/* Çalışılan gün: nane daire, lacivert yazı (ana düğme rengi). JS satır içi renkli zemin verir. */
+html #ekran-takvim#ekran-takvim .gun.calisti { background: var(--renk-dugme) !important; color: var(--renk-dugme-metin); font-weight: var(--kalin-siyah); }
+/* Koruyucuyla kurtarılan gün: lila daire (yazıyla da anlatılır: alttaki açıklama). */
+html #ekran-takvim#ekran-takvim .gun.korundu { background: var(--renk-oyun-lila); color: #1B1B3A; font-size: var(--yazi-xs); }
+/* Bugün: metin renginde halka (koyuda kenar rengi zemine karışır); çalışıldıysa nane dairenin dışında. */
+html #ekran-takvim#ekran-takvim .gun.bugun { outline: 2px solid var(--renk-metin); outline-offset: 2px; color: var(--renk-metin); font-weight: var(--kalin-siyah); }
 html #ekran-takvim#ekran-takvim .gun.bugun.calisti { color: var(--renk-dugme-metin); }
 html #ekran-takvim#ekran-takvim .gun::before, html #ekran-takvim#ekran-takvim .gun::after { content: none; display: none; }
 
 /* Açıklama (lejant) */
-html #ekran-takvim#ekran-takvim .lejant { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--bosluk-4); margin: var(--bosluk-3) 0 0; font-size: var(--yazi-xs); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
+html #ekran-takvim#ekran-takvim .lejant { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--bosluk-4); margin: var(--bosluk-3) 0 0; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
 html #ekran-takvim#ekran-takvim .lejant span { display: inline-flex; align-items: center; gap: 6px; }
 html #ekran-takvim#ekran-takvim .lejant i { display: inline-grid; place-items: center; width: 14px; height: 14px; margin: 0; border-radius: var(--kose-hap); font-style: normal; font-size: 8px; vertical-align: 0; outline: 0; }
 html #ekran-takvim#ekran-takvim .lejant .lej-calisti { background: var(--renk-dugme); }
-html #ekran-takvim#ekran-takvim .lejant .lej-korundu { background: var(--renk-yuzey-adacayi); box-shadow: inset 0 0 0 1.5px var(--renk-metin-adacayi); }
+html #ekran-takvim#ekran-takvim .lejant .lej-korundu { background: var(--renk-oyun-lila); }
 html #ekran-takvim#ekran-takvim .lejant .lej-bugun { background: transparent; box-shadow: inset 0 0 0 2px var(--renk-metin); }
 
-/* ---------- 4. İstatistik bağlantısı (satır düğmesi, kart gibi) ---------- */
-html #ekran-takvim#ekran-takvim > .menu-link { display: flex; align-items: center; justify-content: flex-start; gap: var(--bosluk-3); width: 100%; height: auto; min-height: var(--dugme-boy); margin: 0; padding: 0 var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); text-align: left; }
+/* ---------- 4. İstatistik bağlantısı: dokunulur → kenar + sert gölge, basınca iner ---------- */
+html #ekran-takvim#ekran-takvim > .menu-link { display: flex; align-items: center; justify-content: flex-start; gap: var(--bosluk-3); width: 100%; height: auto; min-height: var(--dugme-boy); margin: 0; padding: 0 var(--bosluk-5); border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); text-align: left; transition: transform var(--gecis), box-shadow var(--gecis); }
 
-/* ---------- 5. Koruyucu satışı: kart satırı + ikinci düğme ---------- */
-html #ekran-takvim#ekran-takvim .menu-koruyucu { display: flex; align-items: center; gap: var(--bosluk-3); height: auto; min-height: 64px; padding: var(--bosluk-3) var(--bosluk-3) var(--bosluk-3) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); }
-html #ekran-takvim#ekran-takvim .menu-koruyucu > span { font-size: 20px; }
-html #ekran-takvim#ekran-takvim .menu-koruyucu b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); color: var(--renk-metin); }
-html #ekran-takvim#ekran-takvim .menu-koruyucu small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-takvim#ekran-takvim .menu-koruyucu .al { flex: none; margin-left: auto; min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-md); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); white-space: nowrap; }
-html #ekran-takvim#ekran-takvim .menu-koruyucu .al:disabled { opacity: .45; cursor: default; }
+/* ---------- 5. Koruyucu satışı: kenarsız satır + kenarlı "al" düğmesi ---------- */
+html #ekran-takvim#ekran-takvim .menu-koruyucu { display: flex; align-items: center; gap: var(--bosluk-3); height: auto; min-height: 64px; padding: var(--bosluk-3) var(--bosluk-3) var(--bosluk-3) var(--bosluk-4); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); }
+html #ekran-takvim#ekran-takvim .menu-koruyucu > span { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--kose-hap); background: var(--renk-oyun-lila); font-size: 20px; }
+html #ekran-takvim#ekran-takvim .menu-koruyucu > div { min-width: 0; }
+html #ekran-takvim#ekran-takvim .menu-koruyucu b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-siyah); color: var(--renk-metin); }
+html #ekran-takvim#ekran-takvim .menu-koruyucu small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #ekran-takvim#ekran-takvim .menu-koruyucu .al { flex: none; margin-left: auto; min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-siyah); white-space: nowrap; transition: transform var(--gecis), box-shadow var(--gecis); }
+/* Altın yetmiyorsa: soluk, gölgesiz (basılamaz görünür). */
+html #ekran-takvim#ekran-takvim .menu-koruyucu .al:disabled { opacity: .45; box-shadow: none; transform: translateY(3px); cursor: default; }
+html #ekran-takvim#ekran-takvim :is(> .menu-link, .menu-koruyucu .al):active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
 
 /* ---------- İstatistik paneli (Takvim'den açılır) ---------- */
 html #tam-menu-istatistik#tam-menu-istatistik {
@@ -118,25 +137,27 @@ html #tam-menu-istatistik#tam-menu-istatistik {
 html #tam-menu-istatistik#tam-menu-istatistik :is(h2, b, p, span, button, div) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
 html #tam-menu-istatistik#tam-menu-istatistik :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
 html #tam-menu-istatistik#tam-menu-istatistik > .ust { display: flex; justify-content: flex-start; align-items: center; gap: var(--bosluk-2); min-height: 52px; margin: 0 0 var(--bosluk-3); padding: 0; border: 0; }
-html #tam-menu-istatistik#tam-menu-istatistik > .ust .kapat { flex: 0 0 var(--dokunma-min); width: var(--dokunma-min); height: var(--dokunma-min); min-height: 0; margin-left: calc(-1 * var(--bosluk-2)); display: grid; place-items: center; border-radius: var(--kose-hap); background: transparent; color: var(--renk-metin); font-size: 20px; font-weight: var(--kalin-orta); }
-html #tam-menu-istatistik#tam-menu-istatistik > .ust h2 { margin: 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+/* Kapat: dokunulur → küçük beyaz daire, kenar + sert gölge. */
+html #tam-menu-istatistik#tam-menu-istatistik > .ust .kapat { flex: 0 0 var(--dokunma-min); width: var(--dokunma-min); height: var(--dokunma-min); min-height: 0; margin: 0; display: grid; place-items: center; border: var(--kenar); border-radius: var(--kose-hap); box-shadow: var(--golge-sert); background: var(--renk-yuzey); color: var(--renk-metin); font-size: 18px; font-weight: var(--kalin-siyah); transition: transform var(--gecis), box-shadow var(--gecis); }
+html #tam-menu-istatistik#tam-menu-istatistik > .ust .kapat:active { transform: translateY(3px); box-shadow: none; }
+html #tam-menu-istatistik#tam-menu-istatistik > .ust h2 { margin: 0; font-size: var(--yazi-2xl); font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
 html #tam-menu-istatistik#tam-menu-istatistik .menu-panel-ic { padding: 0 0 var(--bosluk-4); }
 html #tam-menu-istatistik#tam-menu-istatistik .menu-panel-ic > * { margin-bottom: var(--bosluk-3); }
 html #tam-menu-istatistik#tam-menu-istatistik .istat { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bosluk-3); margin: 0 0 var(--bosluk-3); }
-html #tam-menu-istatistik#tam-menu-istatistik .kart { margin: 0; padding: var(--bosluk-4) var(--bosluk-4) var(--bosluk-4) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); }
-html #tam-menu-istatistik#tam-menu-istatistik .istat .i-ikon { display: none; } /* emoji yok: sayı ve yazı yeter */
-html #tam-menu-istatistik#tam-menu-istatistik .istat b { display: block; font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
-html #tam-menu-istatistik#tam-menu-istatistik .istat .soluk { display: block; margin-top: var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: 1.4; color: var(--renk-metin-ikincil); }
-html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not { background: var(--renk-yuzey-adacayi); }
-html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not b { font-size: var(--yazi-md); font-weight: var(--kalin-orta); color: var(--renk-metin); }
-html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not p { margin-top: var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-normal); line-height: var(--satir-rahat); color: var(--renk-metin-adacayi); }
+/* İstatistik kartları bilgi: beyaz, kenarsız. */
+html #tam-menu-istatistik#tam-menu-istatistik .kart { margin: 0; padding: var(--bosluk-4); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); }
+html #tam-menu-istatistik#tam-menu-istatistik .istat .i-ikon { display: block; margin-bottom: var(--bosluk-1); font-size: 22px; line-height: 1; }
+html #tam-menu-istatistik#tam-menu-istatistik .istat b { display: block; font-size: var(--yazi-3xl); font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
+html #tam-menu-istatistik#tam-menu-istatistik .istat .soluk { display: block; margin-top: var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); line-height: 1.4; color: var(--renk-metin-ikincil); }
+html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not { background: var(--renk-oyun-lila); }
+html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not b { font-size: var(--yazi-md); font-weight: var(--kalin-siyah); color: #1B1B3A; }
+html #tam-menu-istatistik#tam-menu-istatistik .koruyucu-not p { margin-top: var(--bosluk-1); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); line-height: var(--satir-rahat); color: #1B1B3A; }
 
 /* ---------- Koyu tema ---------- */
-/* Koyuda ana düğme rengi açık; bugünün halkası da açık kalır. Ek kural gerekmez. */
+/* Lila üstündeki yazı her temada lacivert (ana ekrandaki lila köşe gibi sabit #1B1B3A); ek kural gerekmez. */
 
 /* ---------- Yüksek kontrast: gölge/dolgu yerine siyah çerçeve ---------- */
-:root[data-tema="kontrast"] #ekran-takvim#ekran-takvim :is(.takvim-kart, .menu-link, .menu-koruyucu, .menu-koruyucu .al, #koruyucu-hap) { border: 2px solid #000; }
-:root[data-tema="kontrast"] #ekran-takvim#ekran-takvim .takvim-pencere::after { border-top: 2px solid #000; }
+:root[data-tema="kontrast"] #ekran-takvim#ekran-takvim :is(.takvim-kart, .menu-koruyucu, #koruyucu-hap) { border: 2px solid #000; }
 :root[data-tema="kontrast"] #ekran-takvim#ekran-takvim .ay-cubuk { box-shadow: inset 0 0 0 1px #000; }
-:root[data-tema="kontrast"] #ekran-takvim#ekran-takvim .gun.korundu { box-shadow: inset 0 0 0 2px #000; }
+:root[data-tema="kontrast"] #ekran-takvim#ekran-takvim :is(.gun.korundu, .lejant .lej-korundu, .menu-koruyucu > span) { box-shadow: inset 0 0 0 2px #000; }
 :root[data-tema="kontrast"] #tam-menu-istatistik#tam-menu-istatistik .kart { border: 2px solid #000; }

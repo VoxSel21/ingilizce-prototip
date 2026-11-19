@@ -13,19 +13,19 @@
 <meta name="apple-mobile-web-app-title" content="Pati">
 <title>Pati · Küçük İngilizce dünyası</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/degiskenler.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/stil.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/menuler.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/pati-dunya.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/ana-ekran.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/ders-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/takvim-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/kedi-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/oduller-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/sosyal-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/alistirma-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/oyun-ekrani.css?v=0.10.9-dev.11">
-<link rel="stylesheet" href="css/kucuk-ekranlar.css?v=0.10.9-dev.11">
+<link rel="stylesheet" href="css/degiskenler.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/stil.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/menuler.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/pati-dunya.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/ana-ekran.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/ders-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/takvim-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/kedi-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/oduller-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/sosyal-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/alistirma-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/oyun-ekrani.css?v=0.10.9-dev.12">
+<link rel="stylesheet" href="css/kucuk-ekranlar.css?v=0.10.9-dev.12">
 </head>
 <body>
 <div id="uygulama">
@@ -33,55 +33,62 @@
   <div class="sahne" id="sahne"></div>
 
   <!-- ========== ANA SAYFA ========== -->
-  <!-- C · Sakin ve şık (2026-11-16): ilk ekranda yalnız 6 parça (üst satır, Pati penceresi, ders satırı,
-       tek ana düğme, bilgi satırı, alt menü). Seviye, konu ve alıştırmalar kaydırınca altta.
+  <!-- B · Canlı ve oyunsu (2026-11-18): arkadaşın taslağındaki sıra. Üst satır (seri · ses, altın, ayarlar) →
+       Pati çemberde (satın alınan arka plan içinde, günlük hedef halkası çevresinde; sol altta seviye, sağ altta
+       Phrasal verbs) → günlük hedef kutusu + ana düğme → konu arama ve konular → Alıştırmalar ve Kelime kutuları.
        Görünüş: css/degiskenler.css + css/ana-ekran.css. Eski kimlikler (id) JS için korunur. -->
   <section class="ekran aktif" id="ekran-ana">
     <div class="ana-ust">
-      <div class="ana-selam"><span id="ana-tarih"></span><b id="ana-selam">Merhaba</b></div>
+      <!-- Bildirim paneli (Serhat, 2026-11-18): seri ve hediye hatırlatmaları; içeriği ana-sayfa.js bildirimCiz yazar. -->
+      <div class="ana-sol">
+        <button class="ana-hap ikon" id="bildirim-dugme" aria-haspopup="true" aria-expanded="false" aria-controls="bildirim-panel" aria-label="Hatırlatmalar">🔔<span class="ana-nokta" id="bildirim-nokta" hidden></span></button>
+        <span class="ana-hap" id="seri-hap">🔥 0</span>
+      </div>
+      <div class="ana-bildirim" id="bildirim-panel" role="region" aria-label="Hatırlatmalar" hidden></div>
       <div class="ana-araclar">
+        <button class="ana-hap ikon ses-dugme" aria-label="Sesi aç/kapat">🔊</button>
         <span class="ana-hap" id="yildiz-hap">🪙 0</span>
-        <button class="ana-ikon-dugme ses-dugme" aria-label="Sesi aç/kapat">🔊</button>
-        <button class="ana-ikon-dugme" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button>
+        <button class="ana-hap ikon" id="ayarlar-ac" aria-label="Ayarlar">⚙️</button>
       </div>
     </div>
 
-    <div class="ana-pencere-kap">
-      <div class="ana-pencere" id="ders-sahne">
-        <span class="ana-hap cam" id="seri-hap">🔥 0</span>
-        <!-- Kedi tasarımı tasarımcıda: kesik çizgili yer tutucu çizilir (CSS), eski kedi çizimi gizli. -->
-        <button class="ana-kedi" id="ana-kedi" aria-label="Kedine git"></button>
+    <div class="ana-sahne">
+      <div class="ana-cember-sar">
+        <svg class="ana-halka" id="halka" viewBox="0 0 100 100" role="img" aria-label="Günlük hedef">
+          <circle class="h-kenar" cx="50" cy="50" r="46"/>
+          <circle class="h-zemin" cx="50" cy="50" r="46"/>
+          <circle class="h-dolu" id="halka-dolu" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 50 50)"/>
+        </svg>
+        <!-- Satın alınan arka plan çemberin içini kaplar (Serhat, 2026-11-18); resmi ana-sayfa.js sahneCiz koyar. -->
+        <div class="ana-cember" id="ders-sahne">
+          <!-- Kedi tasarımı tasarımcıda: kesik çizgili yer tutucu çizilir (CSS), eski kedi çizimi gizli. -->
+          <button class="ana-kedi" id="ana-kedi" aria-label="Kedine git"></button>
+        </div>
       </div>
+      <!-- Seviye elle seçilir (Serhat, 2026-11-18). -->
+      <button class="ana-kose sol" id="seviye-dugme" aria-haspopup="true" aria-expanded="false" aria-controls="seviye-sec">A1</button>
+      <div class="ana-seviye-sec" id="seviye-sec" role="group" aria-label="Seviye seç" hidden></div>
+      <button class="ana-kose sag" id="pv-dugme" data-ac="pv"><b>Phrasal<br>verbs</b><small id="pv-yazi"></small></button>
     </div>
 
-    <div class="ana-ders-satir">
-      <div class="ana-ders-metin">
-        <small id="ana-etiket">A1 · Tüm konular</small>
-        <h1 id="mini-ders-baslik">Pati ile masanın başında</h1>
-        <p id="mini-ders-not">3 kelime · yaklaşık 2 dk</p>
-      </div>
-      <div class="ana-halka" id="halka" role="img" aria-label="Günlük hedef"><span id="halka-yazi" aria-hidden="true">0/10</span></div>
+    <div class="ana-hedef">
+      <div class="ana-hedef-satir"><small>Günlük hedef</small><b id="halka-yazi">0 / 10</b></div>
+      <div class="ana-bilgi"><span id="hedef-yazi">Hediyeye 10 cevap kaldı</span><b id="ana-dogru">0 doğru</b></div>
+      <div class="ana-ders"><h1 id="mini-ders-baslik">Pati ile masanın başında</h1><p id="mini-ders-not">3 kelime · yaklaşık 2 dk</p></div>
+      <button class="dugme-ana" id="basla-dugme">İlk mini dersine başla</button>
     </div>
 
-    <button class="dugme-ana" id="basla-dugme">İlk mini dersine başla</button>
-
-    <div class="ana-bilgi"><span id="hedef-yazi">Hediyeye 10 cevap kaldı</span><b id="ana-dogru">0 doğru</b></div>
-
-    <!-- Kaydırınca: daha az kullanılan seçimler -->
     <div class="ana-alt">
-      <!-- Seviye elle seçilmez (Serhat, 2026-11-16): seviyeyi Ayarlar'daki seviye değerlendirmesi belirler. -->
-      <h2>Konu</h2>
       <div class="konu-ara"><input id="konu-ara" type="search" placeholder="Konu ara (ör. yemek, doğa)" aria-label="Konu ara" autocomplete="off"><button id="konu-ara-temizle" aria-label="Aramayı temizle" hidden>✕</button></div>
       <div class="konu-sec" id="konu-sec"></div>
       <p class="konu-yok" id="konu-yok" hidden>Bu aramayla konu bulunamadı.</p>
 
+      <!-- Aşağıdakileri js/menu-paneller.js açılışta ayrı panellere taşır (Alıştırmalar, Kelime kutuları) ve
+           ana ekranda yerlerine bir liste koyar (Alıştırmalar, Kelime kutuların, Çalışma türünü seç).
+           Phrasal verbs alıştırmalardan çıktı, çemberin sağ altında (arkadaşın taslağı, 2026-11-18). -->
       <button class="ana-satir" id="calisma-turu-sec"><div><b>Çalışma türünü seç</b><small>Uzun tur ve diğer çalışma türleri</small></div><span class="ok" aria-hidden="true">›</span></button>
-
-      <!-- Aşağıdakileri js/menu-paneller.js açılışta ayrı panellere taşır (Alıştırmalar, Kelime kutuları);
-           panellerin C görünümü css/alistirma-ekrani.css'te. Ana ekranda yalnız iki bağlantı kalır. -->
       <h2>Alıştırmalar</h2>
       <div class="gorevler">
-        <button class="gorev" data-ac="pv"><b>Phrasal verbs</b><small id="pv-yazi">get up, give up...</small></button>
         <button class="gorev" data-ac="cumle"><b>Cümle kur</b><small>Blokları sıraya diz</small></button>
         <button class="gorev" data-ac="kur"><b>Kelime Kur</b><small id="kur-yazi">Harfleri dizip kelimeyi yaz</small></button>
         <button class="gorev" data-ac="esles"><b>Pati Çabukluğu</b><small id="esles-yazi">Eşleştir, süreye karşı</small></button>
@@ -259,7 +266,7 @@
     <div class="antrenman" id="antrenman" hidden><div class="antrenman-kedi" id="antrenman-kedi"></div><div class="antrenman-bant"></div>
       <div class="antrenman-bilgi"><b id="antrenman-yazi"></b><div class="antrenman-cubuk"><i id="antrenman-cubuk"></i></div><small id="antrenman-kilo"></small></div></div>
     <div class="hedef-serit" aria-live="polite"></div>
-    <!-- C · Sakin ve şık (2026-11-16): Pati orta boy kemerli pencerede (css/ders-ekrani.css); asıl kedi gelene kadar yer tutucu. -->
+    <!-- C · Sakin ve şık (2026-11-16): Pati orta boy kemerli pencerede (css/ders-ekrani.css). B (2026-11-18): parlak sarı sahnede orta boy çember (160); asıl kedi gelene kadar yer tutucu. -->
     <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <div class="k-alan" id="k-alan"></div>
     <div class="geri-bildirim" id="k-gb">
@@ -286,7 +293,7 @@
   <!-- ========== PATİ ÇABUKLUĞU: eşleştirme (arkadaşın önerisi, 2026-10-19) ========== -->
   <section class="tam" id="tam-esles">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="e-cubuk"></i></div><b id="e-sure">0.0</b></div>
-    <!-- C · Sakin ve şık (2026-11-17): Pati küçük kemerli pencerede (css/alistirma-ekrani.css). -->
+    <!-- B (2026-11-18): Pati parlak sarı sahnede orta boy çember (160; kısa telefonda 96), css/alistirma-ekrani.css. -->
     <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <p class="soru">Eşleri bul! Bir İngilizce, bir Türkçe kart seç.</p>
     <div class="esles" id="esles"></div>
@@ -320,7 +327,7 @@
   <section class="tam" id="tam-kur">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="kur-cubuk"></i></div><b id="kur-sayac">0/8</b></div>
     <div class="hedef-serit" aria-live="polite"></div>
-    <!-- C · Sakin ve şık (2026-11-17): Pati küçük kemerli pencerede (css/alistirma-ekrani.css). -->
+    <!-- B (2026-11-18): Pati parlak sarı sahnede orta boy çember (160; kısa telefonda 96), css/alistirma-ekrani.css. -->
     <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
     <div class="k-alan" id="kur-alan"></div>
     <div class="geri-bildirim" id="kur-gb"><h3 id="kur-gb-baslik"></h3><p id="kur-gb-yazi"></p><button class="buyuk-dugme" id="kur-gb-devam">Devam</button></div>
@@ -330,13 +337,16 @@
   <section class="tam" id="tam-cumle">
     <div class="ilerleme"><button class="kapat" data-kapat>✕</button><div class="cubuk"><i id="c-cubuk"></i></div><b id="c-sayac">0/5</b></div>
     <div class="hedef-serit" aria-live="polite"></div>
-    <!-- C · Sakin ve şık (2026-11-16): Pati küçük kemerli pencerede (css/alistirma-ekrani.css); asıl kedi gelene kadar yer tutucu. -->
+    <!-- B · Canlı ve oyunsu (2026-11-18): Pati sarı şeritte orta boy çemberde (css/alistirma-ekrani.css); asıl kedi gelene kadar yer tutucu. -->
     <div class="ders-pencere-kap" aria-hidden="true"><div class="ders-pencere"><span class="ders-kedi"></span></div></div>
-    <p class="soru">Bu cümleyi İngilizceye çevir:</p>
-    <p class="tr-cumle" id="c-tr"></p>
-    <p class="c-ipucu" id="c-ipucu"></p>
-    <div class="dizi" id="dizi"></div>
-    <div class="havuz" id="havuz"></div>
+    <!-- B (2026-11-18): soru alanı kendi içinde kayar; kısa telefonda "Kontrol et" hep görünür. -->
+    <div class="c-orta">
+      <p class="soru">Bu cümleyi İngilizceye çevir:</p>
+      <p class="tr-cumle" id="c-tr"></p>
+      <p class="c-ipucu" id="c-ipucu"></p>
+      <div class="dizi" id="dizi"></div>
+      <div class="havuz" id="havuz"></div>
+    </div>
     <div class="c-alt"><button class="buyuk-dugme mor" id="kontrol" disabled>Kontrol et</button></div>
     <div class="geri-bildirim" id="geri-bildirim">
       <h3 id="gb-baslik"></h3>
@@ -346,7 +356,7 @@
   </section>
 
   <!-- ========== GÜNLÜK BALIK AVI (tam ekran) ========== -->
-  <!-- C · Sakin ve şık (2026-11-17): görünüm css/oyun-ekrani.css; kedi çizimi (KediCizici) ve pist ölçüleri korunur. -->
+  <!-- B · Canlı ve oyunsu (2026-11-18; C 2026-11-17): görünüm css/oyun-ekrani.css; kedi çizimi (KediCizici) ve pist ölçüleri korunur. -->
   <section class="tam" id="tam-av">
     <div class="sure"><button class="kapat" id="av-kapat">✕</button><div class="cubuk"><i id="av-sure-cubuk"></i></div><b id="av-sure" aria-label="Kalan saniye">30</b><b id="av-mod" hidden>Alıştırma · süresiz</b></div>
     <div class="pist" id="pist">
@@ -411,73 +421,73 @@
 </div>
 
 <!-- Sürüm (0.4.0) her yayında js/ayarlar.js UYGULAMA_SURUM ile birlikte artırılır. Sıra önemli: önce veri, sonra kurallar, ekranlar; en son baslat.js uygulamayı açar. -->
-<script src="vendor/capacitor.js?v=0.10.9-dev.11"></script>
-<script src="veri/kelimeler.js?v=0.10.9-dev.11"></script>
-<script src="veri/phrasal.js?v=0.10.9-dev.11"></script>
-<script src="veri/cumleler.js?v=0.10.9-dev.11"></script>
-<script src="js/yardimci.js?v=0.10.9-dev.11"></script>
-<script src="vendor/ts-fsrs-5.4.2.js?v=0.10.9-dev.11"></script>
-<script src="js/beceri-kural.js?v=0.10.9-dev.11"></script>
-<script src="js/kayit.js?v=0.10.9-dev.11"></script>
-<script src="js/ekonomi.js?v=0.10.9-dev.11"></script>
-<script src="js/ilerleme.js?v=0.10.9-dev.11"></script>
-<script src="js/ogrenme.js?v=0.10.9-dev.11"></script>
-<script src="js/oyun.js?v=0.10.9-dev.11"></script>
-<script src="js/durum-modeli.js?v=0.10.9-dev.11"></script>
-<script src="js/ilerleme-sozlesmesi.js?v=0.10.9-dev.11"></script>
-<script src="js/esitleme.js?v=0.10.9-dev.11"></script>
-<script src="js/yerel-kayit.js?v=0.10.9-dev.11"></script>
-<script src="js/oturumlar.js?v=0.10.9-dev.11"></script>
-<script src="js/durum.js?v=0.10.9-dev.11"></script>
-<script src="js/firebase-ayar.js?v=0.10.9-dev.11"></script>
-<script src="js/bulut-veri.js?v=0.10.9-dev.11"></script>
-<script src="js/bulut.js?v=0.10.9-dev.11"></script>
-<script src="js/ana-sayfa.js?v=0.10.9-dev.11"></script>
-<script src="js/calisma-islemi.js?v=0.10.9-dev.11"></script>
-<script src="js/konusma-kural.js?v=0.10.9-dev.11"></script>
-<script src="js/mini-ders.js?v=0.10.9-dev.11"></script>
-<script src="js/pati-gorunum.js?v=0.10.9-dev.11"></script>
-<script src="js/kelime-calisma.js?v=0.10.9-dev.11"></script>
-<script src="veri/sesler.js?v=0.10.9-dev.11"></script>
-<script src="js/ses.js?v=0.10.9-dev.11"></script>
-<script src="js/cihaz.js?v=0.10.9-dev.11"></script>
-<script src="js/alistirmalar.js?v=0.10.9-dev.11"></script>
-<script src="js/odul-takvim.js?v=0.10.9-dev.11"></script>
-<script src="js/hazne.js?v=0.10.9-dev.11"></script>
-<script src="js/sohbet.js?v=0.10.9-dev.11"></script>
-<script src="js/cete-veri.js?v=0.10.9-dev.11"></script>
-<script src="js/cete.js?v=0.10.9-dev.11"></script>
-<script src="js/cete-baglanti.js?v=0.10.9-dev.11"></script>
-<script src="js/sosyal.js?v=0.10.9-dev.11"></script>
-<script src="js/demo-sohbet.js?v=0.10.9-dev.11"></script>
-<script src="js/savas-puan.js?v=0.10.9-dev.11"></script>
-<script src="js/savas-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/cete-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/gezinme.js?v=0.10.9-dev.11"></script>
-<script src="js/sevgi.js?v=0.10.9-dev.11"></script>
-<script src="js/kedi.js?v=0.10.9-dev.11"></script>
-<script src="js/kedi-cizim.js?v=0.10.9-dev.11"></script>
-<script src="js/av-gorunum.js?v=0.10.9-dev.11"></script>
-<script src="js/balik-avi.js?v=0.10.9-dev.11"></script>
-<script src="js/ayarlar.js?v=0.10.9-dev.11"></script>
-<script src="js/cete-yenilikler.js?v=0.10.9-dev.11"></script>
-<script src="js/arkadas.js?v=0.10.9-dev.11"></script>
-<script src="js/arkadas-veri.js?v=0.10.9-dev.11"></script>
-<script src="js/arkadas-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/savas-kural.js?v=0.10.9-dev.11"></script>
-<script src="js/savas-veri.js?v=0.10.9-dev.11"></script>
-<script src="js/savas-gercek-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/menu-paneller.js?v=0.10.9-dev.11"></script>
-<script src="js/seviye-sinavi.js?v=0.10.9-dev.11"></script>
-<script src="js/seviye-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/ozel-veri.js?v=0.10.9-dev.11"></script>
-<script src="js/ozel-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/kupa-eslesme.js?v=0.10.9-dev.11"></script>
-<script src="js/kupa-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/ozellestirme.js?v=0.10.9-dev.11"></script>
-<script src="js/telaffuz.js?v=0.10.9-dev.11"></script>
-<script src="js/beceri-ekran.js?v=0.10.9-dev.11"></script>
-<script src="js/baslat.js?v=0.10.9-dev.11"></script>
+<script src="vendor/capacitor.js?v=0.10.9-dev.12"></script>
+<script src="veri/kelimeler.js?v=0.10.9-dev.12"></script>
+<script src="veri/phrasal.js?v=0.10.9-dev.12"></script>
+<script src="veri/cumleler.js?v=0.10.9-dev.12"></script>
+<script src="js/yardimci.js?v=0.10.9-dev.12"></script>
+<script src="vendor/ts-fsrs-5.4.2.js?v=0.10.9-dev.12"></script>
+<script src="js/beceri-kural.js?v=0.10.9-dev.12"></script>
+<script src="js/kayit.js?v=0.10.9-dev.12"></script>
+<script src="js/ekonomi.js?v=0.10.9-dev.12"></script>
+<script src="js/ilerleme.js?v=0.10.9-dev.12"></script>
+<script src="js/ogrenme.js?v=0.10.9-dev.12"></script>
+<script src="js/oyun.js?v=0.10.9-dev.12"></script>
+<script src="js/durum-modeli.js?v=0.10.9-dev.12"></script>
+<script src="js/ilerleme-sozlesmesi.js?v=0.10.9-dev.12"></script>
+<script src="js/esitleme.js?v=0.10.9-dev.12"></script>
+<script src="js/yerel-kayit.js?v=0.10.9-dev.12"></script>
+<script src="js/oturumlar.js?v=0.10.9-dev.12"></script>
+<script src="js/durum.js?v=0.10.9-dev.12"></script>
+<script src="js/firebase-ayar.js?v=0.10.9-dev.12"></script>
+<script src="js/bulut-veri.js?v=0.10.9-dev.12"></script>
+<script src="js/bulut.js?v=0.10.9-dev.12"></script>
+<script src="js/ana-sayfa.js?v=0.10.9-dev.12"></script>
+<script src="js/calisma-islemi.js?v=0.10.9-dev.12"></script>
+<script src="js/konusma-kural.js?v=0.10.9-dev.12"></script>
+<script src="js/mini-ders.js?v=0.10.9-dev.12"></script>
+<script src="js/pati-gorunum.js?v=0.10.9-dev.12"></script>
+<script src="js/kelime-calisma.js?v=0.10.9-dev.12"></script>
+<script src="veri/sesler.js?v=0.10.9-dev.12"></script>
+<script src="js/ses.js?v=0.10.9-dev.12"></script>
+<script src="js/cihaz.js?v=0.10.9-dev.12"></script>
+<script src="js/alistirmalar.js?v=0.10.9-dev.12"></script>
+<script src="js/odul-takvim.js?v=0.10.9-dev.12"></script>
+<script src="js/hazne.js?v=0.10.9-dev.12"></script>
+<script src="js/sohbet.js?v=0.10.9-dev.12"></script>
+<script src="js/cete-veri.js?v=0.10.9-dev.12"></script>
+<script src="js/cete.js?v=0.10.9-dev.12"></script>
+<script src="js/cete-baglanti.js?v=0.10.9-dev.12"></script>
+<script src="js/sosyal.js?v=0.10.9-dev.12"></script>
+<script src="js/demo-sohbet.js?v=0.10.9-dev.12"></script>
+<script src="js/savas-puan.js?v=0.10.9-dev.12"></script>
+<script src="js/savas-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/cete-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/gezinme.js?v=0.10.9-dev.12"></script>
+<script src="js/sevgi.js?v=0.10.9-dev.12"></script>
+<script src="js/kedi.js?v=0.10.9-dev.12"></script>
+<script src="js/kedi-cizim.js?v=0.10.9-dev.12"></script>
+<script src="js/av-gorunum.js?v=0.10.9-dev.12"></script>
+<script src="js/balik-avi.js?v=0.10.9-dev.12"></script>
+<script src="js/ayarlar.js?v=0.10.9-dev.12"></script>
+<script src="js/cete-yenilikler.js?v=0.10.9-dev.12"></script>
+<script src="js/arkadas.js?v=0.10.9-dev.12"></script>
+<script src="js/arkadas-veri.js?v=0.10.9-dev.12"></script>
+<script src="js/arkadas-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/savas-kural.js?v=0.10.9-dev.12"></script>
+<script src="js/savas-veri.js?v=0.10.9-dev.12"></script>
+<script src="js/savas-gercek-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/menu-paneller.js?v=0.10.9-dev.12"></script>
+<script src="js/seviye-sinavi.js?v=0.10.9-dev.12"></script>
+<script src="js/seviye-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/ozel-veri.js?v=0.10.9-dev.12"></script>
+<script src="js/ozel-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/kupa-eslesme.js?v=0.10.9-dev.12"></script>
+<script src="js/kupa-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/ozellestirme.js?v=0.10.9-dev.12"></script>
+<script src="js/telaffuz.js?v=0.10.9-dev.12"></script>
+<script src="js/beceri-ekran.js?v=0.10.9-dev.12"></script>
+<script src="js/baslat.js?v=0.10.9-dev.12"></script>
 
 </body>
 </html>

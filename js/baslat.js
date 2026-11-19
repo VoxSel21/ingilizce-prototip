@@ -31,11 +31,11 @@ window.addEventListener("storage", e => {
   }
 });
 Bulut.baslat(); // hesap ayarı yoksa hiçbir şey yüklemez (js/bulut.js)
-// İlk açılış: seviye elle seçilmediği için yeni gelene seviye değerlendirmesi önerilir (Serhat, 2026-11-16).
+// İlk açılış: yeni gelene seviye değerlendirmesi önerilir; sonucu seviye seçiciyi ayarlar (Serhat, 2026-11-16/18).
 // Biraz beklenir: hesaptan ilerleme gelirse ya da başka pencere açıksa öneri çıkmaz. Geçen A1'den başlar.
 setTimeout(() => {
   if (!SeviyeSinavi.oneriGoster(d) || document.getElementById("perde").classList.contains("aktif") || document.querySelector(".tam.aktif")) return;
-  onayPenceresi("Seviyeni bulalım mı?", "16 kısa soruyla sana uygun seviyeyi bulalım (yaklaşık 3 dakika). İstersen geç: A1'den başlarsın, seviyeni sonra Ayarlar'dan da ölçebilirsin.", "Seviyemi bul", "A1'den başla", seviyeSinavAc);
+  onayPenceresi("Seviyeni bulalım mı?", "16 kısa soruyla sana uygun seviyeyi bulalım (yaklaşık 3 dakika). İstersen geç: A1'den başlarsın; seviyeni istediğin zaman Pati'nin altından seçebilir, Ayarlar'dan da ölçebilirsin.", "Seviyemi bul", "A1'den başla", seviyeSinavAc);
 }, 1500);
 setInterval(sahneCiz, 10 * 60000);
 // Ana ekrana ekleme ve çevrimdışı açılış (sw.js: internet varken hep en yeni sürüm)

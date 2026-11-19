@@ -77,7 +77,9 @@ const esyaVarMi = e => d.esyalar.includes(e.id) || !!(e.rozet && d.rozet[e.rozet
 const sahneGovde = () => document.querySelector("#kedi-kutu .kedi-govde");
 const kediHareketSahne = (ad, sure) => kediHareket(sahneGovde(), ad, sure);
 function kediCiz() {
-  document.getElementById("kedi-ad").textContent = `🐱 ${d.kediAd} ✏️`;
+  // Açılıştaki pati-gorunum.js ile aynı biçim (ikon + ad); kalemi CSS çizer. Ad temizAd'dan geçtiği için HTML içermez.
+  const adDugme = document.getElementById("kedi-ad");
+  if (typeof patiIkon === "function") adDugme.innerHTML = patiIkon("cat") + " " + d.kediAd; else adDugme.textContent = d.kediAd;
   document.getElementById("kedi-sahne").style.backgroundImage = `url(resim/bg_${d.tema}.jpg)`;
   kediGuncelle(document.getElementById("kedi-kutu"), sahneGorunumu());
   kediGuncelle(document.getElementById("ana-kedi"));

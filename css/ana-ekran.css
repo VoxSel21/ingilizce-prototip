@@ -1,15 +1,16 @@
 /* =====================================================================
-   Ana ekran · "C · Sakin ve şık" kural seti (2026-11-16)
+   Ana ekran · "B · Canlı ve oyunsu" kural seti (2026-11-18)
+   Yerleşim arkadaşın taslağından: üst satır → Pati çemberde (sol altta
+   seviye, sağ altta Phrasal verbs) → günlük hedef kutusu + ana düğme →
+   konular → Alıştırmalar / Kelime kutuları listesi.
    Değerler css/degiskenler.css'ten gelir; burada yeni renk/ölçü yazılmaz.
-   Yalnız ana ekranı ve ana ekran açıkken alt menüyü giydirir; diğer
-   ekranlar eski görünümde kalır (ekran ekran geçiş).
+   Yalnız ana ekranı ve ana ekran ile geçmiş ekranlar açıkken alt menüyü giydirir.
    En son yüklenir: eski kuralları (stil.css, menuler.css, pati-dunya.css)
    ezmek için seçiciler "html #ekran-ana#ekran-ana" ile başlar (çift kimlik =
    daha güçlü seçici); alt menüde aynı iş için ":not(#yok)" kullanılır.
-   Eski dosyalardaki ana ekran kuralları, tüm ekranlar geçince silinecek.
    ===================================================================== */
 
-/* ---------- Zemin: fotoğraflı sahne yerine düz kırık beyaz ---------- */
+/* ---------- Zemin: krem sarı, fotoğraflı sahne gizli ---------- */
 :root:not(#yok):has(#ekran-ana.aktif) #uygulama { background: var(--renk-zemin); }
 :root:not(#yok):has(#ekran-ana.aktif) #uygulama > .sahne { display: none; }
 /* Gizli telefon bildiriminin gölgesi ekranın tepesine gri şerit olarak taşıyordu (eski kusur). */
@@ -20,128 +21,192 @@ html #ekran-ana#ekran-ana.aktif {
   padding: calc(var(--bosluk-2) + var(--ust-bosluk)) 0 calc(112px + var(--alt-bosluk));
   background: var(--renk-zemin); color: var(--renk-metin);
   font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
+  /* Kısa telefonda çember küçülür ki hedef kutusu ve düğme ilk bakışta görünsün */
+  --ana-cember: clamp(168px, calc(100dvh - 500px), var(--cember-buyuk));
 }
 html #ekran-ana#ekran-ana :is(h1, h2, b, small, button, input, summary, .ana-hap) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
-html #ekran-ana#ekran-ana :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
+html #ekran-ana#ekran-ana :focus-visible { outline: 3px solid var(--renk-odak); outline-offset: 2px; }
 
-/* ---------- 1. Üst satır: tarih + selam, sağda altın ve araçlar ---------- */
-html #ekran-ana#ekran-ana .ana-ust { display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0; padding: var(--bosluk-2) var(--kenar-icerik) 0; }
-html #ekran-ana#ekran-ana .ana-selam { min-width: 0; }
-html #ekran-ana#ekran-ana .ana-selam span { display: block; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-ana#ekran-ana .ana-selam span::first-letter { text-transform: uppercase; }
-html #ekran-ana#ekran-ana .ana-selam b { display: block; margin-top: 2px; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
-html #ekran-ana#ekran-ana .ana-araclar { display: flex; align-items: center; gap: var(--bosluk-1); flex: none; }
-html #ekran-ana#ekran-ana .ana-ikon-dugme { width: var(--dokunma-min); height: var(--dokunma-min); display: grid; place-items: center; border-radius: var(--kose-hap); color: var(--renk-metin); background: transparent; font-size: 20px; }
-html #ekran-ana#ekran-ana .ana-ikon-dugme .pati-ikon { width: 22px; height: 22px; }
-
-/* Hap: kısa durum bilgisi (12 · 600, adaçayı yeşili) */
-html #ekran-ana#ekran-ana .ana-hap { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 6px 12px; border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; white-space: nowrap; }
-html #ekran-ana#ekran-ana .ana-hap .pati-ikon { width: 16px; height: 16px; }
-
-/* ---------- 2. Pati'nin penceresi (kemer) ---------- */
-/* Tepe yarıçapı genişliğin yarısı: kap "container" olur, 50cqw = pencere genişliğinin yarısı. */
-html #ekran-ana#ekran-ana .ana-pencere-kap { container-type: inline-size; margin: var(--bosluk-4) var(--kenar-genis) 0; }
-html #ekran-ana#ekran-ana .ana-pencere {
-  position: relative; overflow: hidden;
-  /* 360 tavan; kısa telefonda düğme ve menü ilk bakışta görünsün diye kısalır */
-  height: clamp(220px, calc(100dvh - 380px), var(--pencere-buyuk));
-  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 70%, var(--renk-pencere-alt) 100%);
-  border: 2px solid var(--renk-pencere-cerceve);
-  border-radius: 50cqw 50cqw var(--kose-xl) var(--kose-xl);
+/* ---------- 1. Üst satır: solda seri; sağda ses, altın, ayarlar ---------- */
+html #ekran-ana#ekran-ana .ana-ust { display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-2); margin: 0; padding: var(--bosluk-2) var(--kenar-icerik) 0; }
+html #ekran-ana#ekran-ana .ana-araclar { display: flex; align-items: center; gap: 6px; flex: none; }
+html #ekran-ana#ekran-ana .ana-hap {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 36px; padding: 3px 10px;
+  border: var(--kenar); border-radius: var(--kose-sm); box-shadow: var(--golge-sert);
+  background: var(--renk-hap-cam); color: var(--renk-metin);
+  font-size: var(--yazi-md); font-weight: var(--kalin-siyah); line-height: 1.2; white-space: nowrap;
 }
-html #ekran-ana#ekran-ana .ana-pencere::after { content: ""; position: absolute; z-index: 0; left: 0; right: 0; bottom: 0; height: 25%; background: var(--renk-pencere-tepe); border-top-left-radius: 50% 40px; border-top-right-radius: 50% 40px; }
-html #ekran-ana#ekran-ana .ana-hap.cam { position: absolute; z-index: 2; top: 12%; left: 50%; transform: translateX(-50%); background: var(--renk-hap-cam); }
-html #ekran-ana#ekran-ana #seri-hap::after { content: " günlük seri"; }
+html #ekran-ana#ekran-ana .ana-hap.ikon { width: 40px; padding: 0; }
+html #ekran-ana#ekran-ana .ana-hap .pati-ikon { width: 18px; height: 18px; }
+html #ekran-ana#ekran-ana #seri-hap .pati-ikon { color: var(--renk-ates); }
+html #ekran-ana#ekran-ana #yildiz-hap .pati-ikon { color: var(--renk-altin); }
+html #ekran-ana#ekran-ana button.ana-hap { transition: transform var(--gecis), box-shadow var(--gecis); }
+html #ekran-ana#ekran-ana button.ana-hap:active { transform: translateY(3px); box-shadow: none; }
 
-/* Pati: tepeye basar, ortada durur. Asıl kedi tasarımcıdan gelene kadar kesik çizgili yer tutucu;
-   eski kedi çizimi (kedi.js'in koyduğu) gizli kalır, düğme kedi sekmesine götürmeye devam eder. */
+/* Bildirim düğmesi + paneli (Serhat, 2026-11-18): seri ve hediye hatırlatmaları. Kenar + sert gölge yalnız
+   düğmede, panelde ve paneldeki dokunulan satırlarda; bilgi satırları kenarsız. */
+html #ekran-ana#ekran-ana .ana-ust { position: relative; }
+html #ekran-ana#ekran-ana .ana-sol { display: flex; align-items: center; gap: 6px; min-width: 0; }
+html #ekran-ana#ekran-ana #bildirim-dugme { position: relative; }
+html #ekran-ana#ekran-ana #bildirim-dugme[aria-expanded="true"] { background: var(--renk-yuzey-adacayi); }
+html #ekran-ana#ekran-ana .ana-nokta:not([hidden]) {
+  position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 4px; display: grid; place-items: center;
+  border: var(--kenar); border-radius: 9px; background: var(--renk-ates); color: #fff;
+  font-size: 10px; font-weight: var(--kalin-siyah); line-height: 1;
+}
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-nokta:not([hidden]) { background: #000; color: #fff; }
+html #ekran-ana#ekran-ana .ana-bildirim:not([hidden]) {
+  position: absolute; z-index: 5; top: calc(100% + 8px); left: var(--kenar-icerik); right: var(--kenar-icerik); max-width: 360px;
+  display: grid; gap: 2px; padding: var(--bosluk-3);
+  border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert);
+  background: var(--renk-yuzey); color: var(--renk-metin);
+}
+html #ekran-ana#ekran-ana .bildirim-baslik { margin: 0 0 4px; font-size: var(--yazi-md); font-weight: var(--kalin-siyah); }
+html #ekran-ana#ekran-ana .bildirim-satir {
+  display: flex; align-items: center; gap: var(--bosluk-2); width: 100%; min-height: var(--dokunma-min);
+  padding: 8px 4px; border: 0; border-radius: 12px; background: transparent; color: inherit; text-align: left;
+}
+html #ekran-ana#ekran-ana .bildirim-satir + .bildirim-satir:not(.eylem) { border-top: 1px solid var(--renk-cizgi); border-radius: 0; }
+html #ekran-ana#ekran-ana .bildirim-satir.eylem {
+  margin: 4px 0; padding: 8px 10px; border: var(--kenar); box-shadow: var(--golge-sert); background: var(--renk-yuzey-adacayi);
+  transition: transform var(--gecis), box-shadow var(--gecis);
+}
+html #ekran-ana#ekran-ana .bildirim-satir.eylem:active { transform: translateY(3px); box-shadow: none; }
+html #ekran-ana#ekran-ana .bildirim-ikon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--renk-zemin); }
+html #ekran-ana#ekran-ana .bildirim-ikon .pati-ikon { width: 18px; height: 18px; }
+html #ekran-ana#ekran-ana [data-bildirim="calis"] .bildirim-ikon .pati-ikon { color: var(--renk-ates); }
+html #ekran-ana#ekran-ana .bildirim-metin { flex: 1; min-width: 0; display: grid; gap: 1px; }
+html #ekran-ana#ekran-ana .bildirim-metin b { font-size: var(--yazi-sm); font-weight: var(--kalin-siyah); }
+html #ekran-ana#ekran-ana .bildirim-metin small { font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); line-height: 1.35; }
+html #ekran-ana#ekran-ana .bildirim-ok { flex: none; font-size: 20px; font-weight: var(--kalin-siyah); line-height: 1; }
+html #ekran-ana#ekran-ana .bildirim-bos { margin: 0; padding: 4px 0; font-size: var(--yazi-sm); color: var(--renk-metin-ikincil); }
+
+/* ---------- 2. Pati'nin sahnesi: parlak sarı şerit, çember, halka, köşe düğmeleri ---------- */
+html #ekran-ana#ekran-ana .ana-sahne {
+  position: relative; display: grid; place-items: center;
+  margin-top: var(--bosluk-3); padding: var(--bosluk-4) 0 calc(var(--bosluk-6) + 8px);
+  background: var(--renk-sahne); border-block: var(--kenar);
+}
+html #ekran-ana#ekran-ana .ana-cember-sar { position: relative; width: calc(var(--ana-cember) + 2 * var(--halka-kalin) + 12px); aspect-ratio: 1; display: grid; place-items: center; }
+html #ekran-ana#ekran-ana .ana-halka { position: absolute; inset: 0; width: 100%; height: 100%; }
+html #ekran-ana#ekran-ana .ana-halka circle { fill: none; }
+html #ekran-ana#ekran-ana .ana-halka .h-kenar { stroke: var(--renk-kenar); stroke-width: 6.5; }
+html #ekran-ana#ekran-ana .ana-halka .h-zemin { stroke: var(--renk-yuzey); stroke-width: 3.8; }
+html #ekran-ana#ekran-ana .ana-halka .h-dolu { stroke: var(--renk-halka); stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray .6s ease; }
+
+/* Satın alınan arka plan çemberin içini kaplar (--ders-resmi, ana-sayfa.js sahneCiz); resim yoksa gökyüzü + tepe. */
+html #ekran-ana#ekran-ana .ana-cember {
+  position: relative; overflow: hidden; width: var(--ana-cember); aspect-ratio: 1; border-radius: 50%; border: var(--kenar);
+  background: var(--ders-resmi, none) center / cover no-repeat,
+    radial-gradient(circle at 50% 85%, var(--renk-pencere-tepe) 0 32%, transparent 33%),
+    linear-gradient(180deg, var(--renk-pencere-ust), var(--renk-pencere-orta) 60%, var(--renk-pencere-alt));
+}
+/* Pati: asıl kedi tasarımcıdan gelene kadar kesik çizgili yer tutucu; eski kedi çizimi gizli, düğme Kedi sekmesine götürür. */
 html #ekran-ana#ekran-ana .ana-kedi {
-  position: absolute; z-index: 1; inset: auto; left: 50%; bottom: 9%; transform: translateX(-50%);
-  width: min(46%, 170px); height: auto; aspect-ratio: 200 / 220; padding: 0;
+  position: absolute; z-index: 1; inset: auto; left: 50%; bottom: 10%; transform: translateX(-50%);
+  width: 56%; height: auto; aspect-ratio: 200 / 220; padding: 0;
   border-radius: var(--kose-md); background: none; box-shadow: none; animation: none;
 }
 html #ekran-ana#ekran-ana .ana-kedi > * { display: none !important; }
 html #ekran-ana#ekran-ana .ana-kedi::before {
   content: ""; position: absolute; inset: 0; background: var(--renk-pati-yer);
-  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='4' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
+  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3C/g%3E%3C/svg%3E");
   -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
 }
-html #ekran-ana#ekran-ana .ana-kedi:focus-visible { outline-offset: 4px; }
 
-/* ---------- 3. Ders satırı + ilerleme halkası ---------- */
-html #ekran-ana#ekran-ana .ana-ders-satir { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--bosluk-3); margin: var(--bosluk-5) var(--kenar-icerik) 0; }
-html #ekran-ana#ekran-ana .ana-ders-metin { min-width: 0; }
-html #ekran-ana#ekran-ana .ana-ders-metin small { display: block; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
-html #ekran-ana#ekran-ana .ana-ders-metin h1 { margin-top: var(--bosluk-1); font-size: var(--yazi-2xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); overflow-wrap: anywhere; }
-html #ekran-ana#ekran-ana .ana-ders-metin p { margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-/* Halka metin renginde (limon değil); iz adaçayı. JS --yuzde değişkenini verir. */
-html #ekran-ana#ekran-ana .ana-halka { --yuzde: 0; flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--renk-metin) calc(var(--yuzde) * 1%), var(--renk-yuzey-adacayi) 0); }
-html #ekran-ana#ekran-ana .ana-halka span { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--renk-zemin); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); }
-
-/* ---------- 4. Tek ana düğme ---------- */
-/* Ok dairesi CSS'te: JS düğmenin yazısını değiştirince silinmesin. */
-html #ekran-ana#ekran-ana .dugme-ana {
-  display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
-  min-height: var(--dugme-boy); margin: var(--bosluk-4) var(--kenar-icerik) 0; padding: 8px var(--bosluk-5) 8px 22px;
-  border-radius: var(--kose-md); background: var(--renk-dugme); color: var(--renk-dugme-metin); box-shadow: none;
-  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left;
-  transition: transform var(--gecis), opacity var(--gecis);
+/* Köşe düğmeleri: solda seviye, sağda Phrasal verbs (lila) */
+html #ekran-ana#ekran-ana .ana-kose {
+  position: absolute; z-index: 2; bottom: 10px; min-width: 56px; min-height: var(--dokunma-min); padding: 6px 10px;
+  display: grid; place-items: center; gap: 0;
+  border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert);
+  background: var(--renk-yuzey); color: var(--renk-metin);
+  font-size: var(--yazi-lg); font-weight: var(--kalin-siyah); line-height: 1.1; text-align: center;
+  transition: transform var(--gecis), box-shadow var(--gecis);
 }
-html #ekran-ana#ekran-ana .dugme-ana::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: var(--kose-hap); display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
-html #ekran-ana#ekran-ana .dugme-ana:active { transform: scale(.98); }
+html #ekran-ana#ekran-ana .ana-kose:active { transform: translateY(3px); box-shadow: none; }
+html #ekran-ana#ekran-ana .ana-kose.sol { left: var(--kenar-icerik); }
+html #ekran-ana#ekran-ana .ana-kose.sol::after { content: "▾"; font-size: 11px; line-height: 1; }
+html #ekran-ana#ekran-ana .ana-kose.sag { right: var(--kenar-icerik); background: var(--renk-oyun-lila); color: #1B1B3A; }
+html #ekran-ana#ekran-ana .ana-kose.sag b { font-size: var(--yazi-sm); font-weight: var(--kalin-siyah); }
+html #ekran-ana#ekran-ana .ana-kose.sag small { font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); }
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-kose.sag { color: #000; }
+
+/* Seviye seçici: sol köşe düğmesinin üstünde açılır */
+html #ekran-ana#ekran-ana .ana-seviye-sec:not([hidden]) {
+  position: absolute; z-index: 3; left: var(--kenar-icerik); bottom: calc(10px + var(--dokunma-min) + 10px);
+  display: flex; gap: 4px; padding: 4px;
+  border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert);
+  background: var(--renk-yuzey-adacayi);
+}
+html #ekran-ana#ekran-ana .ana-seviye-sec button { min-width: 58px; min-height: var(--dokunma-min); padding: 4px 6px; display: grid; place-items: center; border-radius: 11px; background: transparent; color: var(--renk-metin); line-height: 1.1; }
+html #ekran-ana#ekran-ana .ana-seviye-sec b { font-size: var(--yazi-md); font-weight: var(--kalin-siyah); }
+html #ekran-ana#ekran-ana .ana-seviye-sec small { font-size: 10px; font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-seviye-sec button[aria-pressed="true"] { background: var(--renk-yuzey); box-shadow: inset 0 0 0 2px var(--renk-kenar); }
+
+/* ---------- 3. Günlük hedef kutusu + tek ana düğme ---------- */
+html #ekran-ana#ekran-ana .ana-hedef {
+  margin: var(--bosluk-4) var(--kenar-genis) 0; padding: var(--bosluk-4);
+  border: var(--kenar); border-radius: var(--kose-lg); box-shadow: var(--golge-sert);
+  background: var(--renk-yuzey);
+}
+html #ekran-ana#ekran-ana .ana-hedef-satir { display: flex; justify-content: space-between; align-items: baseline; gap: var(--bosluk-3); }
+html #ekran-ana#ekran-ana .ana-hedef-satir small { font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-hedef-satir b { font-size: var(--yazi-2xl); font-weight: var(--kalin-siyah); line-height: 1.1; }
+html #ekran-ana#ekran-ana .ana-bilgi { display: flex; justify-content: space-between; gap: var(--bosluk-3); font-size: var(--yazi-sm); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-bilgi b { font-weight: var(--kalin-kalin); color: var(--renk-metin); white-space: nowrap; }
+html #ekran-ana#ekran-ana .ana-ders { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; margin-top: var(--bosluk-2); padding-top: var(--bosluk-2); border-top: 1px solid var(--renk-cizgi); }
+html #ekran-ana#ekran-ana .ana-ders h1 { font-size: var(--yazi-md); font-weight: var(--kalin-siyah); line-height: var(--satir-sik); color: var(--renk-metin); overflow-wrap: anywhere; }
+html #ekran-ana#ekran-ana .ana-ders p { font-size: var(--yazi-sm); color: var(--renk-metin-ikincil); }
+html #ekran-ana#ekran-ana .ana-ders p::before { content: "· "; }
+
+/* Ok dairesi CSS'te: JS düğmenin yazısını değiştirince silinmesin. Basınca gölgesine iner. */
+html #ekran-ana#ekran-ana .dugme-ana {
+  display: flex; justify-content: center; align-items: center; gap: var(--bosluk-3);
+  width: 100%; min-height: var(--dugme-boy); margin: var(--bosluk-3) 0 4px; padding: 8px var(--bosluk-4);
+  border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert-dugme);
+  background: var(--renk-dugme); color: var(--renk-dugme-metin);
+  font-size: var(--yazi-lg); font-weight: var(--kalin-siyah); line-height: 1.2; text-align: center;
+  transition: transform var(--gecis), box-shadow var(--gecis);
+}
+html #ekran-ana#ekran-ana .dugme-ana::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: 50%; display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-siyah); }
+html #ekran-ana#ekran-ana .dugme-ana:active { transform: translateY(4px); box-shadow: none; }
 html #ekran-ana#ekran-ana .dugme-ana:disabled { opacity: .35; cursor: default; }
 
-/* ---------- 5. Bilgi satırı ---------- */
-html #ekran-ana#ekran-ana .ana-bilgi { display: flex; justify-content: space-between; align-items: baseline; gap: var(--bosluk-3); margin: var(--bosluk-3) var(--kenar-icerik) 0; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-ana#ekran-ana .ana-bilgi b { color: var(--renk-metin); font-weight: var(--kalin-orta); white-space: nowrap; }
-
-/* ---------- Kaydırınca: konu, çalışma türü, panellere bağlantılar ---------- */
-html #ekran-ana#ekran-ana .ana-alt { display: grid; gap: var(--bosluk-3); margin-top: var(--bosluk-8); padding: 0 var(--kenar-icerik); }
-html #ekran-ana#ekran-ana .ana-alt h2 { margin: var(--bosluk-5) 0 0; font-size: var(--yazi-xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); }
-html #ekran-ana#ekran-ana .ana-alt h2:first-child { margin-top: 0; }
-
-
+/* ---------- 4. Konular, Alıştırmalar ve Kelime kutuları ---------- */
+html #ekran-ana#ekran-ana .ana-alt { display: grid; gap: var(--bosluk-3); margin-top: var(--bosluk-5); padding: 0 var(--kenar-genis); }
+html #ekran-ana#ekran-ana .menu-konu { display: grid; gap: var(--bosluk-2); margin: 0; }
 html #ekran-ana#ekran-ana .konu-ara { position: relative; margin: 0; }
-html #ekran-ana#ekran-ana .konu-ara input { width: 100%; min-height: var(--dokunma-min); padding: 0 var(--dokunma-min) 0 var(--bosluk-4); border: 1px solid var(--renk-cizgi); border-radius: var(--kose-sm); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-normal); box-shadow: none; }
+html #ekran-ana#ekran-ana .konu-ara input { width: 100%; min-height: var(--dokunma-min); padding: 0 var(--dokunma-min) 0 var(--bosluk-4); border: var(--kenar); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); box-shadow: none; }
 html #ekran-ana#ekran-ana .konu-ara input::placeholder { color: var(--renk-metin-ikincil); }
 html #ekran-ana#ekran-ana .konu-ara button { position: absolute; top: 0; right: 0; width: var(--dokunma-min); height: var(--dokunma-min); color: var(--renk-metin-ikincil); background: none; }
-html #ekran-ana#ekran-ana .konu-sec { display: flex; gap: var(--bosluk-2); overflow-x: auto; padding: 0; margin: 0 calc(-1 * var(--kenar-icerik)); padding-inline: var(--kenar-icerik); scrollbar-width: none; }
+/* Konular yana kayar; en başta "Hepsi" */
+html #ekran-ana#ekran-ana .konu-sec { display: flex; gap: var(--bosluk-2); overflow-x: auto; margin: 0 calc(-1 * var(--kenar-genis)); padding: 2px var(--kenar-genis) 6px; scrollbar-width: none; }
 html #ekran-ana#ekran-ana .konu-sec::-webkit-scrollbar { display: none; }
-html #ekran-ana#ekran-ana .konu-sec button { flex: none; min-height: var(--dokunma-min); padding: 0 var(--bosluk-4); border: 0; border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); font-size: var(--yazi-sm); font-weight: var(--kalin-orta); white-space: nowrap; }
-html #ekran-ana#ekran-ana .konu-sec button.aktif { background: var(--renk-dugme); color: var(--renk-dugme-metin); }
+html #ekran-ana#ekran-ana .konu-sec button { flex: none; min-height: 40px; padding: 0 14px; border: var(--kenar); border-radius: var(--kose-hap); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-sm); font-weight: var(--kalin-kalin); white-space: nowrap; }
+html #ekran-ana#ekran-ana .konu-sec button.aktif { background: var(--renk-metin); color: var(--renk-zemin); }
 html #ekran-ana#ekran-ana .konu-yok { font-size: var(--yazi-sm); color: var(--renk-metin-ikincil); }
 
-html #ekran-ana#ekran-ana .menu-konu { display: grid; gap: var(--bosluk-3); margin: 0; }
-/* Satır düğmesi (kart gibi: beyaz, köşe 22, çerçeve ve gölge yok) */
-html #ekran-ana#ekran-ana .ana-satir { display: flex; align-items: center; justify-content: space-between; gap: var(--bosluk-3); width: 100%; min-height: 64px; padding: var(--bosluk-3) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); text-align: left; }
-html #ekran-ana#ekran-ana .ana-satir b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
+/* Bilgi listesi: kenarsız beyaz, satırlar ince çizgiyle ayrılır */
+html #ekran-ana#ekran-ana .ana-liste { margin-top: var(--bosluk-2); border-radius: var(--kose-lg); background: var(--renk-yuzey); overflow: hidden; }
+html #ekran-ana#ekran-ana .ana-liste > button { display: flex; align-items: center; justify-content: space-between; gap: var(--bosluk-3); width: 100%; min-height: 56px; margin: 0; padding: 12px var(--bosluk-4); border: 0; border-bottom: 1px solid var(--renk-cizgi); border-radius: 0; box-shadow: none; background: transparent; color: var(--renk-metin); text-align: left; }
+html #ekran-ana#ekran-ana .ana-liste > button:last-child { border-bottom: 0; }
+html #ekran-ana#ekran-ana .ana-liste b { display: block; font-size: var(--yazi-md); font-weight: var(--kalin-kalin); }
+html #ekran-ana#ekran-ana .ana-liste-satir > small { flex: none; font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); }
 html #ekran-ana#ekran-ana .ana-satir small { display: block; margin-top: 2px; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-ana#ekran-ana .ana-satir .ok { font-size: 22px; color: var(--renk-metin-ikincil); }
-/* js/menu-paneller.js'in ana ekrana eklediği sayaç (bilgi satırı) ve iki panel bağlantısı */
-html #ekran-ana#ekran-ana .menu-count { display: flex; justify-content: space-between; align-items: baseline; gap: var(--bosluk-3); margin: var(--bosluk-5) var(--kenar-icerik) 0; font-size: var(--yazi-sm); font-weight: var(--kalin-normal); color: var(--renk-metin-ikincil); }
-html #ekran-ana#ekran-ana .menu-count b { font-size: var(--yazi-sm); font-weight: var(--kalin-orta); color: var(--renk-metin); }
-html #ekran-ana#ekran-ana .menu-links { display: grid; grid-template-columns: 1fr; gap: var(--bosluk-3); margin: var(--bosluk-3) var(--kenar-icerik) 0; }
-html #ekran-ana#ekran-ana .menu-links .menu-link { display: flex; align-items: center; justify-content: flex-start; gap: var(--bosluk-3); height: auto; min-height: var(--dugme-boy); padding: 0 var(--bosluk-5); border: 0; border-radius: var(--kose-lg); box-shadow: none; background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-md); font-weight: var(--kalin-orta); }
-html #ekran-ana#ekran-ana .menu-links .pati-ikon { width: 20px; height: 20px; color: var(--renk-metin-adacayi); }
+html #ekran-ana#ekran-ana .ana-satir .ok { font-size: 20px; color: var(--renk-metin-ikincil); }
+:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-liste { border: var(--kenar); }
 
-/* ---------- 6. Yüzen alt menü (ana ekran, Takvim ya da Kedi açıkken; geçen ekranlar listeye eklenir) ---------- */
+/* ---------- 5. Yüzen alt menü (ana ekran ve geçmiş ekranlar açıkken) ---------- */
 :root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav {
   left: calc(var(--kenar-genis) + var(--sol-bosluk)); right: calc(var(--kenar-genis) + var(--sag-bosluk)); bottom: calc(18px + var(--alt-bosluk));
-  display: flex; justify-content: space-around; padding: var(--bosluk-3) 6px;
-  border: 0; border-radius: var(--kose-lg); background: var(--renk-yuzey); box-shadow: var(--golge-yuzen);
+  display: flex; justify-content: space-around; padding: 8px 4px;
+  border: var(--kenar); border-radius: var(--kose-lg); background: var(--renk-yuzey); box-shadow: var(--golge-yuzen);
 }
 /* Yalnız ikon: yazı görünmez ama ekran okuyucu için düğmenin adı olarak kalır. */
 :root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button { flex: 1; display: grid; place-items: center; gap: 0; min-height: var(--dokunma-min); padding: 0; border-radius: var(--kose-sm); background: transparent; color: var(--renk-ikon-pasif); font-size: 0; line-height: 0; }
-:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button span { width: var(--dokunma-min); height: 36px; margin: 0; display: grid; place-items: center; border-radius: var(--kose-sm); font-size: 22px; filter: none; opacity: 1; transform: none; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button span { width: 48px; height: 40px; margin: 0; display: grid; place-items: center; border-radius: var(--kose-sm); font-size: 22px; filter: none; opacity: 1; transform: none; }
 :root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button .pati-ikon { width: 22px; height: 22px; }
 :root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif { color: var(--renk-vurgu); background: transparent; }
-:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif span { background: var(--renk-dugme); }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif span { background: var(--renk-metin); }
 :root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif::after { display: none; }
-:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button:focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 0; }
-:root[data-tema="koyu"]:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button.aktif span { background: var(--renk-yuzey-adacayi); }
-
-/* ---------- Yüksek kontrast: gölge/dolgu yerine siyah çerçeve ---------- */
-:root[data-tema="kontrast"] #ekran-ana#ekran-ana :is(.ana-hap, .ana-satir, .menu-link, .konu-sec button) { border: 2px solid #000; }
-:root[data-tema="kontrast"] #ekran-ana#ekran-ana .konu-ara input { border: 2px solid #000; }
-:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-pencere::after { border-top: 2px solid #000; }
-:root[data-tema="kontrast"] #ekran-ana#ekran-ana .ana-halka span { box-shadow: 0 0 0 1px #000; }
+:root:not(#yok):has(:is(#ekran-ana, #ekran-takvim, #ekran-kedi, #ekran-oduller, #ekran-arkadaslar).aktif) #uygulama > nav button:focus-visible { outline: 3px solid var(--renk-odak); outline-offset: 0; }

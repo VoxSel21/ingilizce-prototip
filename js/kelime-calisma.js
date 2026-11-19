@@ -46,19 +46,20 @@ function konusmaDinle(hedef,bitti){
   try{r.start();zaman=setTimeout(()=>{try{r.abort()}catch(e){}bitir({hata:'no-speech'})},12000)}catch(e){bitir({hata:'baslamadi'})}
 }
 const konusmaAcik=()=>KonusmaDestegi&&!((d.konusmaKapali||0)>Date.now());
-// Seviye ana ekranda elle seçilmez (Serhat, 2026-11-16); d.seviye'yi seviye değerlendirmesi (seviye-ekran.js) belirler.
+// Seviye ana ekrandaki düğmeden elle seçilir (Serhat, 2026-11-18; ana-sayfa.js seviyeSec); değerlendirme sonucu da seçiciyi ayarlar.
 function seviyeCiz() {
   konuCiz();
 }
-// Seviyenin bütün kelimeleriyle tanışıldıysa bir üst seviyeye geçilir (Serhat, 2026-11-16).
+// Seviyenin bütün kelimeleriyle tanışıldıysa üst seviyeye geçmek ÖNERİLİR, kendiliğinden geçilmez (Serhat, 2026-11-18).
+// Her seviye için bir kez sorulur (d.ayar.seviyeOneri = sorulan seviye); başka pencere açıksa sonraki çizime kalır.
 function seviyeIlerlet() {
   const sonraki = SeviyeSinavi.sonrakiSeviye(d.seviye, KELIMELER, d.kartlar);
-  if (!sonraki) return;
-  const eski = d.seviye;
-  d.seviye = sonraki; d.konu = ""; kaydet();
-  const yazi = `${eski} seviyesindeki bütün kelimelerle tanıştın. Artık ${sonraki} kelimeleri gelecek; ${eski} kelimelerinin tekrarları sürüyor.`;
-  if (document.getElementById("perde").classList.contains("aktif")) bildir(`🎉 ${eski} bitti! Artık ${sonraki}`);
-  else setTimeout(() => pencere("🎉", `${eski} bitti!`, yazi, "Devam"), 300);
+  const ayar = d.ayar || (d.ayar = {});
+  if (!sonraki || ayar.seviyeOneri === d.seviye) return;
+  if (document.getElementById("perde").classList.contains("aktif") || document.querySelector(".tam.aktif")) return;
+  const eski = d.seviye; ayar.seviyeOneri = eski; kaydet();
+  setTimeout(() => onayPenceresi(`${eski} bitti!`, `${eski} seviyesindeki bütün kelimelerle tanıştın. ${sonraki} kelimelerine geçelim mi? ${eski} tekrarları sürer; seviyeni istediğin zaman Pati'nin altından değiştirebilirsin.`, `${sonraki}${/1$/.test(sonraki) ? "'e" : "'ye"} geç`, `${eski}'de kal`,
+    () => { d.seviye = sonraki; d.konu = ""; kaydet(); bildir(`Seviye ${sonraki}`); herSeyiCiz(); }), 300);
 }
 function anaCiz() {
   seviyeIlerlet();
@@ -68,8 +69,10 @@ function anaCiz() {
   ["yildiz-hap", "yildiz-hap2", "yildiz-hap3"].forEach(i => document.getElementById(i).textContent = "🪙 " + d.yildiz);
   document.getElementById("koruyucu-hap").textContent = "🧊 " + d.koruyucu;
   const hedef = gunlukHedef(), yuzde = Math.min(100, Math.round(say / hedef * 100));
-  document.getElementById("halka").style.setProperty("--yuzde", yuzde);
-  document.getElementById("halka-yazi").textContent = Math.min(say, hedef) + "/" + hedef;
+  // B: günlük hedef çemberin çevresindeki halkada dolar (pathLength 100 = yüzde).
+  document.getElementById("halka-dolu").setAttribute("stroke-dasharray", `${yuzde} 100`);
+  document.getElementById("halka-dolu").style.opacity = yuzde ? 1 : 0;
+  document.getElementById("halka-yazi").textContent = Math.min(say, hedef) + " / " + hedef;
   // Hedef cevap sayısıyla dolar (doğru ya da yanlış); doğrular ayrıca yazılır (U04).
   const hediyeNotu = say >= hedef ? (d.bugun.hediye ? "Hediye alındı" : "Hediye hazır") : `Hediyeye ${hedef - say} cevap kaldı`;
   // C arayüzü: bilgi satırı solda hedef notu, sağda bugünkü doğru sayısı; halka ekran okuyucuya hedefi söyler.
@@ -77,8 +80,11 @@ function anaCiz() {
   document.getElementById("ana-dogru").textContent = `${d.bugun.dogru || 0} doğru`;
   document.getElementById("halka").setAttribute("aria-label", `Günlük hedef: ${Math.min(say, hedef)}/${hedef} cevap`);
   anaUstCiz();
-  const pvBek = bekleyenler(PHRASAL).length, pvTanis = PHRASAL.filter(k => d.kartlar[k[0]]).length;
-  document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${PHRASAL.length} · ${pvBek} bekliyor` : "Bugünlük bitti 🎉";
+  bildirimCiz();
+  // Phrasal verbs çemberin sağ altında; sayılar seçili seviyeden (arkadaşın taslağı, 2026-11-18).
+  const pvSeviye = PHRASAL.filter(k => k[5] === d.seviye), pvTanis = pvSeviye.filter(k => d.kartlar[k[0]]).length, pvBek = bekleyenler(PHRASAL).length;
+  document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${pvSeviye.length}` : "bitti";
+  document.getElementById("pv-dugme").setAttribute("aria-label", `Phrasal verbs, ${d.seviye}: ${pvTanis}/${pvSeviye.length} tanıştın${pvBek ? `, ${pvBek} bekliyor` : ", bugünlük bitti"}`);
   const bd = document.getElementById("basla-dugme");
   const acik = acikTur("kelime"), tekrar = KELIMELER.filter(k => d.kartlar[k[0]]?.sira <= bugunNo()).length;
   const boy = kisaTurBoyu();

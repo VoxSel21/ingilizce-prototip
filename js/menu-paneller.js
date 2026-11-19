@@ -29,10 +29,13 @@ const MenuPaneller = (() => {
   const anaNot = ana.querySelector('.prototip-not'); if (anaNot) kutuPanel.append(anaNot);
   const filtre = document.createElement('div'); filtre.className = 'menu-konu';
   const search = ana.querySelector('.konu-ara'); search.before(filtre); filtre.append(search, bul('konu-sec'), bul('konu-yok'));
-  const sayac = document.createElement('div'); sayac.className = 'menu-count';
-  const label = document.createElement('span'); label.textContent = 'Çalışılan kelime ve ifade';
-  const n = document.createElement('b'); n.id = 'calisilan-sayi'; n.textContent = '0'; sayac.append(label, n);
-  const links = document.createElement('div'); links.className = 'menu-links'; links.append(dugme('🧩 Alıştırmalar', 'alistirmalar'), dugme('📚 Kelime kutuları', 'kutular')); ana.append(sayac, links);
+  // B görünümü (2026-11-18): ana ekranda kenarsız beyaz liste; satıra dokununca panel açılır.
+  const satir = (ad, sag, panelAdi) => { const b = dugme('', panelAdi, 'ana-liste-satir'), bas = document.createElement('b'); bas.textContent = ad; b.append(bas, sag); return b; };
+  const n = document.createElement('small'); n.id = 'calisilan-sayi'; n.textContent = '0';
+  const turSayi = document.createElement('small'); turSayi.textContent = gorevler.children.length + ' tür ›';
+  const liste = document.createElement('div'); liste.className = 'ana-liste';
+  liste.append(satir('Alıştırmalar', turSayi, 'alistirmalar'), satir('Kelime kutuların', n, 'kutular'), bul('calisma-turu-sec'));
+  ana.querySelector('.ana-alt').append(liste);
 
   const takvim = bul('ekran-takvim'), istat = takvim.querySelector('.istat');
   istat.previousElementSibling.remove(); const koruyucuNot = istat.nextElementSibling;
@@ -43,7 +46,7 @@ const MenuPaneller = (() => {
 
   const oduller = bul('ekran-oduller'), rozetler = bul('rozetler');
   const odulUst = oduller.querySelector('.ust'); oduller.replaceChildren(odulUst);
-  // Özet (C görünümü, 2026-11-16): Pati'nin küçük penceresi + açılan başarım sayısı; odulCiz doldurur.
+  // Özet (B görünümü, 2026-11-18): sarı şeritte Pati'nin küçük çemberi (arka planı sahneCiz koyar) + açılan başarım sayısı; odulCiz doldurur.
   const odulOzet = document.createElement('div'); odulOzet.className = 'odul-ozet';
   odulOzet.innerHTML = '<div class="odul-pencere" aria-hidden="true"><div class="odul-kedi" id="odul-kedi"></div></div><div class="odul-ozet-metin"><small>Açılan başarım</small><b><span id="odul-acilan">0</span> / <span id="odul-toplam">0</span></b><div class="odul-cubuk"><i id="odul-cubuk"></i></div><small id="odul-kazanc"></small></div>';
   oduller.append(odulOzet);
@@ -72,5 +75,5 @@ const MenuPaneller = (() => {
   panel('sohbet', 'Çete sohbeti', [bul('cete-gercek-sohbet'), bul('sohbet-ac'), bul('sohbet-demo-not'), bul('sosyal-prototip-not')]);
   const chat = karo('💬', 'Çete sohbeti', 'Sohbeti aç', 'sohbet');
   chat.onclick = ceteSohbetAc; cete.append(chat,dugme('Çete ve üyeler','cete'),dugme('Çete savaşı','savas'),dugme('Haftalık görevler','cete-gorev')); sohbet.replaceChildren(karo('⚔️', 'Çete savaşı', 'Oyun modları ve katkıların', 'savas'));
-  return { guncelle() { bul('calisilan-sayi').textContent = Ilerleme.calisilanSayisi(d); } };
+  return { guncelle() { bul('calisilan-sayi').textContent = Ilerleme.calisilanSayisi(d) + ' kelime ›'; } };
 })();

@@ -9,21 +9,12 @@ button:focus-visible,summary:focus-visible{outline:3px solid var(--vurgu-mor);ou
 :root[data-tema="kontrast"] .sahne{background:var(--krem)!important}:root[data-tema="kontrast"] .sahne::before,:root[data-tema="kontrast"] .sahne::after{display:none}
 #ekran-ana.aktif{
   --ana-yuzey:rgba(255,255,255,.83);
-  grid-template-rows:none;
   grid-auto-rows:max-content;
   align-content:start;
 }
 :root[data-tema="koyu"] #ekran-ana{--ana-yuzey:rgba(42,37,64,.85)}
 :root[data-tema="kontrast"] #ekran-ana{--ana-yuzey:var(--yuzey)}
-.menu-primary{
-  display:grid;
-  padding:0 14px 12px;
-  background:var(--ana-yuzey);
-  border:1px solid var(--cizgi);
-  border-radius:var(--pati-kose);
-  gap:12px;
-}
-.menu-primary .buyuk-dugme{padding:12px 10px}
+
 .ders-sahne{
   display:grid;
   grid-template-columns:minmax(0,1fr) clamp(76px,25vw,108px);
@@ -37,14 +28,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid var(--vurgu-mor);ou
   border-bottom:1px solid var(--cizgi);
   overflow:hidden;
 }
-.ders-sahne-metni{
-  align-self:start;
-  justify-self:start;
-  min-width:0;
-  padding:9px 10px;
-  border-radius:12px;
-  background:var(--ana-yuzey);
-}
+
 .ders-sahne h1{
   font-size:clamp(21px,6vw,26px);
   line-height:1.15;
@@ -69,7 +53,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid var(--vurgu-mor);ou
 }
 .ders-sahne .ana-kedi:focus-visible{outline-offset:-3px}
 :root[data-tema="kontrast"] .ders-sahne{background:var(--yuzey)}
-:root[data-tema="kontrast"] .ders-sahne-metni{padding-inline:0}
+
 @media(max-height:460px){
   .ders-sahne{min-height:110px}
 }
@@ -90,7 +74,7 @@ nav button{font-weight:700;}nav button span{justify-content:center;}
 
 nav button.aktif::after{background:currentColor}
 
-.tam>.ust{border-bottom:1px solid var(--cizgi)}.tam .ust h2{font-weight:700}
+.tam>.ust{border-bottom:1px solid var(--cizgi)}
 
 .tanis .kelime{overflow-wrap:anywhere}
 
@@ -112,11 +96,11 @@ nav button.aktif::after{background:currentColor}
 #kedi-etkinlik{bottom:18px;left:16px;right:16px;z-index:3;}
 .kedi-govde[data-hareket="bekle"] *{animation:none!important}
 .sahne .bulut,.sahne .yildizcik{animation:none}
-@media(max-height:700px){.tanis{padding:16px}.kelime-cizim{width:96px;height:96px}.tanis .resim{min-height:96px}}
+
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 :root[data-hareket="azalt"] *,:root[data-hareket="azalt"] *::before,:root[data-hareket="azalt"] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 
-.sonuc-cizim{height:88px;object-fit:contain}#pist .hedef-balik img{width:100%;height:100%;object-fit:contain}.kedi-govde[data-hareket="bekle"]{animation:none!important}
+.sonuc-cizim{height:88px;object-fit:contain}#pist .hedef-balik img{width:100%;height:100%;object-fit:contain}
 
 .tanis .durum-baslik{align-self:stretch;}
 .tanis-kelime{display:flex;align-items:center;max-width:100%}
@@ -128,7 +112,6 @@ nav button.aktif::after{background:currentColor}
 .tanis{justify-content:flex-start;}
 #tam-kartlar .k-alt{flex:none;}
 .tanis .soyle-sonuc:empty{display:none}
-.tanis .hata-bildir{position:static;}
 
 .kucuk-ses{min-height:44px}
 
@@ -141,7 +124,7 @@ nav button.aktif::after{background:currentColor}
 
 #ekran-kedi.panelli #kedi-kontroller{pointer-events:none}
 #tam-av .sure{grid-template-columns:44px minmax(0,1fr) 44px;}
-#av-mod{grid-column:2/-1;width:auto;justify-self:stretch;}
+#av-mod{grid-column:2/-1;justify-self:stretch;}
 
 .pist .hedef-balik{width:44px;height:44px;top:calc(58% - 43px);font-size:0}
 
@@ -152,4 +135,4 @@ nav button.aktif::after{background:currentColor}
 #pencere p{font-weight:500;line-height:1.55;margin:12px 0 18px}
 
 .soluk,.hedef-serit,.seviye-sec small,.hap{font-weight:600;}
-@media(max-height:700px){#ekran-kedi .kedi-sahne{flex-basis:280px}#ekran-kedi .sevgi-hap{top:58px;padding:6px 10px}#ekran-kedi .kilo-hap{min-height:40px}}
+

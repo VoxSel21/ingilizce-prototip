@@ -1,17 +1,26 @@
 /* =====================================================================
-   Oyun ekranları · "C · Sakin ve şık" kural seti (2026-11-17)
+   Oyun ekranları · "B · Canlı ve oyunsu" kural seti (2026-11-18; C hali 2026-11-17)
    #tam-av   : günlük balık avı (Kedi sekmesinden; js/balik-avi.js, js/av-gorunum.js)
    #tam-savas: çete savaşının hızlı oyunları, Kelime Yarışı ve Kulak Kabart (js/savas-ekran.js)
    Spor turu ders ekranında (#tam-kartlar) açılır; antrenman kartı ders-ekrani.css'te.
    Cümle Düellosu #tam-cumle'yi, Pati Çabukluğu #tam-esles'i kullanır (alistirma-ekrani.css).
-   Sonuç pencereleri ortak C penceresinde (ders-ekrani.css listesine #tam-av, #tam-savas eklendi).
-   Avdaki kedi çizimi (KediCizici), balıkçı ve balık resmi ile pistteki konumlar değişmez:
-   kedinin balığa değme ölçüsü (av-gorunum.js) bu konumlara bağlı. Burada yalnız renk, yazı, köşe.
+   Sonuç pencereleri ortak B penceresinde (ders-ekrani.css listesinde #tam-av, #tam-savas var).
+   B: 2 px kenar + sert gölge YALNIZ dokunulan parçada (şık, dinle düğmesi, yazma alanı,
+   Kontrol et); kapat ders ekranıyla aynı düz ✕; soru kartı, pist hapları, puan kenarsız.
+   Avdaki kedi çizimi (KediCizici), balıkçı ve balık resmi ile pistteki konumlar ve pistin
+   yüksekliği değişmez: kedinin balığa değme ölçüsü (av-gorunum.js) bunlara bağlı.
+   Burada yalnız renk, yazı, köşe, kenar.
    Değerler css/degiskenler.css'ten gelir. En son yüklenir; eski kuralları (stil.css,
    pati-dunya.css, menuler.css) ezmek için seçiciler kimliği iki kez yazar.
    ===================================================================== */
 
+/* Oyun renginin (lila hap) üstündeki yazı: lacivert; kontrastta oyun renkleri beyaza döndüğü
+   için metin rengi (alıştırmalardaki --alistirma-oyun-metin ile aynı mantık). */
+:root { --oyun-renk-metin: var(--renk-dugme-metin); }
+:root[data-tema="kontrast"] { --oyun-renk-metin: var(--renk-metin); }
+
 /* ---------- Ortak: zemin, yazı, üst satır (✕ + süre çubuğu + saniye) ---------- */
+/* Üst satır ders ekranı ve alıştırmalarla aynı: düz ✕, kalın (10 px) nane çubuk, kalın sayaç. */
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) {
   padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(var(--bosluk-4) + var(--alt-bosluk));
   background: var(--renk-zemin); color: var(--renk-metin);
@@ -21,72 +30,82 @@ html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(b, small, p, button, i
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :focus-visible { outline: 2px solid var(--renk-odak); outline-offset: 3px; }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure { display: flex; align-items: center; gap: var(--bosluk-3); min-height: 52px; margin: 0 0 var(--bosluk-3); }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .kapat { flex: 0 0 var(--dokunma-min); width: var(--dokunma-min); height: var(--dokunma-min); min-height: 0; margin-left: calc(-1 * var(--bosluk-2)); display: grid; place-items: center; border: 0; border-radius: var(--kose-hap); background: transparent; box-shadow: none; color: var(--renk-metin); font-size: 20px; }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk { flex: 1; height: 6px; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk i { background: var(--renk-metin); border-radius: var(--kose-hap); }
-/* Son saniyeler: çubuk yanlış renginde (eski kuralda mercan) */
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk { flex: 1; height: 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk i { background: var(--renk-dugme); border-radius: var(--kose-hap); }
+/* Son saniyeler (8 sn altı, av-gorunum.js): çubuk yanlış renginde */
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk i.az { background: var(--renk-yanlis); }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(#av-sure, #sv-sure) { flex: none; width: auto; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); color: var(--renk-metin-ikincil); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(#av-sure, #sv-sure) { flex: none; width: auto; font-size: var(--yazi-sm); font-weight: var(--kalin-siyah); color: var(--renk-metin); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(#av-sure, #sv-sure)::after { content: " sn"; font-weight: var(--kalin-normal); }
-html #tam-av#tam-av #av-mod { flex: 1; font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.4; color: var(--renk-metin-ikincil); text-align: right; }
+html #tam-av#tam-av #av-mod { flex: 1; font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); line-height: 1.4; color: var(--renk-metin-ikincil); text-align: right; }
 html #tam-av#tam-av :is(#av-mod, #av-sure, .cubuk)[hidden] { display: none; }
 
-/* ---------- Soru kartı ve şıklar (iki ekranda aynı) ---------- */
+/* ---------- Soru kartı (kenarsız beyaz) ve şıklar (B: kenar + sert gölge) ---------- */
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-soru { flex: none; margin: var(--bosluk-3) 0 0; padding: var(--bosluk-4) var(--bosluk-5); border: 0; border-radius: var(--kose-lg); background: var(--renk-yuzey); box-shadow: none; text-align: center; }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-yon { font-size: var(--yazi-sm); font-weight: var(--kalin-orta); line-height: 1.4; color: var(--renk-metin-ikincil); }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .s-kelime { margin-top: var(--bosluk-1); font-size: var(--yazi-3xl); font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); line-height: var(--satir-sik); color: var(--renk-metin); overflow-wrap: anywhere; }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-siklar { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bosluk-2); margin-top: var(--bosluk-3); }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-siklar { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bosluk-3) var(--bosluk-2); margin-top: var(--bosluk-3); padding-bottom: 3px; }
 html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik {
   min-height: 56px; padding: var(--bosluk-2) var(--bosluk-3);
-  border: 1.5px solid var(--renk-cizgi); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none;
-  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; overflow-wrap: anywhere;
-  transition: transform var(--gecis), background-color var(--gecis), border-color var(--gecis);
+  border: var(--kenar); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: var(--golge-sert);
+  font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); line-height: 1.3; overflow-wrap: anywhere;
+  transition: transform var(--gecis), box-shadow var(--gecis), background-color var(--gecis), border-color var(--gecis);
 }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik:active { transform: scale(.97); }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.dogru { border-color: var(--renk-dogru); background: var(--renk-dogru-zemin); color: var(--renk-dogru); }
-html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.yanlis { border-color: var(--renk-yanlis); background: var(--renk-yanlis-zemin); color: var(--renk-yanlis); }
+/* Basınca gölgesine iner (ders ekranındaki şıklarla aynı) */
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+/* Cevaplanan şık basılı durur, kenarı durum renginde; renk körleri için işaret de var
+   (JS şık yazısını textContent ile karşılaştırır; ::before ona karışmaz). */
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.dogru { border-color: currentColor; background: var(--renk-dogru-zemin); color: var(--renk-dogru); box-shadow: none; transform: translateY(3px); }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.yanlis { border-color: currentColor; background: var(--renk-yanlis-zemin); color: var(--renk-yanlis); box-shadow: none; transform: translateY(3px); }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.dogru::before { content: "✓ "; }
+html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik.yanlis::before { content: "✕ "; }
 
 /* ---------- Balık avı (#tam-av) ---------- */
-/* Pist: Pati penceresinin renkleri; gökyüzü pencere geçişi, iskele yer tutucu yeşili, su adaçayı.
-   190 px (eskisi 170): iki satırlık yönerge hapı kedinin başına değmesin. İçindeki konumlar
-   yüzdeyle eski kuraldan gelir; kısa yatay ekranda 120 px. */
-html #tam-av#tam-av .pist { height: 190px; border-radius: var(--kose-lg); box-shadow: none; border: 2px solid var(--renk-pencere-cerceve);
-  background: linear-gradient(180deg, var(--renk-pencere-ust) 0%, var(--renk-pencere-orta) 58%, var(--renk-yuzey-adacayi) 58%, var(--renk-yuzey-adacayi) 100%); }
+/* Pist Pati'nin sahnesi: gökyüzü sarıdan kreme (çemberin içiyle aynı renkler), su naneye çalan dolgu,
+   kenar Pati çemberininki. Yükseklik (190) ve içindeki konumlar C'den aynen; kısa yatay ekranda 120 px. */
+html #tam-av#tam-av .pist { height: 190px; border-radius: var(--kose-lg); box-shadow: none; border: var(--kenar); border-color: var(--renk-pencere-cerceve);
+  --av-su: color-mix(in srgb, var(--renk-oyun-nane) 55%, var(--renk-yuzey));
+  background: linear-gradient(180deg, var(--renk-pencere-tepe) 0%, var(--renk-pencere-orta) 58%, var(--av-su) 58%, var(--av-su) 100%); }
 html #tam-av#tam-av .pist .iskele { background: var(--renk-pati-yer); box-shadow: none; }
-/* Üstteki yönerge: camsı hap (ders ekranındaki Pati sözü gibi) */
-html #tam-av#tam-av .pist .uyari { left: var(--bosluk-3); right: auto; top: 10px; max-width: calc(100% - 110px); padding: 4px 12px; border-radius: var(--kose-hap); background: var(--renk-hap-cam); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.35; text-align: left; }
-/* Alt köşelerde: doğru sayacı beyaz hap, pratik etiketi adaçayı hap */
-html #tam-av#tam-av .pist .av-adim { left: var(--bosluk-3); bottom: var(--bosluk-2); padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); line-height: 1.3; }
-html #tam-av#tam-av .pist .av-pratik { right: var(--bosluk-3); bottom: var(--bosluk-2); padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey); color: var(--renk-metin-adacayi); font-size: var(--yazi-xs); font-weight: var(--kalin-orta); line-height: 1.3; }
+/* Üstteki yönerge: düz beyaz hap, kenarsız (ders ekranındaki Pati tepki hapı gibi) */
+html #tam-av#tam-av .pist .uyari { left: var(--bosluk-3); right: auto; top: 10px; max-width: calc(100% - 110px); padding: 4px 12px; border-radius: var(--kose-hap); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); line-height: 1.35; text-align: left; }
+/* Alt köşelerde: doğru sayacı beyaz hap (kalın), pratik etiketi lila hap (B'de etiketler lila) */
+html #tam-av#tam-av .pist .av-adim { left: var(--bosluk-3); bottom: var(--bosluk-2); padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-siyah); line-height: 1.3; }
+html #tam-av#tam-av .pist .av-pratik { right: var(--bosluk-3); bottom: var(--bosluk-2); padding: 4px 10px; border-radius: var(--kose-hap); background: var(--renk-oyun-lila); color: var(--oyun-renk-metin); font-size: var(--yazi-xs); font-weight: var(--kalin-kalin); line-height: 1.3; }
 html #tam-av#tam-av .pist .av-pratik[hidden] { display: none; }
-/* Balıkçı bakınca: küçük yanlış renkli daire içinde "!" (emoji yerine) */
-html #tam-av#tam-av .pist .unlem { right: 30px; top: calc(58% - 108px); width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yanlis); color: var(--renk-yuzey); font-size: 15px; font-weight: var(--kalin-kalin); line-height: 1; }
+/* Balıkçı bakınca: küçük yanlış renkli daire içinde "!" (konum C'den aynen) */
+html #tam-av#tam-av .pist .unlem { right: 30px; top: calc(58% - 108px); width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--kose-hap); background: var(--renk-yanlis); color: var(--renk-yuzey); font-size: 15px; font-weight: var(--kalin-siyah); line-height: 1; }
 /* Uçuşan emoji efektleri (💨 💦 🙀) gösterilmez: şık rengi, balıkçının dönmesi ve kedinin tepkisi aynı bilgiyi verir. */
 html #tam-av#tam-av .pist .efekt { display: none; }
 /* Alttaki kural satırı: küçük ikincil yazı */
 html #tam-av#tam-av .av-kural { margin: auto 0 0; padding-top: var(--bosluk-3); font-size: var(--yazi-xs); font-weight: var(--kalin-normal); line-height: 1.45; color: var(--renk-metin-ikincil); text-align: center; }
-/* Başlangıçta 3'ten geri sayım: zemin rengi perde, büyük metin rengi rakam */
-html #tam-av#tam-av .geri-sayim { background: color-mix(in srgb, var(--renk-zemin) 90%, transparent); color: var(--renk-metin); font-size: 96px; font-weight: var(--kalin-kalin); letter-spacing: var(--harf-baslik); }
+/* Başlangıçta 3'ten geri sayım: zemin rengi perde, büyük kalın rakam */
+html #tam-av#tam-av .geri-sayim { background: color-mix(in srgb, var(--renk-zemin) 90%, transparent); color: var(--renk-metin); font-size: 96px; font-weight: var(--kalin-siyah); letter-spacing: var(--harf-baslik); }
 
 /* ---------- Çete savaşı hızlı oyunlar (#tam-savas) ---------- */
-html #tam-savas#tam-savas .sv-puan { margin: auto 0 0; padding-top: var(--bosluk-3); font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); color: var(--renk-metin); text-align: center; }
-/* Kulak Kabart: dinle düğmesi adaçayı daire + hoparlör ikonu; yazma alanı ve tek ana düğme alt alta */
-html #tam-savas#tam-savas .dinle-dugme { width: 72px; height: 72px; margin: var(--bosluk-3) auto 0; display: grid; place-items: center; border: 0; border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin); box-shadow: none; animation: none; }
+html #tam-savas#tam-savas .sv-puan { margin: auto 0 0; padding-top: var(--bosluk-3); font-size: var(--yazi-xl); font-weight: var(--kalin-siyah); color: var(--renk-metin); text-align: center; }
+/* Kulak Kabart: dinle düğmesi sakin sarı daire + kenar + sert gölge (ders ekranındaki dinle düğmesi gibi, biraz küçük) */
+html #tam-savas#tam-savas .dinle-dugme { width: 72px; height: 72px; margin: var(--bosluk-3) auto 3px; display: grid; place-items: center; border: var(--kenar); border-radius: var(--kose-hap); background: var(--renk-yuzey-adacayi); color: var(--renk-metin-adacayi); box-shadow: var(--golge-sert); animation: none; transition: transform var(--gecis), box-shadow var(--gecis); }
+html #tam-savas#tam-savas .dinle-dugme:active { transform: translateY(3px); box-shadow: none; }
 html #tam-savas#tam-savas .dinle-dugme .pati-ikon { width: 32px; height: 32px; }
 html #tam-savas#tam-savas .av-siklar:has(form) { display: block; }
-html #tam-savas#tam-savas .av-siklar form { display: grid; gap: var(--bosluk-2); }
-html #tam-savas#tam-savas .hesap-girdi { min-height: var(--dugme-boy); margin: 0; padding: 0 var(--bosluk-4); border: 1.5px solid var(--renk-cizgi); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); font-size: var(--yazi-lg); font-weight: var(--kalin-orta); }
-html #tam-savas#tam-savas .hesap-girdi:focus { border-color: var(--renk-metin); outline: 0; }
+html #tam-savas#tam-savas .av-siklar form { display: grid; gap: var(--bosluk-3); }
+/* Yazma alanı dokunulur: kenarlı, gölgesiz (Arkadaşlar'daki sohbet alanı gibi) */
+html #tam-savas#tam-savas .hesap-girdi { min-height: var(--dugme-boy); margin: 0; padding: 0 var(--bosluk-4); border: var(--kenar); border-radius: var(--kose-md); background: var(--renk-yuzey); color: var(--renk-metin); box-shadow: none; font-size: var(--yazi-lg); font-weight: var(--kalin-kalin); }
+html #tam-savas#tam-savas .hesap-girdi:focus { outline: 2px solid var(--renk-odak); outline-offset: 2px; }
 html #tam-savas#tam-savas .hesap-girdi:disabled { opacity: 1; background: var(--renk-zemin); }
+/* Kontrol et: B ana düğmesi (nane, lacivert yazı, kenar + sert gölge; basınca iner). Ok dairesi ortak penceredeki gibi. */
 html #tam-savas#tam-savas .av-siklar form .buyuk-dugme {
   display: flex; justify-content: space-between; align-items: center; gap: var(--bosluk-3);
-  width: 100%; min-height: var(--dugme-boy); padding: 8px var(--bosluk-5) 8px 22px;
-  border: 0; border-radius: var(--kose-md); box-shadow: none;
+  width: 100%; min-height: var(--dugme-boy); margin-bottom: 4px; padding: 8px var(--bosluk-4) 8px 22px;
+  border: var(--kenar); border-radius: var(--kose-md); box-shadow: var(--golge-sert-dugme);
   background: var(--renk-dugme) !important; color: var(--renk-dugme-metin) !important;
-  font-size: var(--yazi-lg); font-weight: var(--kalin-orta); line-height: 1.3; text-align: left;
+  font-size: var(--yazi-lg); font-weight: var(--kalin-siyah); line-height: 1.2; text-align: left;
+  transition: transform var(--gecis), box-shadow var(--gecis);
 }
-html #tam-savas#tam-savas .av-siklar form .buyuk-dugme::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: var(--kose-hap); display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
-html #tam-savas#tam-savas .av-siklar form .buyuk-dugme:disabled { opacity: .35; }
-html #tam-savas#tam-savas .av-siklar form p { margin: var(--bosluk-1) 0 0; font-size: var(--yazi-md); font-weight: var(--kalin-orta); text-align: center; }
+html #tam-savas#tam-savas .av-siklar form .buyuk-dugme:active:not(:disabled) { transform: translateY(4px); box-shadow: none; }
+html #tam-savas#tam-savas .av-siklar form .buyuk-dugme::after { content: "→"; flex: none; width: var(--ok-daire); height: var(--ok-daire); border-radius: 50%; display: grid; place-items: center; background: var(--renk-dugme-ok); color: var(--renk-dugme-ok-metin); font-size: 16px; font-weight: var(--kalin-kalin); }
+html #tam-savas#tam-savas .av-siklar form .buyuk-dugme:disabled { opacity: .35; box-shadow: none; }
+html #tam-savas#tam-savas .av-siklar form p { margin: var(--bosluk-1) 0 0; font-size: var(--yazi-md); font-weight: var(--kalin-kalin); text-align: center; }
 html #tam-savas#tam-savas .av-siklar form p.sv-dogru { color: var(--renk-dogru); }
 html #tam-savas#tam-savas .av-siklar form p.sv-yanlis { color: var(--renk-yanlis); }
 
@@ -101,12 +120,12 @@ html #tam-savas#tam-savas .av-siklar form p.sv-yanlis { color: var(--renk-yanlis
 
 /* ---------- Koyu tema: değişkenler koyuya döner; ek kural gerekmez. ---------- */
 
-/* ---------- Yüksek kontrast: dolgu yerine siyah çerçeve ---------- */
-:root[data-tema="kontrast"] :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(.av-soru, .av-sik, .hesap-girdi, .dinle-dugme) { border: 2px solid #000; }
+/* ---------- Yüksek kontrast: gölgeler kalkar (değişkenler); dokunulmayan kart ve haplar da siyah çerçeveli ---------- */
+:root[data-tema="kontrast"] :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-soru { border: 2px solid #000; }
 :root[data-tema="kontrast"] :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .sure .cubuk { box-shadow: inset 0 0 0 1px #000; }
 :root[data-tema="kontrast"] #tam-av#tam-av .pist .iskele { border-block: 2px solid #000; }
 :root[data-tema="kontrast"] #tam-av#tam-av .pist :is(.uyari, .av-adim, .av-pratik) { box-shadow: 0 0 0 1.5px #000; }
 
-/* Azaltılmış hareket: şık basınca küçülmez. */
-:root[data-hareket="azalt"] :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik { transition: none; transform: none; }
-@media (prefers-reduced-motion: reduce) { html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) .av-sik { transition: none; transform: none; } }
+/* Azaltılmış hareket: şık ve düğmeler basınca kaymaz. */
+:root[data-hareket="azalt"] :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(.av-sik, .dinle-dugme, .buyuk-dugme) { transition: none; }
+@media (prefers-reduced-motion: reduce) { html :is(#tam-av, #tam-savas):is(#tam-av, #tam-savas) :is(.av-sik, .dinle-dugme, .buyuk-dugme) { transition: none; } }

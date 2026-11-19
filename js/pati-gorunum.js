@@ -21,8 +21,6 @@ const PatiGorunum = {
     const ayar=document.getElementById('ayarlar-ac'); ayar.innerHTML=patiIkon('gear');
     document.querySelectorAll('.ses-dugme').forEach(b => {b.innerHTML=patiIkon(d.sesKapali?'speaker-slash':'speaker-high');});
     for(const id of ['yildiz-hap','yildiz-hap2','yildiz-hap3']) {const el=document.getElementById(id);el.innerHTML=`${patiIkon('coins')} ${d.yildiz}`;el.setAttribute('aria-label',`${d.yildiz} altın`);}
-    const kisim=document.getElementById('ekran-ana');
-    kisim.querySelectorAll('.menu-links .menu-link').forEach((b,i)=>{if(!b.querySelector('svg'))b.innerHTML=patiIkon(i?'book-open':'paw-print')+b.textContent.replace(/^\S+\s/,'');});
   },
 };
 

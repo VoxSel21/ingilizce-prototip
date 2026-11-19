@@ -1,7 +1,7 @@
 // Ana ekrana eklenen uygulama için çevrimdışı destek.
 // Ağ önce: internet varken her zaman sunucudaki en yeni sürüm gelir (eski sürüm takılı kalmasın);
 // internet yoksa en son kaydedilen kopya açılır.
-const ONBELLEK = "pati-v52-dev11";
+const ONBELLEK = "pati-v64-dev12";
 // Seviye ve özel sohbet modülleri de çevrimdışı kabukta bulunur.
 // Uygulama artık parçalı: stil, veri ve kod dosyaları da çevrimdışı açılış için önbelleğe alınır.
 const KOD = ["css/stil.css", "vendor/capacitor.js", "veri/kelimeler.js", "veri/phrasal.js", "veri/cumleler.js", "js/yardimci.js", "vendor/ts-fsrs-5.4.2.js", "js/beceri-kural.js", "js/beceri-ekran.js", "js/telaffuz.js", "js/kayit.js", "js/ekonomi.js", "js/ilerleme.js", "js/ogrenme.js", "js/oyun.js", "js/esitleme.js", "js/durum.js", "js/firebase-ayar.js", "js/bulut.js", "js/ana-sayfa.js",

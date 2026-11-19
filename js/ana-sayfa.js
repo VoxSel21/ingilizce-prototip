@@ -18,19 +18,90 @@ function sahneCiz() {
   const dersSahnesi = document.getElementById("ders-sahne");
   const dersResmi = new URL(`resim/bg_${d.tema}.jpg`, document.baseURI);
   dersSahnesi.style.setProperty("--ders-resmi", `url("${dersResmi.href}")`);
+  // B ders ekranı, Takvim ve Ödüller (2026-11-18): satın alınan arka plan Pati'nin çemberlerinde de görünür.
+  document.querySelectorAll("#tam-kartlar .ders-pencere, #tam-cumle .ders-pencere, #ekran-takvim .takvim-pencere, #ekran-oduller .odul-pencere").forEach(p => p.style.setProperty("--ders-resmi", `url("${dersResmi.href}")`));
   s.dataset.vakit = vakit; // akşam ve gece için yumuşak renk perdesi (CSS)
 }
 
 // ================= ANA SAYFA =================
 const SEVIYELER = [["A1", "Başlangıç"], ["A2", "Temel"], ["B1", "Orta"], ["B2", "İleri-orta"]];
 // C arayüzü üst satırı ve ders etiketi (2026-11-16): tarih, saate göre selam, "A1 · Konu".
+// B arayüzü (2026-11-18): seviye çemberin sol altındaki düğmeden elle seçilir (Serhat, 2026-11-18).
 function anaUstCiz() {
-  const simdi = new Date(), saat = simdi.getHours();
-  document.getElementById("ana-tarih").textContent = `${simdi.toLocaleDateString("tr-TR", { weekday: "long" })}, ${simdi.toLocaleDateString("tr-TR", { day: "numeric", month: "long" })}`;
-  document.getElementById("ana-selam").textContent = saat >= 5 && saat < 12 ? "Günaydın" : saat >= 18 ? "İyi akşamlar" : "Merhaba";
-  const konu = KONULAR.concat([KONU_GENEL]).find(([kod]) => kod === d.konu)?.[1].replace(/^[^\p{L}]+/u, "");
-  document.getElementById("ana-etiket").textContent = `${d.seviye} · ${konu || "Tüm konular"}`;
+  const dugme = document.getElementById("seviye-dugme"), ad = (SEVIYELER.find(([s]) => s === d.seviye) || [])[1] || "";
+  dugme.textContent = d.seviye;
+  dugme.setAttribute("aria-label", `Seviye: ${d.seviye} ${ad}. Değiştir`);
+  document.getElementById("seviye-sec").innerHTML = SEVIYELER.map(([s, a]) =>
+    `<button data-seviye="${s}" aria-pressed="${s === d.seviye}"><b>${s}</b><small>${a}</small></button>`).join("");
+  document.querySelectorAll("[data-seviye]").forEach(b => b.onclick = () => seviyeSec(b.dataset.seviye));
 }
+function seviyeSecAc(ac) {
+  const sec = document.getElementById("seviye-sec"), dugme = document.getElementById("seviye-dugme");
+  sec.hidden = !ac; dugme.setAttribute("aria-expanded", String(ac));
+  if (ac) sec.querySelector('[aria-pressed="true"]')?.focus();
+}
+function seviyeSec(s) {
+  seviyeSecAc(false); document.getElementById("seviye-dugme").focus();
+  if (s === d.seviye) return;
+  d.seviye = s; d.konu = ""; kaydet(); Ses.pop();
+  bildir(`Seviye ${s}: yeni kelimeler bu seviyeden gelecek`); herSeyiCiz();
+}
+document.getElementById("seviye-dugme").onclick = () => seviyeSecAc(document.getElementById("seviye-sec").hidden);
+document.getElementById("seviye-sec").onkeydown = e => { if (e.key === "Escape") { seviyeSecAc(false); document.getElementById("seviye-dugme").focus(); } };
+document.addEventListener?.("click", e => { if (!e.target.closest("#seviye-sec, #seviye-dugme")) seviyeSecAc(false); });
+
+// Bildirim paneli (Serhat, 2026-11-18): yalnız uygulama içi seri ve hediye hatırlatmaları; telefon bildirimi değil.
+// Veri yeni alan açmaz: seri() ve d.gunler/d.korunan/d.koruyucu (js/ilerleme.js kuralı), d.bugun + gunlukHedef() (hediye).
+// "Okundu" yalnız bu açılışta bellekte tutulur: panel açılınca nokta söner, yeni hatırlatma çıkınca yeniden yanar.
+let bildirimGorulen = "";
+function bildirimListesi() {
+  const bugun = bugunNo(), sr = seri(), say = d.bugun.sayi, hedef = gunlukHedef(), liste = [];
+  // Hediye: hedef doldu ama açılmadı → dokunulan satır (hediyeyi açar); dolmadıysa kalan sayı bilgi satırı.
+  if (say >= hedef && !d.bugun.hediye) liste.push({ id: "hediye", ikon: "gift", baslik: "Hediyen hazır", yazi: "Günlük hedef tamam, aç da altınını al.", eylem: "hediye" });
+  else if (say < hedef && say > 0) liste.push({ id: "hedef", ikon: "gift", baslik: `Hediyeye ${hedef - say} cevap kaldı`, yazi: `Bugün ${say} / ${hedef} cevap verdin.` });
+  // Seri: bugün henüz çalışılmadıysa. Koruyucu yalnız dün çalışılmışsa yarın serini kurtarır (koruyucuUygula kuralı).
+  if (!d.gunler[bugun] && sr > 0) {
+    liste.push({ id: "seri", ikon: "paw-print", baslik: `${sr} günlük serin tehlikede`, yazi: "Bugün bir soru cevapla, seri sürsün.", eylem: "calis" });
+    if (d.koruyucu > 0 && d.gunler[bugun - 1]) liste.push({ id: "koruyucu", ikon: "calendar", baslik: `Elinde ${d.koruyucu} koruyucu var`, yazi: "Bugünü kaçırırsan biri harcanır, serin bozulmaz." });
+    else if (d.koruyucu > 0) liste.push({ id: "koruyucu", ikon: "calendar", baslik: "Dün koruyucu kullanıldı", yazi: "Üst üste ikinci gün korunmaz; bugün kaçırırsan seri sıfırlanır." });
+    else liste.push({ id: "koruyucu", ikon: "calendar", baslik: "Koruyucun yok", yazi: "Bugün kaçırırsan seri sıfırlanır. Takvim'den alabilirsin.", eylem: "takvim" });
+  } else if (!d.gunler[bugun] && d.korunan[bugun - 1]) {
+    liste.push({ id: "korundu", ikon: "calendar", baslik: "Dün koruyucu serini korudu", yazi: "Bugün çalışırsan seri yeniden büyür." });
+  }
+  return liste;
+}
+function bildirimCiz() {
+  const dugme = document.getElementById("bildirim-dugme"), panel = document.getElementById("bildirim-panel"), nokta = document.getElementById("bildirim-nokta");
+  if (!dugme) return;
+  const liste = bildirimListesi(), onemli = liste.filter(b => b.eylem);
+  const imza = bugunNo() + ":" + onemli.map(b => b.id).join(",");
+  if (!panel.hidden) bildirimGorulen = imza;
+  if (!dugme.querySelector("svg") && typeof patiIkon === "function") { dugme.innerHTML = patiIkon("bell"); dugme.append(nokta); }
+  nokta.hidden = !onemli.length || imza === bildirimGorulen;
+  nokta.textContent = onemli.length;
+  dugme.setAttribute("aria-label", onemli.length ? `Hatırlatmalar, ${onemli.length} yeni` : "Hatırlatmalar");
+  const satir = b => {
+    const ic = `<span class="bildirim-ikon">${typeof patiIkon === "function" ? patiIkon(b.ikon) : ""}</span><span class="bildirim-metin"><b>${b.baslik}</b><small>${b.yazi}</small></span>`;
+    return b.eylem ? `<button class="bildirim-satir eylem" data-bildirim="${b.eylem}">${ic}<span class="bildirim-ok" aria-hidden="true">›</span></button>` : `<div class="bildirim-satir">${ic}</div>`;
+  };
+  panel.innerHTML = `<h2 class="bildirim-baslik">Hatırlatmalar</h2>` +
+    (liste.length ? liste.map(satir).join("") : `<p class="bildirim-bos">Şimdilik hatırlatma yok. Serin ve hediyen yolunda.</p>`);
+  panel.querySelectorAll("[data-bildirim]").forEach(b => b.onclick = () => {
+    bildirimAc(false);
+    if (b.dataset.bildirim === "hediye") hediyeHazirsaAc();
+    else if (b.dataset.bildirim === "takvim") sekme("takvim");
+    else document.getElementById("basla-dugme").click();
+  });
+}
+function bildirimAc(ac) {
+  const panel = document.getElementById("bildirim-panel"), dugme = document.getElementById("bildirim-dugme");
+  if (panel.hidden === !ac) return;
+  panel.hidden = !ac; dugme.setAttribute("aria-expanded", String(ac));
+  if (ac) { bildirimCiz(); (panel.querySelector("button") || dugme).focus(); }
+}
+document.getElementById("bildirim-dugme").onclick = () => bildirimAc(document.getElementById("bildirim-panel").hidden);
+document.addEventListener?.("keydown", e => { if (e.key === "Escape" && !document.getElementById("bildirim-panel").hidden) { bildirimAc(false); document.getElementById("bildirim-dugme").focus(); } });
+document.addEventListener?.("click", e => { if (!e.target.closest("#bildirim-panel, #bildirim-dugme")) bildirimAc(false); });
 // Konular (arkadaşın önerisi, 2026-10-21): seviyenin içinde istediğin konudan öğren.
 // Eski listede konu bilgisi yok; ayırma Violet'in (veri/konular.txt). Listede olmayan kelime "Temel kelimeler".
 const KONULAR = [

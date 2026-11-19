@@ -155,8 +155,8 @@ function kartlariAc(deste = KELIMELER, mini = false) {
   let sira = Ogrenme.turOlustur({
     bekleyen: deste.filter(k => Ogrenme.tekrarZamani(d.kartlar[k[0]], b)).map(k => ({ id: k[0], sira: d.kartlar[k[0]].sira })), tekrarSiniri: mini || deste === KELIMELER ? boy : OGRENME.enCokTekrar,
     yeniler: durum ? durum.kelimeler.filter(id => !d.kartlar[id]) : yeniHavuz(deste).map(k => k[0]), son: d.sonSunulan, turBoyu: boy, rastgele: tohumlu(tohum) });
-  // Kelime turunda yazma soruları da var (Halim, 2026-11-19); phrasal verb ve mini tur seçmeli kalır.
-  if (!mini && deste === KELIMELER) sira = Ogrenme.yaziEkle(sira);
+  // Her kelime turunda (Başla ve "N kelime daha") yazma soruları da var (Halim, 2026-11-19); phrasal verb seçmeli kalır.
+  if (deste === KELIMELER) sira = Ogrenme.yaziEkle(sira);
   turBaslat({ deste: tur, mini, durum: durum?.id || null, gun: b, tohum, sira, i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null }, false);
 }
 function adimGoster() {

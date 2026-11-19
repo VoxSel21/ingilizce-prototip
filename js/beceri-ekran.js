@@ -2,7 +2,8 @@
 function beceriSecAc(deste = KELIMELER) {
   const menu=ceteEl('div','beceri-sec');
   if (acikTur(deste === PHRASAL ? 'phrasal' : 'kelime')) menu.append(dugmeEl('↩ Kayıtlı tura devam',()=>{document.getElementById('perde').classList.remove('aktif');turBaslat(acikTur(deste===PHRASAL?'phrasal':'kelime'),true);}));
-  menu.append(dugmeEl((deste===PHRASAL?'Phrasal verb turu · ':'Uzun kelime turu · ')+turBoyu(deste)+(deste===PHRASAL?' ifade':' kelime'),()=>{document.getElementById('perde').classList.remove('aktif');kartlariAc(deste);}));
+  // Kelimede "Uzun kelime turu" yok: Başla ile aynıydı ve yeni kelime açıyordu (Halim, 2026-11-19).
+  if (deste === PHRASAL) menu.append(dugmeEl((deste===PHRASAL?'Phrasal verb turu · ':'Uzun kelime turu · ')+turBoyu(deste)+(deste===PHRASAL?' ifade':' kelime'),()=>{document.getElementById('perde').classList.remove('aktif');kartlariAc(deste);}));
   for(const [mod,ad]of Object.entries(BECERILER))menu.append(dugmeEl(ad,()=>{document.getElementById('perde').classList.remove('aktif');beceriBaslat(mod,deste);}));
   cetePencere('📚','Nasıl çalışmak istersin?',[menu,ceteEl('p','mikrofon-not','Tüm türler açık. Ortak günlük hedefin korunur. Telaffuz deneme aşamasında; puanı ilerlemeyi ve ödülleri etkilemez.')],[['Kapat',null,true]]);
 }
@@ -10,16 +11,19 @@ function beceriBaslat(mod,deste=KELIMELER) {
   const tur=deste===PHRASAL?'phrasal':'kelime',eski=acikTur(tur);
   if(eski?.beceriMod===mod)return turBaslat(eski,true);
   const zaman=Date.now(),gun=bugunNo(),tipler=BeceriKural.turler(mod,Telaffuz.hazir()),sira=[],secilen=new Set();
-  const havuz=karistir(deste.filter(k=>d.kartlar[k[0]]||k[5]===d.seviye&&(!d.konu||deste!==KELIMELER||konuOf(k[0])===d.konu)));
+  // Yalnız öğrenilen (tanışılmış) kelimeler: yeni kelime Başla'da öğretilir (Halim, 2026-11-19). Zamanı gelmemiş
+  // kelime de pratik için gelir (en eski/hiç çalışılmamış önce); erken doğru cevap beceri tarihini değiştirmez.
+  const havuz=karistir(deste.filter(k=>d.kartlar[k[0]]));
+  if(!havuz.length){bildir('Önce Başla ile birkaç kelime öğren; çalışma türleri öğrendiğin kelimelerle çalışır.');return;}
   for(let i=0;i<turBoyu(deste);i++){
     const beceri=tipler[i%tipler.length];
-    const adaylar=havuz.filter(k=>!secilen.has(k[0])&&(beceri==='telaffuz'||!d.kartlar[k[0]]?.beceriler?.[beceri]||Date.parse(d.kartlar[k[0]].beceriler[beceri].kart.due)<=zaman));
+    const adaylar=havuz.filter(k=>!secilen.has(k[0]));
     adaylar.sort((a,b)=>(Date.parse(d.kartlar[a[0]]?.beceriler?.[beceri]?.kart.due)||0)-(Date.parse(d.kartlar[b[0]]?.beceriler?.[beceri]?.kart.due)||0));
     const k=adaylar[0];if(!k)continue;secilen.add(k[0]);
     if(!d.kartlar[k[0]])sira.push({tip:'tanis',id:k[0]});
     sira.push({tip:'soru',id:k[0],beceri});
   }
-  if(!sira.length){bildir('Bu beceride zamanı gelen tekrar yok. Başka bir tür seçebilirsin.');return;}
+  if(!sira.length){bildir('Bu türde çalışılacak kelime yok. Başla ile yeni kelime öğrenebilirsin.');return;}
   turBaslat({deste:tur,beceriMod:mod,gun,sira:mod==='telaffuz'?Ogrenme.bilgilerOnce(sira):Ogrenme.gruplar(sira),i:0,dogru:0,yanlis:0,kiloBas:d.kilo,kiloAdim:[],cevaplanan:null},false);
 }
 function beceriSoruCiz(a) {

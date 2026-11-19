@@ -63,7 +63,7 @@ button:focus-visible,summary:focus-visible{outline:3px solid var(--vurgu-mor);ou
 #ekran-ana .halka span{width:40px;height:40px;font-size:13px}
 #ekran-ana .hedef b{font-size:14px!important}
 #ekran-ana .hedef p{font-size:13px!important}
-#calisma-turu-sec{justify-self:start;}
+
 .buyuk-dugme{background:var(--pati-eylem)!important;color:#fff!important;border-radius:14px;box-shadow:0 3px 0 var(--pati-cizgi);line-height:1.35;min-height:48px;}
 
 .seviye-sec button.aktif small{color:var(--murekkep)}

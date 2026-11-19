@@ -156,9 +156,7 @@ html :is(#tam-cumle, #tam-kur, #tam-esles):is(#tam-cumle, #tam-kur, #tam-esles) 
 html :is(#tam-cumle, #tam-kur, #tam-esles):is(#tam-cumle, #tam-kur, #tam-esles) .ders-pencere::after { content: none; }
 html :is(#tam-cumle, #tam-kur, #tam-esles):is(#tam-cumle, #tam-kur, #tam-esles) .ders-kedi {
   position: absolute; z-index: 1; left: 50%; bottom: 10%; translate: -50% 0;
-  width: 56%; height: auto; aspect-ratio: 200 / 220; background: var(--renk-pati-yer);
-  --kedi-yer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 220'%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-dasharray='10 8' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M60 205c-22 0-34-14-34-40 0-30 16-52 38-62-14-10-22-26-22-44 0-8 1-16 4-24l4-26 26 22c8-3 16-4 24-4s16 1 24 4l26-22 4 26c3 8 4 16 4 24 0 18-8 34-22 44 22 10 38 32 38 62 0 26-12 40-34 40z'/%3E%3Cpath d='M166 180c18-2 28-14 26-30'/%3E%3C/g%3E%3C/svg%3E");
-  -webkit-mask: var(--kedi-yer) center / contain no-repeat; mask: var(--kedi-yer) center / contain no-repeat;
+  width: 56%; height: auto; aspect-ratio: 200 / 220; background: none; /* gerçek Pati (baslat.js herSeyiCiz çizer), 2026-11-19 */
 }
 /* Tepki: doğruda zıplar, yanlışta başını eğer; kısa söz çemberin üst kenarına biner (düz beyaz hap, kenarsız).
    Görsel süs; ekran okuyucu aynı bilgiyi cevap panelinden duyar. */

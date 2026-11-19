@@ -5,6 +5,8 @@ function herSeyiCiz() {
   const aktif = document.querySelector('.ekran.aktif'), ciz = aktif && EKRAN_CIZ[aktif.id.replace('ekran-', '')];
   if (ciz) ciz();
   if (aktif && aktif.id === 'ekran-ana') kediGuncelle(document.getElementById('ana-kedi'));
+  // Takvim ve ders pencerelerinde de gerçek Pati (eskiden kesik çizgili yer tutucu; Halim, 2026-11-19).
+  document.querySelectorAll('.ders-kedi, .takvim-kedi').forEach(k => kediGuncelle(k));
   MenuPaneller.guncelle(); PatiGorunum.ciz();
 }
 Bulut.hesapYenilendi = () => { kartOturumunuBirak(); tamKapat(); };

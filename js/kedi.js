@@ -81,6 +81,7 @@ function kediCiz() {
   const adDugme = document.getElementById("kedi-ad");
   if (typeof patiIkon === "function") adDugme.innerHTML = patiIkon("cat") + " " + d.kediAd; else adDugme.textContent = d.kediAd;
   document.getElementById("kedi-sahne").style.backgroundImage = `url(resim/bg_${d.tema}.jpg)`;
+  document.getElementById("ekran-kedi").style.setProperty("--kedi-resmi", `url("${new URL(`resim/bg_${d.tema}.jpg`, location.href).href}")`);
   kediGuncelle(document.getElementById("kedi-kutu"), sahneGorunumu());
   kediGuncelle(document.getElementById("ana-kedi"));
   const kd = kiloDurumu();
@@ -319,8 +320,12 @@ const kgYazi = x => Math.abs(x) < 0.005 ? "0 kg" : (x < 0 ? "−" : "+") + Math.
 function sporAc() {
   // Spor = tanışılmış kelimelerden 10 soru; her doğru cevap 0,15 kg verdirir. Yarıda kalan antrenman aynı gün kaldığı yerden sürer.
   const acik = acikTur("spor"); if (acik) return turBaslat(acik, true);
-  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]]).map(k => k[0]);
-  if (calisilan.length < 3) { pencere("🏋️", "Önce birkaç kelime öğren", "Spor salonunda eski kelimeler tekrar edilir. En az 3 kelimeyle tanışınca gel!", "Tamam"); return; }
+  // Pekişti kutusundaki kelime sporda da çıkmaz (2026-11-19).
+  const calisilan = KELIMELER.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].kutu < 4).map(k => k[0]);
+  if (calisilan.length < 3) {
+    const pekisen = KELIMELER.some(k => d.kartlar[k[0]]?.kutu >= 4);
+    pencere("🏋️", pekisen ? "Tekrar edilecek kelime az" : "Önce birkaç kelime öğren", pekisen ? "Pekişen kelimeler sporda çıkmaz. Birkaç yeni kelime öğrenince gel!" : "Spor salonunda eski kelimeler tekrar edilir. En az 3 kelimeyle tanışınca gel!", "Tamam"); return;
+  }
   const sira = Ogrenme.pratikSec(calisilan, d.sonSunulan, 10).map(id => ({ tip: "soru", id }));
   turBaslat({ deste: "spor", gun: bugunNo(), sira, i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null, spor: true }, false);
 }

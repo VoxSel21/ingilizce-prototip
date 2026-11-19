@@ -8,6 +8,13 @@ const CalismaIslemi = {
     _CalIlerleme.kelimeIsaretle(d, id);
     o.kilit = true; o.cevaplanan = o.i;
     const c = d.kartlar[id]; let kg = null;
+    // Aynı turda tanışılan kelimenin yazma pratiği: doğruysa yalnız sayılır (kilo ve kutu yok); önceki yanlış
+    // kelimeyi bugüne bıraktıysa yarına geri alır. Yanlışı aşağıdaki normal yanlış yolundan geçer.
+    if (a.pekistir && dogru) {
+      o.dogru++;
+      if (c && c.sira <= gun) d.kartlar[id] = { ...c, sira: gun + 1 };
+      return { kg };
+    }
     if (!c) { d.tanisGun = d.tanisGun || {}; d.tanisGun[gun] = (d.tanisGun[gun] || 0) + 1; }
     if (dogru) {
       o.dogru++;
@@ -19,9 +26,9 @@ const CalismaIslemi = {
       else d.kartlar[id] = { ...c, hata };
     } else {
       o.yanlis++; d.kartlar[id] = { ...c, kutu: 1, sira: gun, hata: ((c && c.hata) || 0) + 1 };
-      o.sira.push({ tip: 'soru', id, tekrar: true, ...(a.beceri ? { beceri: a.beceri } : {}) });
+      o.sira.push({ tip: 'soru', id, tekrar: true, ...(a.beceri ? { beceri: a.beceri } : {}), ...(a.pekistir ? { pekistir: true } : {}) });
     }
-    if (a.beceri && ['secme', 'yazma', 'dinleme'].includes(a.beceri)) {
+    if (a.beceri && !a.pekistir && ['secme', 'yazma', 'dinleme'].includes(a.beceri)) {
       const beceriler = { ...(c?.beceriler || {}) };
       beceriler[a.beceri] = _CalBeceri.cevapla(beceriler[a.beceri], dogru, gun, o.cevapZamani || Date.now(), !!a.tekrar);
       const b = beceriler[a.beceri], yeni = d.kartlar[id];

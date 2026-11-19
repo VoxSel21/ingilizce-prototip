@@ -86,9 +86,10 @@ function anaCiz() {
   document.getElementById("pv-yazi").textContent = pvBek ? `${pvTanis}/${pvSeviye.length}` : "bitti";
   document.getElementById("pv-dugme").setAttribute("aria-label", `Phrasal verbs, ${d.seviye}: ${pvTanis}/${pvSeviye.length} tanıştın${pvBek ? `, ${pvBek} bekliyor` : ", bugünlük bitti"}`);
   const bd = document.getElementById("basla-dugme");
-  const acik = acikTur("kelime"), tekrar = KELIMELER.filter(k => d.kartlar[k[0]]?.sira <= bugunNo()).length;
-  const boy = kisaTurBoyu();
-  bd.textContent = acik ? "Kayıtlı çalışmana devam et" : say >= hedef ? (!d.bugun.hediye ? "Hediyeni aç" : "Bugünlük tamam") : !bek ? "Cümle alıştırmasına başla" : tekrar ? `${Math.min(boy, tekrar)} kelimeyi hatırla` : !d.ilkDers ? "İlk mini dersine başla" : `${Math.min(boy, bek)} kelime daha`;
+  const acik = acikTur("kelime"), tekrar = KELIMELER.filter(k => Ogrenme.tekrarZamani(d.kartlar[k[0]], bugunNo())).length;
+  // Tek düğme: "Başla" 10 kelimelik turu açar (Halim'in isteği, 2026-11-19; eskiden 3 kelimelik mini ders).
+  const boy = turBoyu(KELIMELER);
+  bd.textContent = acik ? "Kayıtlı çalışmana devam et" : say >= hedef ? (!d.bugun.hediye ? "Hediyeni aç" : "Bugünlük tamam") : !bek ? "Cümle alıştırmasına başla" : "Başla";
   const dersBasligi = document.getElementById("mini-ders-baslik");
   const dersNotu = document.getElementById("mini-ders-not");
   if (acik) {
@@ -101,11 +102,10 @@ function anaCiz() {
     dersBasligi.textContent = "Cümle kurma";
     dersNotu.textContent = "Kısa bir cümle alıştırması";
   } else {
-    const sahne = MiniDers.durum(d.kartlar, d.seviye, d.konu);
     const konu = KONULAR.concat([KONU_GENEL]).find(([kod]) => kod === d.konu)?.[1].replace(/^[^\p{L}]+/u, "");
     const adet = Math.min(boy, bek);
-    dersBasligi.textContent = tekrar ? "Kelime tekrarı" : sahne?.ad || konu || "Yeni kelimeler";
-    dersNotu.textContent = `${adet} kelime · yaklaşık ${adet === 1 ? "1" : "2"} dk`;
+    dersBasligi.textContent = tekrar >= adet ? "Kelime tekrarı" : konu || "Yeni kelimeler";
+    dersNotu.textContent = `${adet} kelime · yaklaşık ${Math.max(1, Math.round(adet / 2))} dk`;
   }
   const sayac = [0, 0, 0, 0, 0];
   KELIMELER.forEach(k => { const c = d.kartlar[k[0]]; if (c) sayac[Math.min(c.kutu, 4)]++; });
@@ -151,16 +151,19 @@ function kartlariAc(deste = KELIMELER, mini = false) {
   if (!bekleyenler(deste).length) { bildir(deste === PHRASAL ? "Bugünlük phrasal verb kalmadı 🎉" : "Bugünlük kelime kalmadı. Cümle kurmaya ne dersin?"); return; }
   const b = bugunNo(), tohum = Math.floor(Math.random() * 4294967296);
   const boy = mini ? kisaTurBoyu(deste) : turBoyu(deste);
-  const durum = mini && deste === KELIMELER && !deste.some(k=>d.kartlar[k[0]]?.sira<=b) ? MiniDers.durum(d.kartlar,d.seviye,d.konu) : null;
-  const sira = Ogrenme.turOlustur({
-    bekleyen: deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b).map(k => ({ id: k[0], sira: d.kartlar[k[0]].sira })), tekrarSiniri: mini ? boy : OGRENME.enCokTekrar,
+  const durum = mini && deste === KELIMELER && !deste.some(k=>Ogrenme.tekrarZamani(d.kartlar[k[0]],b)) ? MiniDers.durum(d.kartlar,d.seviye,d.konu) : null;
+  let sira = Ogrenme.turOlustur({
+    bekleyen: deste.filter(k => Ogrenme.tekrarZamani(d.kartlar[k[0]], b)).map(k => ({ id: k[0], sira: d.kartlar[k[0]].sira })), tekrarSiniri: mini || deste === KELIMELER ? boy : OGRENME.enCokTekrar,
     yeniler: durum ? durum.kelimeler.filter(id => !d.kartlar[id]) : yeniHavuz(deste).map(k => k[0]), son: d.sonSunulan, turBoyu: boy, rastgele: tohumlu(tohum) });
+  // Kelime turunda yazma soruları da var (Halim, 2026-11-19); phrasal verb ve mini tur seçmeli kalır.
+  if (!mini && deste === KELIMELER) sira = Ogrenme.yaziEkle(sira);
   turBaslat({ deste: tur, mini, durum: durum?.id || null, gun: b, tohum, sira, i: 0, dogru: 0, yanlis: 0, kiloBas: d.kilo, kiloAdim: [], cevaplanan: null }, false);
 }
 function adimGoster() {
   const a = kO.sira[kO.i];
   const once = kO.sira.slice(0, kO.i), tanis = kO.sira.filter(x => x.tip === "tanis").length;
-  document.getElementById("k-sayac").textContent = `Tanışma ${once.filter(x => x.tip === "tanis").length}/${tanis} · Cevap ${once.filter(x => x.tip === "soru").length}/${kO.sira.length - tanis}`;
+  // Yalnız o anki adımın sayacı: 10 kelimelik turda ikisi birden üst satıra sığmıyordu (2026-11-19).
+  document.getElementById("k-sayac").textContent = a.tip === "tanis" ? `Tanışma ${once.filter(x => x.tip === "tanis").length + 1}/${tanis}` : `Cevap ${once.filter(x => x.tip === "soru").length + 1}/${kO.sira.length - tanis}`;
   document.getElementById("k-cubuk").style.width = (kO.i / kO.sira.length * 100) + "%";
   d.sonSunulan = Ogrenme.sunuldu(d.sonSunulan, a.id);
   antrenmanCiz(); hedefSeritCiz();
@@ -302,9 +305,9 @@ function kelimeDevami(tur) {
 }
 function sonrakiTekrarYazi() {
   const b = bugunNo(), kartlar = KELIMELER.concat(PHRASAL).map(k => d.kartlar[k[0]]).filter(Boolean);
-  const bek = kartlar.filter(c => c.sira <= b).length;
+  const bek = kartlar.filter(c => Ogrenme.tekrarZamani(c, b)).length;
   if (bek) return `${bek} kelimenin tekrar zamanı geldi; ana sayfadan devam edebilirsin.`;
-  const yarin = kartlar.filter(c => c.sira === b + 1).length;
+  const yarin = kartlar.filter(c => c.kutu < 4 && c.sira === b + 1).length;
   if (yarin) return `Yarın ${yarin} kelimeyi hatırlamayı deneyeceğiz. Tekrarlar ana sayfada hazır olacak.`;
   return "Yeni kelimelerle veya cümlelerle istediğin zaman devam edebilirsin.";
 }
@@ -368,7 +371,7 @@ function gunTamamPenceresi() {
 
 function kisaTurBoyu(deste = KELIMELER) {
   const sahne=deste===KELIMELER?MiniDers.durum(d.kartlar,d.seviye,d.konu):null;
-  const tekrar=deste.filter(k=>d.kartlar[k[0]]?.sira<=bugunNo()).length;
+  const tekrar=deste.filter(k=>Ogrenme.tekrarZamani(d.kartlar[k[0]],bugunNo())).length;
   const yeni=sahne?sahne.kelimeler.filter(id=>!d.kartlar[id]).length:yeniHavuz(deste).length;
   return Math.min(MiniDers.boy(d.bugun.sayi,gunlukHedef()),tekrar || yeni);
 }

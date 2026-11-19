@@ -34,7 +34,7 @@ const MenuPaneller = (() => {
   const n = document.createElement('small'); n.id = 'calisilan-sayi'; n.textContent = '0';
   const turSayi = document.createElement('small'); turSayi.textContent = gorevler.children.length + ' tür ›';
   const liste = document.createElement('div'); liste.className = 'ana-liste';
-  liste.append(satir('Alıştırmalar', turSayi, 'alistirmalar'), satir('Kelime kutuların', n, 'kutular'), bul('calisma-turu-sec'));
+  liste.append(satir('Alıştırmalar', turSayi, 'alistirmalar'), satir('Kelime kutuların', n, 'kutular'));
   ana.querySelector('.ana-alt').append(liste);
 
   const takvim = bul('ekran-takvim'), istat = takvim.querySelector('.istat');

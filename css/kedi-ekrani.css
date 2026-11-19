@@ -33,7 +33,7 @@ html #ekran-kedi#ekran-kedi.aktif {
   display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: var(--bosluk-3); /* sahne kalan yeri doldurur, içeriğinden kısa olmaz */
   padding: calc(var(--bosluk-2) + var(--ust-bosluk)) var(--kenar-genis) calc(112px + var(--alt-bosluk));
   overflow-x: hidden; overflow-y: auto; scrollbar-width: none;
-  background: var(--renk-zemin); color: var(--renk-metin);
+  background: var(--kedi-resmi, none) center / cover no-repeat, var(--renk-zemin); color: var(--renk-metin);
   font-family: var(--font); font-size: var(--yazi-md); line-height: var(--satir-rahat);
 }
 html #ekran-kedi#ekran-kedi :is(button, span, label, div, b, small) { font-family: var(--font); letter-spacing: 0; text-shadow: none; }
@@ -74,14 +74,11 @@ html #ekran-kedi#ekran-kedi .kedi-sahne {
   grid-template-areas: "balon balon" "cember cember" "kilo sevgi"; grid-template-rows: auto var(--kedi-cember) auto;
   justify-items: center; align-items: center; align-content: center; gap: 0;
   margin: 0 calc(-1 * var(--kenar-genis)); padding: var(--bosluk-3) var(--kenar-genis) var(--bosluk-4);
-  border: 0; border-block: var(--kenar); border-radius: 0; box-shadow: none;
-  background-color: var(--renk-sahne); background-size: 0 0 !important; background-repeat: no-repeat;
+  border: 0; border-radius: 0; box-shadow: none;
+  background-color: transparent; background-size: 0 0 !important; background-repeat: no-repeat;
 }
-html #ekran-kedi#ekran-kedi .kedi-sahne::before {
-  content: ""; grid-area: cember; z-index: 0; width: var(--kedi-cember); height: var(--kedi-cember); box-sizing: border-box;
-  border: var(--kenar); border-color: var(--renk-pencere-cerceve); border-radius: 50%;
-  background-color: var(--renk-pencere-orta); background-image: inherit; background-position: center; background-size: cover; background-repeat: no-repeat;
-}
+/* Çember yok (arkadaşın isteği, 2026-11-19): seçili arka plan bütün Kedi ekranını kaplar (kedi.js --kedi-resmi). */
+html #ekran-kedi#ekran-kedi .kedi-sahne::before { content: none; display: none; }
 html #ekran-kedi#ekran-kedi .kedi-sahne::after { content: none; display: none; }
 
 /* Balon: Pati'nin sözü; bilgi → beyaz, kenarsız; kuyruğu çembere iner. */

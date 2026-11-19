@@ -1,6 +1,6 @@
 // ================= AYARLAR =================
 // Ayarlar d.ayar içinde kalıcı (kayit.js izinli değerleri denetler). Yedek ve kaynaklar Ödüller'den buraya taşındı.
-const UYGULAMA_SURUM = "0.10.9-dev.12";
+const UYGULAMA_SURUM = "0.10.9-dev.13";
 const AYAR_SATIRLARI = [
   { baslik: "Günlük hedef", aciklama: "Her cevap hedefe sayılır.", tur: "secim", alan: "hedef",
     secenek: [[5, "5"], [10, "10"], [15, "15"], [20, "20"]] },

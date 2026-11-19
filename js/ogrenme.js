@@ -47,6 +47,21 @@ const Ogrenme = {
     return Ogrenme.gruplar(sira);
   },
 
+  // Başla turu (Halim'in isteği, 2026-11-19): yazma becerileri turun içinde, telaffuz yok.
+  // - Yeni kelime önce tanışma + seçmeli soruyla gelir; turun sonunda bir kez yazılır ("pekistir": aynı gün pratiği,
+  //   kilo, kutu ve beceri tarihi değişmez; yanlışsa tur sonunda yeniden sorulur).
+  // - Tekrarı gelen eski kelimelerin üçte ikisi doğrudan yazma sorusu olur (gerçek beceri tekrarı); kalanı seçmeli.
+  // Yazma türleri sırayla değişir: anlamından yaz, dinleyip yaz.
+  yaziEkle(sira) {
+    const tur = ["yazma", "dinleme"]; let t = 0, y = 0;
+    const sonuc = sira.map(a => {
+      if (a.tip !== "soru" || a.yeni || a.beceri) return a;
+      const i = t++; return i % 3 === 0 ? a : { ...a, beceri: tur[i % 2] };
+    });
+    sira.filter(a => a.tip === "soru" && a.yeni).forEach(a => sonuc.push({ tip: "soru", id: a.id, beceri: tur[y++ % 2], pekistir: true }));
+    return sonuc;
+  },
+
   // Kayıttaki açık tur geri yüklenebilir mi? Aynı gün, aynı deste, tanınan kelimeler ve bitmemiş olmalı.
   // Cevaplanmış ama "Devam"a basılmamış soru (sayfa o anda kapandıysa) yeniden sorulmaz: i bir ilerler.
   geriYukle(o, { gun, deste, bilinen }) {
@@ -59,6 +74,9 @@ const Ogrenme = {
     const sira = o.sira.slice();
     return { ...o, sira, i, cevaplanan: null };
   },
+
+  // Tekrar zamanı geldi mi? Pekişti kutusundaki (4) kelime tekrarda hiç çıkmaz (Halim'in isteği, Serhat'ın kararı 2026-11-19).
+  tekrarZamani(c, gun) { return !!c && c.kutu < 4 && c.sira <= gun; },
 
   // Yakın geçmişte sunulan kelimeler (en yenisi başta, tekil, sınırlı)
   sunuldu(son, id) { return [id, ...(son || []).filter(x => x !== id)].slice(0, OGRENME.sonSunulan); },

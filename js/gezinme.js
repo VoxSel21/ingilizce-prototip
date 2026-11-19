@@ -81,6 +81,6 @@ document.getElementById("basla-dugme").onclick = () => {
   if (acikTur("kelime")) kartlariAc();
   else if (d.bugun.sayi >= gunlukHedef() && !d.bugun.hediye) hediyePenceresi();
   else if (d.bugun.sayi >= gunlukHedef()) gunTamamPenceresi();
-  else if (bekleyenler().length) kartlariAc(KELIMELER, true);
+  else if (bekleyenler().length) kartlariAc(KELIMELER);
   else cumleAc();
 };

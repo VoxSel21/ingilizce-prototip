@@ -9,6 +9,7 @@ const KILO = {
   hal: [[4.5, "fit"], [6, "pofuduk"], [7.5, "tombis"], [Infinity, "mega"]],   // üst sınır (hariç) → hal
   fark: { yeniKelime: 0.1, tekrar: -0.1, spor: -0.15, balik: 0.5 },
 };
+const UNUTMA = { gecikme: 3, kelimeBasi: 0.02, gunlukEnCok: 0.2, araEnCok: 1 };
 const Kilo = {
   sinirla: k => { const n = typeof k === "number" || typeof k === "string" ? Number(k) : NaN;
     return Math.round(Math.min(KILO.enCok, Math.max(KILO.enAz, Number.isFinite(n) && k !== "" ? n : KILO.baslangic)) * 100) / 100; },
@@ -20,6 +21,18 @@ const Kilo = {
     if (spor) return KILO.fark.spor;
     if (yeni) return KILO.fark.yeniKelime;
     return tekrar ? 0 : KILO.fark.tekrar;
+  },
+  // Unutma kilosu (Halim'in isteği, 2026-11-19): tekrar günü UNUTMA.gecikme gün geçmiş, pekişmemiş her kelime
+  // her gün kediye biraz ağırlık yapar. Pekişti kutusundaki kelime ağırlık yapmaz. Tavanlar geri dönen kullanıcıyı
+  // kaçırmamak için: günde en çok UNUTMA.gunlukEnCok, bir aradan (iki açılış arası) en çok UNUTMA.araEnCok kg.
+  // oncekiGun: kayıttaki son gün, bugun: yeni gün. Eklenecek kg'ı döndürür (0 ya da pozitif).
+  unutma(kartlar, oncekiGun, bugun) {
+    if (!Number.isInteger(oncekiGun) || !Number.isInteger(bugun) || bugun <= oncekiGun) return 0;
+    const geciken = Object.values(kartlar || {}).filter(c => c && c.kutu < 4 && Number.isInteger(c.sira)).map(c => c.sira + UNUTMA.gecikme);
+    let toplam = 0;
+    for (let g = Math.max(oncekiGun + 1, bugun - 60); g <= bugun && toplam < UNUTMA.araEnCok; g++)
+      toplam += Math.min(UNUTMA.gunlukEnCok, geciken.filter(s => s <= g).length * UNUTMA.kelimeBasi);
+    return Math.round(Math.min(UNUTMA.araEnCok, toplam) * 100) / 100;
   },
   // Aynı turdaki aynı adım kiloyu bir kez değiştirir (çift dokunuş, sayfa yenileme, geri yükleme).
   // o.kiloAdim: bu turda kilosu işlenmiş adımlar. Uygulanan farkı döndürür; adım zaten işlendiyse null.
@@ -100,4 +113,4 @@ const Av = {
   hakKullan(d, gun) { d.avGunu = gun; (d.avlar = d.avlar || {})[gun] = 1; },
 };
 
-if (typeof module === "object" && module.exports) module.exports = { KILO, Kilo, Antrenman, AV_KURAL, Av };
+if (typeof module === "object" && module.exports) module.exports = { KILO, UNUTMA, Kilo, Antrenman, AV_KURAL, Av };

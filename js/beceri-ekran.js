@@ -31,7 +31,7 @@ function beceriSoruCiz(a) {
   const kart=ceteEl('div','soru-kart');kart.append(ceteEl('div','s-yon',BECERILER[a.beceri]),ceteEl('h2','s-ana',a.beceri==='dinleme'?'🎧 Dinle ve yaz':a.beceri==='yazma'?k[1]:k[0]));
   const b=d.kartlar[k[0]]?.beceriler?.[a.beceri];
   const durum={yeni:'Yeni',gelisiyor:'Gelişiyor',pekismis:'Pekişmiş'}[BeceriKural.durum(b)];
-  kart.append(ceteEl('small','beceri-ozet',a.beceri==='telaffuz'?'Puansız pratik veya çevrimiçi değerlendirme':durum));alan.append(kart);
+  kart.append(ceteEl('small','beceri-ozet',a.beceri==='telaffuz'?'Puansız pratik veya çevrimiçi değerlendirme':a.pekistir?'Pekiştirme':durum));alan.append(kart);
   if(a.beceri==='telaffuz')return telaffuzSoruCiz(a,k,alan,o);
   if(a.beceri==='secme'){
     const siklar=ceteEl('div','k-siklar');const diger=yanlisSecenekler(k,k[7]==='phrasal verb'?PHRASAL:KELIMELER);

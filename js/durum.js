@@ -45,6 +45,12 @@ function gunuYenile() {
   // bir şey kaybetmez; ara verilen günlerde temizlik yalnız biraz gecikir.
   const onceki = d.bugun.no;
   koruyucuKontrol(); d.bugun = { no: bugunNo(), sayi: 0, dogru: 0, hediye: false };
+  // Tekrar edilmeyen kelimeler kediye ağırlık yapar (js/oyun.js Kilo.unutma).
+  const unutma = Kilo.unutma(d.kartlar, onceki, d.bugun.no);
+  if (unutma > 0) {
+    d.kilo = Kilo.degis(d.kilo, unutma);
+    if (typeof bildir === "function") setTimeout(() => bildir(`${d.kediAd}, tekrar edilmeyen kelimelerden +${unutma.toFixed(2).replace(".", ",")} kg aldı. Başla'ya basıp tekrar edersen geri verir.`), 1200);
+  }
   Ekonomi.defterTemizle(d, Ekonomi.temizlikGunu(onceki, d.bugun.no)); kaydet();
   return true;
 }
@@ -146,7 +152,7 @@ const kartDurum = k => d.kartlar[k] || { kutu: 0, sira: 0, yeni: true };
 function bekleyenler(deste = KELIMELER) {
   const b = bugunNo();
   // Biriken tekrarlar tek dev tura dönmesin: bir turda en çok 20 tekrar, en çok gecikenler önce; kalanı sonraki turda.
-  const eski = deste.filter(k => d.kartlar[k[0]] && d.kartlar[k[0]].sira <= b)
+  const eski = deste.filter(k => Ogrenme.tekrarZamani(d.kartlar[k[0]], b))
     .sort((x, y) => d.kartlar[x[0]].sira - d.kartlar[y[0]].sira).slice(0, 20);
   const yeni = yeniHavuz(deste);
   return eski.concat(yeni.slice(0, Math.max(0, turBoyu(deste) - eski.length)));
